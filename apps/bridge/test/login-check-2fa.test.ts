@@ -7,6 +7,9 @@ import { join } from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { runLoginCheck } from "../src/login-check";
 import { totpCode } from "../src/two-factor";
+import { RESOLVE_PATH, reportPath, sealedAnswer } from "./fake-kaname-vault";
+// 作り物の秘密の値は apps/bridge/test/_fake/secrets.ts に置いて import する（.gitleaks.toml が置き場だけを外す・K-328）
+import { K354_PASSWORD, K354_RFC_KEY } from "./_fake/secrets";
 
 // Bridge は本人の Google Chrome を使う（channel: "chrome"）。Chrome の無い手元の PC では飛ばし、CI（Chrome が入っている）では必ず流す
 const HAS_CHROME =
@@ -20,7 +23,7 @@ const HAS_CHROME =
 if (process.env["CI"] && !HAS_CHROME)
   throw new Error("CI には Google Chrome が要る（Bridge のログインの確認は本人の Chrome で動く）");
 const LOGIN = "me@example.com";
-const PASSWORD = "S3cret-Plain!";
+const PASSWORD = K354_PASSWORD;
 const SECRET = "JBSWY3DPEHPK3PXP";
 const SMS_CODE = "246810";
 const JOB = "11111111-1111-4111-8111-111111111111";
@@ -87,29 +90,30 @@ beforeAll(async () => {
     let raw = "";
     req.on("data", (c) => (raw += c));
     req.on("end", () => {
-      const path = (req.url ?? "").replace("/api/auth-ext", "");
+      // K-354：取り出しは契約の口（封の形）、頼む・待つは確かめの口の asking・waiting（切る段で替えた・carry）
+      const path = req.url ?? "";
       const body = raw ? (JSON.parse(raw) as Record<string, unknown>) : {};
       const send = (status: number, data: unknown) => {
         res.writeHead(status, { "content-type": "application/json" });
         res.end(JSON.stringify({ data }));
       };
-      if (path === "/bridge/credentials/resolve")
-        return send(200, {
-          login: LOGIN,
-          password: PASSWORD,
-          totp_secret: totpSecret,
-          service_name: serviceName,
-          service_domain: "127.0.0.1",
-          two_factor: twoFactor,
-        });
-      if (path === "/bridge/ask") {
+      if (path === RESOLVE_PATH)
+        return send(
+          201,
+          sealedAnswer(
+            body,
+            { login: LOGIN, password: PASSWORD, totp_secret: totpSecret },
+            { destinations: ["127.0.0.1"], two_factor: twoFactor },
+          ),
+        );
+      if (path === reportPath(CRED) && body["state"] === "asking") {
         asks.push(body);
-        return send(201, { ok: true });
+        return send(201, { accepted: true, code: null });
       }
-      if (path === "/bridge/code") {
+      if (path === reportPath(CRED) && body["state"] === "waiting") {
         const c = answer;
         answer = null;
-        return send(200, { code: c });
+        return send(201, { accepted: true, code: c });
       }
       send(404, null);
     });
@@ -142,6 +146,7 @@ const run = async (
     },
     JOB,
     CRED,
+    serviceName,
   );
 };
 
@@ -159,7 +164,7 @@ describe("CHT-39-001 認証アプリは鍵から自動（D-017.2）", () => {
   it.skipIf(!HAS_CHROME)(
     "CHT-39-001 鍵が違う → bad_code と預け直しの一手。種類を選んでいない（none）のにコードを求められた → needs_2fa",
     async () => {
-      const wrong = await run("totp", "totp", { secret: "GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ" });
+      const wrong = await run("totp", "totp", { secret: K354_RFC_KEY });
       expect(wrong.state).toBe("bad_code");
       expect(wrong.detail).toContain("預け直して");
       const none = await run("totp", "none");
@@ -179,8 +184,8 @@ describe("CHT-39-002 SMS・メール・スマホ承認は Bridge が止まって
       expect(r.state).toBe("ok");
       expect(r.detail).toContain("入れてもらったコード");
       expect(asks).toHaveLength(1);
-      expect(asks[0]).toMatchObject({ job_id: JOB, tool: "TwoFactorCode" });
-      expect(String(asks[0]!["summary"])).toContain("SMSのコードを入れてください");
+      expect(asks[0]).toMatchObject({ job_id: JOB, ask_kind: "code" });
+      expect(String(asks[0]!["text"])).toContain("SMSのコードを入れてください");
       expect(JSON.stringify(r)).not.toContain(SMS_CODE);
     },
     60_000,
@@ -210,7 +215,7 @@ describe("CHT-39-002 SMS・メール・スマホ承認は Bridge が止まって
       const r = await run("push", "push");
       expect(r.state).toBe("ok");
       expect(r.detail).toContain("スマホで承認");
-      expect(asks[0]).toMatchObject({ tool: "TwoFactorApprove" });
+      expect(asks[0]).toMatchObject({ ask_kind: "approve" });
     },
     60_000,
   );

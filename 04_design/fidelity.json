@@ -2135,6 +2135,66 @@
      ]
     }
    ]
+  },
+  {
+   "id": "password-reset",
+   "kind": "auth-msg",
+   "canvas": "AuthReset",
+   "app": "/password-reset",
+   "state": "password-reset",
+   "widths": [
+    1440,
+    375
+   ],
+   "owner": "K-638",
+   "enrolled": true,
+   "pairs": [
+    {
+     "name": "入口の箱",
+     "role": "card",
+     "canvas": "x-dc > div > div:nth-of-type(2)",
+     "app": "[data-part=\"auth-box\"]",
+     "props": [
+      "background-color",
+      "border-top-color",
+      "border-radius",
+      "padding-top",
+      "padding-left",
+      "width",
+      "x"
+     ]
+    },
+    {
+     "name": "見出し",
+     "role": "h1",
+     "canvas": "x-dc > div > div:nth-of-type(2) > b:first-of-type",
+     "app": "[data-part=\"auth-box\"] h1",
+     "props": [
+      "font-size",
+      "font-weight",
+      "line-height",
+      "color",
+      "x",
+      "y"
+     ]
+    },
+    {
+     "name": "主ボタン",
+     "role": "primary",
+     "canvas": "x-dc > div > div:nth-of-type(2) > div:last-of-type > a[role=\"button\"]",
+     "app": "[data-part=\"auth-box\"] button[type=\"submit\"]",
+     "props": [
+      "height",
+      "background-color",
+      "color",
+      "font-size",
+      "font-weight",
+      "border-radius",
+      "x",
+      "y"
+     ]
+    }
+   ]
   }
  ]
 }

@@ -4,9 +4,12 @@
 //   鍵は withCredential の中だけ（終わったら消える・ディスクに書かない・AI に渡さない）。結果は種類と理由だけ（値を含まない）。
 //   入れなければ理由：パスワードが違う／2 段階が要る／CAPTCHA／開けない／ログインの欄が無い。何度も試さない（1 回で終わり）。
 //   本人の画面で動くのが見える（headless にしない・D-119.6）。試験だけ headless
+//   K-354：開く先は仕事の prompt（Kaname が使える場所から決めた URL）。取り出しは契約の口に「入れる場所＝開く先の名前」で頼み（使える場所の外なら口が断る）、
+//   ログインの欄に入れる直前にも、いまの画面の名前が使える場所の中かを確かめる（外へ移っていたら入れずに止める・D-128.57 ②）
 import { createRequire } from "node:module";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { hostAllowed, hostnameOf } from "./host";
 import { CredentialError, redact, withCredential, type Credential, type VaultDeps } from "./vault";
 import { ANSWER_WAIT_MS, askPerson, totpCode } from "./two-factor";
 
@@ -110,13 +113,13 @@ const CAPTCHA_SEL = [
 ];
 const CAPTCHA_FRAME = /recaptcha|hcaptcha|turnstile|captcha/i;
 
-/** 開く先：URL をそのまま預けたならそれ。名前だけなら https://<domain>/ */
-export function targetUrl(serviceName: string | null, serviceDomain: string | null): string | null {
-  const n = (serviceName ?? "").trim();
-  if (/^https?:\/\//i.test(n)) return n;
-  const d = (serviceDomain ?? "").trim();
-  if (!d) return null;
-  return `https://${d}/`;
+/** 開く先：仕事の prompt が http(s) の URL ならそのまま。名前だけなら https://<名前>/。空・ほかの形（ほかの scheme・名前に読めない）は null。
+ *  字は読む前に変えない（NFKC などをかけない） */
+export function targetUrl(prompt: string): string | null {
+  const s = prompt.trim();
+  if (/^https?:\/\//i.test(s)) return hostnameOf(s) === null ? null : s;
+  if (s === "" || /[\s/]/.test(s) || /^[a-z][a-z0-9+.-]*:(?!\d)/i.test(s)) return null;
+  return hostnameOf(s) === null ? null : `https://${s}/`;
 }
 
 async function visible(page: Page, sels: string[]): Promise<Locator | null> {
@@ -163,15 +166,49 @@ const NO_ANSWER = {
   detail: "10 分返事が無かったので止めました。いるときに「もう一度試す」を押してください（勝手には試しません）",
 };
 
+/** 仕事と情報の id（頼む・待つの口に要る） */
+interface CheckIds {
+  jobId: string;
+  credentialId: string;
+}
+
+/** 結果の文の上限（K-355 の reportCredentialCheck が detail を 400 字までで受ける。超えると 422 で結果が残らない） */
+export const DETAIL_MAX = 400;
+/** 文に入れる名前 1 つの上限・並べる使える場所の数 */
+const NAME_MAX = 60;
+const PLACES_SHOWN = 3;
+/** 字（コードポイント）で数えて n 字に収める。切ったら末尾を … にする */
+export function clip(s: string, n: number): string {
+  const chars = [...s];
+  return chars.length <= n ? s : `${chars.slice(0, n - 1).join("")}…`;
+}
+
+/** 入れる直前の確かめ：いまの画面の名前が使える場所の外なら、入れずに止める理由を返す（中なら null） */
+function outside(page: Page, c: Credential): LoginCheckResult | null {
+  const now = page.url();
+  if (hostAllowed(now, c.destinations)) return null;
+  const shown = c.destinations.slice(0, PLACES_SHOWN).map((d) => clip(d, NAME_MAX));
+  const rest = c.destinations.length - shown.length;
+  const places = shown.length ? `${shown.join("・")}${rest > 0 ? ` ほか ${rest} 件` : ""}` : "なし";
+  const screen = clip(hostnameOf(now) ?? "名前の分からない画面", NAME_MAX);
+  return {
+    state: "stopped",
+    detail: clip(
+      `使える場所（${places}）の外の画面（${screen}）に移ったので、入れずに止めました。必要なら使える場所に足してください`,
+      DETAIL_MAX,
+    ),
+  };
+}
+
 /** 2 段階の画面に来た（コードの欄がある・スマホの承認を待っている）ときの扱い（D-117.2〜D-117.5・D-017.2・D-017.4） */
 async function secondFactor(
   page: Page,
   c: Credential,
   d: LoginCheckDeps,
-  jobId: string,
+  ids: CheckIds,
   otp: Locator | null,
 ): Promise<LoginCheckResult> {
-  const service = c.serviceName ?? c.serviceDomain ?? "サービス";
+  const service = c.name || hostnameOf(page.url()) || "サービス";
   const ask = {
     apiBase: d.apiBase,
     sessionId: d.sessionId,
@@ -186,7 +223,13 @@ async function secondFactor(
     };
   if (c.twoFactor === "push") {
     // スマホで承認：本人に頼み、承認したと言ったらサービスが進むのを待つ
-    const ok = await askPerson(ask, jobId, "approve", `${service} のログインをスマホで承認してください`);
+    const ok = await askPerson(
+      ask,
+      ids.jobId,
+      ids.credentialId,
+      "approve",
+      `${service} のログインをスマホで承認してください`,
+    );
     if (!ok) return NO_ANSWER;
     const until = Date.now() + PUSH_WAIT_MS;
     while (Date.now() < until) {
@@ -217,12 +260,15 @@ async function secondFactor(
   } else {
     code = await askPerson(
       ask,
-      jobId,
+      ids.jobId,
+      ids.credentialId,
       "code",
       `${service} から届いた${TWO_FACTOR_LABEL[c.twoFactor]}のコードを入れてください`,
     );
     if (!code) return NO_ANSWER;
   }
+  const away = outside(page, c);
+  if (away) return away;
   await otp.fill(code);
   await otp.press("Enter");
   await settle(page);
@@ -253,7 +299,7 @@ async function attempt(
   url: string,
   c: Credential,
   d: LoginCheckDeps,
-  jobId: string,
+  ids: CheckIds,
 ): Promise<LoginCheckResult> {
   try {
     await page.goto(url, { waitUntil: "domcontentloaded", timeout: 30_000 });
@@ -288,6 +334,8 @@ async function attempt(
       state: "no_form",
       detail: "ログインの欄が見つかりませんでした。ログイン画面の URL を入れて預け直してください",
     };
+  const away = outside(page, c);
+  if (away) return away;
   if (user) {
     await user.fill(c.login);
     if (!pass) {
@@ -308,6 +356,8 @@ async function attempt(
     }
   }
   const before = page.url();
+  const moved = outside(page, c);
+  if (moved) return moved;
   await pass!.fill(c.password);
   await pass!.press("Enter");
   await settle(page);
@@ -317,7 +367,7 @@ async function attempt(
       detail: "CAPTCHA（ロボットでない確認）が出るサービスです。一度ご自身でログインしてから預け直してください",
     };
   const otp = await visible(page, OTP_SEL);
-  if (otp) return secondFactor(page, c, d, jobId, otp);
+  if (otp) return secondFactor(page, c, d, ids, otp);
   const stillPass = await visible(page, [PASS_SEL]);
   if (stillPass && (page.url() === before || !(await visible(page, OTP_SEL))))
     return {
@@ -325,7 +375,7 @@ async function attempt(
       detail: "ログイン名かパスワードが違うようです（サービスが受け付けませんでした）。確かめて預け直してください",
     };
   // スマホで承認のサービスは、パスワードの後に「承認してください」の画面で止まる（コードの欄は無い）
-  if (c.twoFactor === "push" && PUSH_TEXT.test(await bodyText(page))) return secondFactor(page, c, d, jobId, null);
+  if (c.twoFactor === "push" && PUSH_TEXT.test(await bodyText(page))) return secondFactor(page, c, d, ids, null);
   return { state: "ok", detail: "ログインできました（入れたらそのまま出ました）" };
 }
 
@@ -352,8 +402,32 @@ function noPasswordManager(profileDir: string): void {
   writeFileSync(file, JSON.stringify(next));
 }
 
-/** Kaname から受け取った login_check の仕事を 1 回だけこなす。鍵は use の中だけ。ブラウザは必ず閉じる */
-export async function runLoginCheck(d: LoginCheckDeps, jobId: string, credentialId: string): Promise<LoginCheckResult> {
+const NO_TARGET: LoginCheckResult = {
+  state: "unreachable",
+  detail: "開く先（使える場所）がありません。使える場所を確かめてください",
+};
+
+/** Kaname から受け取った login_check の仕事を 1 回だけこなす。target は仕事の prompt（開く先）。鍵は use の中だけ。ブラウザは必ず閉じる。
+ *  開く先が無ければ Chrome を開かず、取り出しも頼まない。結果の文は必ず DETAIL_MAX 字に収める（Kaname の文を含む道も） */
+export async function runLoginCheck(
+  d: LoginCheckDeps,
+  jobId: string,
+  credentialId: string,
+  target: string,
+): Promise<LoginCheckResult> {
+  const r = await checkOnce(d, jobId, credentialId, target);
+  return { state: r.state, detail: clip(r.detail, DETAIL_MAX) };
+}
+
+async function checkOnce(
+  d: LoginCheckDeps,
+  jobId: string,
+  credentialId: string,
+  target: string,
+): Promise<LoginCheckResult> {
+  const url = targetUrl(target);
+  const destination = hostnameOf(target);
+  if (!url || !destination) return NO_TARGET;
   const pw = playwright();
   if (!pw) return { state: "stopped", detail: "専用のブラウザの部品が見つかりません。Bridge を入れ直してください" };
   const profileDir = join(d.dataDir, "browser-profile"); // AI の専用ブラウザと同じ置き場（通したログインを残す・D-117.4）
@@ -362,13 +436,7 @@ export async function runLoginCheck(d: LoginCheckDeps, jobId: string, credential
   const limit = d.timeoutMs ?? (d.answerWaitMs ?? ANSWER_WAIT_MS) + 120_000;
   let ctx: Context | null = null;
   try {
-    return await withCredential(d, jobId, credentialId, async (c) => {
-      const url = targetUrl(c.serviceName, c.serviceDomain ?? null);
-      if (!url)
-        return {
-          state: "unreachable" as const,
-          detail: "開く先（URL かドメイン）が分かりません。サービスの URL を入れて預け直してください",
-        };
+    return await withCredential(d, { jobId, credentialId, destination }, async (c) => {
       try {
         ctx = await pw.chromium.launchPersistentContext(profileDir, {
           channel: "chrome",
@@ -391,7 +459,7 @@ export async function runLoginCheck(d: LoginCheckDeps, jobId: string, credential
           limit,
         ),
       );
-      const r = await Promise.race([attempt(page, url, c, d, jobId), timer]);
+      const r = await Promise.race([attempt(page, url, c, d, { jobId, credentialId }), timer]);
       // 入れた欄を画面に残さない（タブの復元・保存の確認に値を渡さない）。ログインの状態（Cookie）は残る
       await page.goto("about:blank", { timeout: 5_000 }).catch(() => undefined);
       // 文の中に値が紛れていないことを最後に確かめる（無いはずだが、最後の砦）
@@ -401,7 +469,7 @@ export async function runLoginCheck(d: LoginCheckDeps, jobId: string, credential
     if (e instanceof CredentialError)
       return {
         state: "stopped",
-        detail: `ログイン情報を受け取れませんでした（${e.message}）${e.handoff ? `。${e.handoff}` : ""}`,
+        detail: `ログイン情報を受け取れませんでした（${clip(e.message, NAME_MAX * 2)}）${e.handoff ? `。${clip(e.handoff, NAME_MAX)}` : ""}`,
       };
     return { state: "stopped", detail: "ログインを試している途中で止まりました。預け直すともう一度試します" };
   } finally {

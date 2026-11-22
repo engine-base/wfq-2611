@@ -1,0 +1,45 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/hooks/credentials-*.ts",
+    "apps/api/src/features/F3/credentials/**",
+    "apps/api/test/features/F3/credential-device.harness.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F3/credential-resolve.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F3/credential-resolve.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_bridge_credentials_resolve.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/features/F3/credentials/host.ts",
+    "apps/bridge/src/host.ts"
+   ],
+   "tests": [
+    "apps/bridge/test/k354-credential-bridge.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F3/credential-host-cases.json"
+   ],
+   "tests": [
+    "apps/api/test/features/F3/credential-resolve.test.ts",
+    "apps/bridge/test/k354-credential-bridge.test.ts"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "apps/api/test/features/F3/credential-resolve.test.ts": "宛先の表 credential-host-cases.json を字として読む（Bridge の試験と同じ 1 つの表・K-354）",
+  "apps/bridge/test/k354-credential-bridge.test.ts": "宛先の表 credential-host-cases.json と、口と Bridge の host.ts を字として読む（同じ表と同じ字で両方を試す・K-354）"
+ }
+}

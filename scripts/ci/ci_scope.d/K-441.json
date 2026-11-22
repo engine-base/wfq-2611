@@ -1,0 +1,30 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/hooks/ticket-links.ts",
+    "apps/api/src/features/F4/ticket-links/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F4/ticket-links.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F4/ticket-links.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts",
+    "apps/api/test/features/F1/terms.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_tickets_id_links.test.ts",
+    "apps/api/test/generated/post_tickets_id_links.test.ts",
+    "apps/api/test/generated/delete_ticket_links_id.test.ts"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "apps/api/test/features/F4/ticket-links.test.ts": "この葉の hooks のファイル apps/api/src/hooks/ticket-links.ts を、最初の要求の前に動的 import で読む（まだ無い実装の前の準備を落とさないため）。読む物と使う試験は data_links で結ぶ・K-441",
+  "apps/api/test/features/contract/k144.d/K-441.ts": "同じ。準備の中で hooks のファイルを動的 import で読む（k144 の置き場の決まり・K-441）"
+ }
+}

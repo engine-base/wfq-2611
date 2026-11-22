@@ -923,6 +923,10 @@
     "test_post_auth_password_reset_session_unresolved": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
+    },
+    "test_post_auth_password_reset_conflict": {
+     "file": "apps/api/test/features/F1/pm-fuzz-auth.test.ts",
+     "mark": "K638-API-009"
     }
    }
   },
@@ -1283,6 +1287,35 @@
     "test_delete_credentials_id_rate_limited": "回数は入口の共通の数えで、同じ表の口の型の確かめは createCredential の K352-API-024 が持つ"
    }
   },
+  "resolveCredential": {
+   "file": "apps/api/test/features/F3/credential-resolve.test.ts",
+   "reason": "取り出しの口は本物の PC の印・本物の預ける口（金庫）・PC が取った動いている仕事・本物の関門 C8・DB の関数の失敗で答えが変わる。生成の試験の偽のセッションでは PC も仕事も預けた物も作れない（K-354）",
+   "covers": {
+    "test_post_bridge_credentials_resolve_ok": "K354-API-001",
+    "test_post_bridge_credentials_resolve_rejected_401": "K354-API-014",
+    "test_post_bridge_credentials_resolve_rejected_403": "K354-API-009",
+    "test_post_bridge_credentials_resolve_rejected_403_2": "K354-API-011",
+    "test_post_bridge_credentials_resolve_rejected_403_3": "K354-API-010",
+    "test_post_bridge_credentials_resolve_rejected_422_2": "K354-API-013",
+    "test_post_bridge_credentials_resolve_not_found": "K354-API-007",
+    "test_post_bridge_credentials_resolve_upstream_failed": "K354-API-019",
+    "test_post_bridge_credentials_resolve_unavailable": "K354-API-019",
+    "test_post_bridge_credentials_resolve_session_unresolved": "K354-API-017",
+    "test_post_bridge_credentials_resolve_rate_limited": "K354-API-015",
+    "test_post_bridge_credentials_resolve_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_bridge_credentials_resolve_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_bridge_credentials_resolve_shape": "K354-API-001"
+   },
+   "na": {
+    "test_post_bridge_credentials_resolve_rejected_422": "冪等の器を使わない口（noIdempotency）：答えに封が入るので、同じ鍵の二度目に前の答えを返さない。取り出しは毎回判定と記録を通す（K354-API-002 が 1 回ごとの記録を見る）"
+   }
+  },
   "checkCredentialLogin": {
    "file": "apps/api/test/features/F3/credential-login-check.test.ts",
    "reason": "確かめの口は本物の PC の印・本物の預ける口（金庫）・PC が取った仕事・DB の関数の失敗で答えが変わる。生成の試験の偽のセッションでは PC も仕事も作れない（K-355）",
@@ -1545,6 +1578,56 @@
     }
    }
   },
+  "listTicketDecisions": {
+   "file": "apps/api/test/features/F6/decisions.test.ts",
+   "reason": "決定は見えるか・書けるか・決めた人・元の書き込みの組み合わせで答えが変わり、生成の試験の種では作れない（K-390）",
+   "covers": {
+    "test_get_tickets_id_decisions_ok": "K390-API-002",
+    "test_get_tickets_id_decisions_rejected_401": "K390-API-014",
+    "test_get_tickets_id_decisions_not_found": "K390-API-014",
+    "test_get_tickets_id_decisions_shape": "K390-API-002",
+    "test_get_tickets_id_decisions_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_get_tickets_id_decisions_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_get_tickets_id_decisions_rejected_403": "見るだけの人も読める。見えない人は 404（K390-API-014）",
+    "test_get_tickets_id_decisions_rate_limited": "上限は入口の共通の数え方。同じ道を足す口で K390-API-019 が確かめる",
+    "test_get_tickets_id_decisions_rejected_422": "入口の uuid の確かめ（K144-API-750）"
+   }
+  },
+  "createTicketDecision": {
+   "file": "apps/api/test/features/F6/decisions.test.ts",
+   "reason": "決定は見えるか・書けるか・決めた人・元の書き込みの組み合わせで答えが変わり、生成の試験の種では作れない（K-390）",
+   "covers": {
+    "test_post_tickets_id_decisions_ok": "K390-API-004",
+    "test_post_tickets_id_decisions_rejected_401": "K390-API-014",
+    "test_post_tickets_id_decisions_rejected_403": "K390-API-014",
+    "test_post_tickets_id_decisions_not_found": "K390-API-014",
+    "test_post_tickets_id_decisions_rejected_422": "K390-API-008",
+    "test_post_tickets_id_decisions_unavailable": "K390-API-016",
+    "test_post_tickets_id_decisions_rate_limited": "K390-API-019",
+    "test_post_tickets_id_decisions_shape": "K390-API-004",
+    "test_post_tickets_id_decisions_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_tickets_id_decisions_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_tickets_id_decisions_conflict": "K390-API-011",
+    "test_post_tickets_id_decisions_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   }
+  },
   "getWorkspaceMembers": {
    "file": "apps/api/test/features/F10/invite-create.test.ts",
    "reason": "メンバーの並びは、グループ・兼ねる所属・招待中・PC の様子・権限の組み合わせで答えが変わる。生成の試験の種では作れない（K-419）",
@@ -1583,6 +1666,156 @@
     }
    },
    "na": {}
+  },
+  "listTestSpecs": {
+   "file": "apps/api/test/features/F4/test-spec-create.test.ts",
+   "reason": "確認項目の一覧は、チケットが見えるか・書けるか・完了したかで答え（can_edit）が変わる。生成の試験の偽のセッションではチケットも項目も作れない（K-434）",
+   "covers": {
+    "test_get_tickets_id_test_specs_ok": "K434-API-001",
+    "test_get_tickets_id_test_specs_rejected_401": "K434-API-006",
+    "test_get_tickets_id_test_specs_not_found": "K434-API-005",
+    "test_get_tickets_id_test_specs_rate_limited": "K434-API-007",
+    "test_get_tickets_id_test_specs_shape": "K434-API-001",
+    "test_get_tickets_id_test_specs_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_get_tickets_id_test_specs_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_get_tickets_id_test_specs_rejected_422": {
+     "file": "apps/api/test/features/contract/k144.d/K-434.ts",
+     "mark": "K144-API-520"
+    }
+   },
+   "na": {
+    "test_get_tickets_id_test_specs_rejected_403": "読むだけの口で、見えない人は 404（行の守り）。権限の 403 は無い（受けは K434-API-005）",
+    "test_get_tickets_id_test_specs_upstream_failed": "外を呼ばない（C3 は契約の口の宣言に付いているだけ・AI も PC も呼ばない）"
+   }
+  },
+  "createTestSpec": {
+   "file": "apps/api/test/features/F4/test-spec-create.test.ts",
+   "reason": "確認項目を足す口は、チケットが見えるか・書けるか・完了したか・同時に完了したかで答えが変わり、DB の関数が行とやり取りと証跡を 1 つの取引で書く。生成の試験の偽のセッションでは作れない（K-434）",
+   "covers": {
+    "test_post_tickets_id_test_specs_ok": "K434-API-008",
+    "test_post_tickets_id_test_specs_shape": "K434-API-008",
+    "test_post_tickets_id_test_specs_rejected_401": "K434-API-011",
+    "test_post_tickets_id_test_specs_rejected_403": "K434-API-011",
+    "test_post_tickets_id_test_specs_not_found": "K434-API-011",
+    "test_post_tickets_id_test_specs_rejected_422": "K434-API-009",
+    "test_post_tickets_id_test_specs_rejected_422_2": "K434-API-010",
+    "test_post_tickets_id_test_specs_rate_limited": "K434-API-018",
+    "test_post_tickets_id_test_specs_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_tickets_id_test_specs_session_unresolved": "K434-API-016",
+    "test_post_tickets_id_test_specs_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_tickets_id_test_specs_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   },
+   "na": {
+    "test_post_tickets_id_test_specs_upstream_failed": "外を呼ばない（C3 は契約の口の宣言に付いているだけ・AI も PC も呼ばない）"
+   }
+  },
+  "listTicketLinks": {
+   "file": "apps/api/test/features/F4/ticket-links.test.ts",
+   "reason": "つながりの一覧は、相手が見えるか・消えているか・書けるかで答えの形が変わる。生成の試験の種ではグループと権限を作れない（K-441）",
+   "covers": {
+    "test_get_tickets_id_links_ok": "K441-API-001",
+    "test_get_tickets_id_links_rejected_401": "K441-API-022",
+    "test_get_tickets_id_links_not_found": "K441-API-004",
+    "test_get_tickets_id_links_shape": "K441-API-001",
+    "test_get_tickets_id_links_rate_limited": "K441-API-023",
+    "test_get_tickets_id_links_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_get_tickets_id_links_session_unresolved": "K441-API-028",
+    "test_get_tickets_id_links_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_get_tickets_id_links_rejected_403": "見えないときは 404（有ることを漏らさない）で、読む口に 403 は無い（受けは K441-API-004）",
+    "test_get_tickets_id_links_rejected_422": "入力は道の id だけ（uuid の確かめは入口の共通・K144-API-541）",
+    "test_get_tickets_id_links_not_found_2": "入口の確かめの後で消える・見えなくなる競合だけで、入口の 404（K441-API-004）と同じ 404。口の答えは E-PAGE-001（関数が null を返す枝）で、試験で競合を作れない（K-441）"
+   }
+  },
+  "createTicketLink": {
+   "file": "apps/api/test/features/F4/ticket-links.test.ts",
+   "reason": "つながりを足す口は、両端の権限・重複・派生元の輪の組み合わせで答えが変わる。生成の試験の種ではグループと権限を作れない（K-441）",
+   "covers": {
+    "test_post_tickets_id_links_ok": "K441-API-005",
+    "test_post_tickets_id_links_rejected_401": "K441-API-022",
+    "test_post_tickets_id_links_rejected_403": "K441-API-011",
+    "test_post_tickets_id_links_not_found": "K441-API-010",
+    "test_post_tickets_id_links_rejected_422": "K441-API-013",
+    "test_post_tickets_id_links_rate_limited": "K441-API-023",
+    "test_post_tickets_id_links_shape": "K441-API-005",
+    "test_post_tickets_id_links_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_tickets_id_links_session_unresolved": "K441-API-019",
+    "test_post_tickets_id_links_conflict": "K441-API-007",
+    "test_post_tickets_id_links_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_tickets_id_links_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_tickets_id_links_not_found_2": "K441-API-010"
+   }
+  },
+  "deleteTicketLink": {
+   "file": "apps/api/test/features/F4/ticket-links.test.ts",
+   "reason": "つながりを外す口は、両端のどちらに書けるか・見えるかで答えが変わる。生成の試験の種ではグループと権限を作れない（K-441）",
+   "covers": {
+    "test_delete_ticket_links_id_ok": "K441-API-015",
+    "test_delete_ticket_links_id_rejected_401": "K441-API-022",
+    "test_delete_ticket_links_id_rejected_403": "K441-API-017",
+    "test_delete_ticket_links_id_not_found": "K441-API-018",
+    "test_delete_ticket_links_id_shape": "K441-API-015",
+    "test_delete_ticket_links_id_rate_limited": "K441-API-023",
+    "test_delete_ticket_links_id_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_delete_ticket_links_id_session_unresolved": "K441-API-020",
+    "test_delete_ticket_links_id_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_delete_ticket_links_id_rejected_422": "入力は道の id だけ（uuid の確かめは入口の共通・K144-API-543）"
+   }
+  },
+  "search": {
+   "file": "apps/api/test/features/F7/search-tickets.test.ts",
+   "reason": "探すは、見える範囲（行の守り）・消したもの・他の人の下書き・権限の付け外しの組み合わせで答えが変わる。生成の試験の種では会社・人・権限・チケットを作れない（K-468）",
+   "covers": {
+    "test_get_search_ok": "K468-API-002",
+    "test_get_search_rejected_401": "K468-API-016",
+    "test_get_search_rejected_403": "K468-API-016",
+    "test_get_search_rejected_422": "K468-API-009",
+    "test_get_search_rate_limited": "K468-API-017",
+    "test_get_search_terms_pending": "K468-API-016",
+    "test_get_search_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   }
   },
   "listTicketFields": {
    "file": "apps/api/test/features/F4/ticket-fields.test.ts",

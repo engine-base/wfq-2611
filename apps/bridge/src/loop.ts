@@ -269,8 +269,14 @@ export function startLoop(d: LoopDeps): () => void {
         },
         job.job_id,
         job.credential_id,
+        job.prompt,
       );
-      await post("/bridge/credentials/check-result", { job_id: job.job_id, state: r.state, detail: r.detail });
+      // 結果は契約の口（K-355 の reportCredentialCheck・K-354 でつなぎ替えた）。体は決めた欄だけ
+      await post(`/v1/bridge/credentials/${encodeURIComponent(job.credential_id)}/check-result`, {
+        job_id: job.job_id,
+        state: r.state,
+        detail: r.detail,
+      });
       state.working = null;
       d.onChange({ ...state });
       return 0;

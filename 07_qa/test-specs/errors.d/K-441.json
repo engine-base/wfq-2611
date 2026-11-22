@@ -1,0 +1,101 @@
+{
+ "errors": [
+  {
+   "id": "E-LNK-001",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "links"
+   },
+   "when": "チケットを自分自身とつなごうとした（関連・派生元とも）",
+   "false_when": "別のチケットとつなぐ",
+   "message": "同じチケットとはつなげられません",
+   "action": "ほかのチケットを選ぶ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットの詳細を開き、つながりを足す小窓を開く",
+    "steps": [
+     "つながりを足す小窓で、開いているチケットと同じチケットを選んで足す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.50",
+    "D-128.80",
+    "D-150.16"
+   ]
+  },
+  {
+   "id": "E-LNK-002",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "links"
+   },
+   "when": "もうつながっている相手に、同じつながりをもう一度足そうとした（関連は逆向きも・派生元は同じ向き）",
+   "false_when": "まだつながっていない相手に足す。または外してから足し直す",
+   "message": "このチケットとは、もうつながっています",
+   "action": "つながりの一覧を見る",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "関連でつながった 2 つのチケット",
+    "steps": [
+     "同じ相手を関連で 2 回足す",
+     "関連の逆向き（相手のチケットから）にも足す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.50",
+    "D-128.80",
+    "D-150.16"
+   ]
+  },
+  {
+   "id": "E-LNK-003",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "links"
+   },
+   "when": "派生元が輪になるつながりを足そうとした（A の派生元が B なのに B の派生元を A にする・間に挟んだ鎖も含む）",
+   "false_when": "派生元をたどって自分に戻らない",
+   "message": "派生元が輪になるので、つなげられません",
+   "action": "ほかのチケットを選ぶ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "派生元でつながった 2 つのチケット",
+    "steps": [
+     "B の派生元を A にしたあと、A の派生元を B にして足す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.50",
+    "D-128.80",
+    "D-150.16"
+   ]
+  }
+ ]
+}

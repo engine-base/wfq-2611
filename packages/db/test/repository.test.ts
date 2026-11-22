@@ -87,7 +87,7 @@ describe("repository（関門 C2）", () => {
     await expect(repo.table("abilities").softDelete(staff(), "view")).rejects.toThrow(/マスタ/);
   });
   it("init は表が無いと落ちる（G-11 の存在確認）", async () => {
-    const empty = new pg.Pool({ connectionString: URL.replace(/\/kaname_test$/, "/postgres"), max: 1 });
+    const empty = new pg.Pool({ connectionString: URL.replace(/\/[^/?]+$/, "/postgres"), max: 1 });
     await expect(createRepository(empty)).rejects.toThrow(/表が無い/);
     await empty.end();
   });

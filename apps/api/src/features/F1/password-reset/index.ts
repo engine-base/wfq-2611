@@ -56,7 +56,7 @@ const missing = (field: string): HookReply => ({
   status: 422,
   body: { error: "validation_failed", code: "VALIDATION_ERROR", details: [{ field, message: `${field} が要る` }] },
 });
-/** 正本のエラーを答えにする。状態の番号は口が決める（410・500 は種類の既定と違う） */
+/** 正本のエラーを答えにする。状態の番号は口が決める（410・409・500 は種類の既定と違うことがある） */
 const reply = (status: number, code: string, field?: string): HookReply => ({
   status,
   body: kanameError(code, field ? { field } : {}).toJSON(),
@@ -134,7 +134,8 @@ export function passwordResetFeature(d: PasswordResetDeps) {
       case "expired":
         return reply(410, "E-AUTH-006");
       case "invalid":
-        return reply(410, "E-PAGE-006");
+        // リンクが DB に無い（でたらめ・空・空白だけ）。形どおりの入力が DB の中身で断られる所なので 422・410 にしない（K-638）
+        return reply(409, "E-PAGE-006");
       case "short":
         return reply(422, "E-VAL-005", "new_password");
       case "long":

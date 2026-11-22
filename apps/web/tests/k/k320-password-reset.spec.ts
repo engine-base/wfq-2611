@@ -2,7 +2,7 @@
 //   正の絵：モック /dev/mock/f1/<状態>（本番と同じ部品 features/F1/password-reset/views.tsx の PasswordReset）。
 //   口（POST /api/v1/auth/password/forgot・/reset・GET /api/v1/me）は網の手前で差し替える。本人の Bridge（127.0.0.1:38617）にも届かせない（網の手前で 404）。
 //   部品の道を閉じたこと（K320-UI-023）だけは本物の口（API_BASE）を叩く。
-//   答えの形は K-313・K-314 の表のとおり：forgot 201 { data: { accepted: true } }／reset 201 { data: { reset: true } }・410 { code: E-AUTH-006 | E-PAGE-006 }・
+//   答えの形は K-313・K-314 の表のとおり：forgot 201 { data: { accepted: true } }／reset 201 { data: { reset: true } }・410 { code: E-AUTH-006 }・409 { code: E-PAGE-006 }・
 //   422 { code, field: new_password }・429 { retry_after_sec }・500 { code: E-PAGE-003 }
 //   文言は正本（07_qa/test-specs/errors.json）と部品（views.tsx）の文。実装から書かない
 //   テストはチケットを作る人が書き、実装する人は変えない（D-128.125）
@@ -133,7 +133,8 @@ test("K320-UI-003 正しいメール（前後の全角の空白つき）で送�
   expect(m.forgots).toEqual([{ email: EMAIL }]);
   await expect(root(page)).toContainText(SENT_TEXT(EMAIL));
   const again = root(page).getByRole("button", { name: /もう一度送る/ });
-  await expect(again).toHaveText("もう一度送る（60 秒あとから）");
+  await expect(root(page).locator('[data-part="resend"]')).toHaveText("もう一度送る（1 分あとから）"); // 60 秒は「1 分」（キャンバス AuthReset・K-638）
+  await expect(again).toHaveText("もう一度送る");
   await expect(again).toBeDisabled();
 });
 
@@ -148,7 +149,7 @@ test("K320-UI-004 送ってから 59 秒では押せない（1 秒あとから�
   await expect(root(page)).toHaveAttribute("data-state", "s");
   const again = root(page).getByRole("button", { name: /もう一度送る/ });
   await page.clock.fastForward(59_000);
-  await expect(again).toHaveText("もう一度送る（1 秒あとから）");
+  await expect(root(page).locator('[data-part="resend"]')).toHaveText("もう一度送る（1 秒あとから）");
   await expect(again).toBeDisabled();
   await page.clock.fastForward(1_000);
   await expect(again).toHaveText("もう一度送る");
@@ -323,11 +324,11 @@ test("K320-UI-015 口が 410・E-AUTH-006：dead・正本の文。パスワー�
   await expect(root(page)).toHaveAttribute("data-state", "n");
 });
 
-test("K320-UI-016 口が 410・E-PAGE-006：invalid・正本 E-PAGE-006 の文「このリンクは使えなくなりました…」。メールアドレスは出さない", async ({
+test("K320-UI-016 口が 409・E-PAGE-006：invalid・正本 E-PAGE-006 の文「このリンクは使えなくなりました…」。メールアドレスは出さない", async ({
   page,
 }) => {
   const m = await mockApi(page);
-  m.on.reset = () => ({ status: 410, body: { error: "gone", code: "E-PAGE-006", message: msg("E-PAGE-006") } });
+  m.on.reset = () => ({ status: 409, body: { error: "not_found", code: "E-PAGE-006", message: msg("E-PAGE-006") } });
   await openNew(page);
   await fillNew(page, NEW_PW);
   await saveBtn(page).click();
@@ -460,7 +461,7 @@ const PROD: Record<string, (page: Page) => Promise<void>> = {
     await sendBtn(page).click();
     await expect(root(page)).toHaveAttribute("data-state", "s");
     await page.clock.fastForward(12_000); // モックは「48 秒あとから」
-    await expect(root(page).getByRole("button", { name: /もう一度送る/ })).toHaveText("もう一度送る（48 秒あとから）");
+    await expect(root(page).locator('[data-part="resend"]')).toHaveText("もう一度送る（48 秒あとから）");
   },
   "reset-signed-in": async (page) => {
     const m = await mockApi(page);
@@ -507,7 +508,7 @@ const PROD: Record<string, (page: Page) => Promise<void>> = {
   },
   "reset-invalid": async (page) => {
     const m = await mockApi(page);
-    m.on.reset = () => ({ status: 410, body: { error: "gone", code: "E-PAGE-006", message: msg("E-PAGE-006") } });
+    m.on.reset = () => ({ status: 409, body: { error: "not_found", code: "E-PAGE-006", message: msg("E-PAGE-006") } });
     await page.goto(`/password-reset?token=${TOKEN}`);
     await fillNew(page, NEW_PW);
     await saveBtn(page).click();

@@ -7,6 +7,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { CredentialError, withCredential } from "../src/vault";
+import { sealedAnswer } from "./fake-kaname-vault";
 import { loadMachineId, MACHINE_ID_FILE, UUID_RE } from "../src/pairing";
 
 // 正式な uuid でない値（apps/api/test/k145_uuid_guard.test.ts の BAD_IDS と同じ並び）
@@ -39,16 +40,15 @@ beforeAll(async () => {
     req.on("data", (c) => (raw += c));
     req.on("end", () => {
       seen.push(`${req.url} ${raw}`);
-      res.writeHead(200, { "content-type": "application/json" });
+      // K-354：取り出しの答えは封（PC の鍵でしか開けない形）。切る段で替えた（carry）
+      res.writeHead(201, { "content-type": "application/json" });
       res.end(
         JSON.stringify({
-          data: {
+          data: sealedAnswer(JSON.parse(raw) as Record<string, unknown>, {
             login: "me@example.com",
             password: "S3cret-Plain!",
             totp_secret: null,
-            service_name: "x",
-            two_factor: "none",
-          },
+          }),
         }),
       );
     });
@@ -70,7 +70,11 @@ describe("K-145 Bridge の id の確かめ", () => {
         [bad, CRED],
       ]) {
         seen.length = 0;
-        const p = withCredential(deps(), job, cred, async () => "使った");
+        const p = withCredential(
+          deps(),
+          { jobId: job, credentialId: cred, destination: "example.com" },
+          async () => "使った",
+        );
         await expect(p, `job=${JSON.stringify(job)} cred=${JSON.stringify(cred)}`).rejects.toBeInstanceOf(
           CredentialError,
         );
@@ -83,7 +87,9 @@ describe("K-145 Bridge の id の確かめ", () => {
     }
     for (const good of GOOD_IDS) {
       seen.length = 0;
-      await expect(withCredential(deps(), good, good, async (c) => c.login)).resolves.toBe("me@example.com");
+      await expect(
+        withCredential(deps(), { jobId: good, credentialId: good, destination: "example.com" }, async (c) => c.login),
+      ).resolves.toBe("me@example.com");
       expect(seen.length, good).toBe(1);
       expect(seen[0]).toContain(`"job_id":"${good}"`);
     }

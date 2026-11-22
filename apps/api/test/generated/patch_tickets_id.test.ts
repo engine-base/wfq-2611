@@ -50,7 +50,7 @@ describe("PATCH /api/v1/tickets/:id", () => {
     expect(readFileSync("apps/api/test/features/F6/progress.test.ts", "utf8")).toContain("K387-API-011");
   });
   it("test_patch_tickets_id_conflict_2", () => {
-    // UNWANTED: IF 完了したチケットの段を開き直さずに変えようとしたら、Kaname は 409 と E-CONF-032 を返し、何も書かない
+    // UNWANTED: IF 完了したチケットの段を、作業中への開き直し以外に変えようとしたら、Kaname は 409 と E-CONF-032 を返し、何も書かない
     // 本物の試験：apps/api/test/features/F6/progress.test.ts の「K387-API-012」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F6/progress.test.ts", "utf8")).toContain("K387-API-012");
   });

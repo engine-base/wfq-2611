@@ -15,6 +15,7 @@ import type { Vars } from "../middleware/tenant.js";
 import type { ContractDeps } from "./deps.js";
 import { op } from "./op.js";
 import { registerAll } from "../routes/index.js";
+import { ROW_EXEMPT_FIELDS } from "../../../../scripts/ci/row_rules.mjs";
 
 type Role = TenantContext["role"];
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "..");
@@ -264,10 +265,27 @@ describe("権限の試験：行に結ぶ言葉（K-15・ZT4）", () => {
   // 除外（scripts/ci/row_rules.mjs の ROW_EXEMPT）：パスキー（認証の側の表）と、つないだ PC（アカウントのもの・D-128.156。
   //   持ち主は口と DB の関数の 2 重で確かめる・D-128.166・K-364）
   const EXEMPT = ["/api/v1/me/passkeys", "/api/v1/bridge/devices/"];
-  it("行に結ぶ口で :id があるものは全部、どの表のどの条件で確かめるかを持つ（除外はパスキーとつないだ PC だけ）", () => {
-    expect(withId.filter((e) => !e.perm.row && !EXEMPT.some((x) => e.path.startsWith(x))).map((e) => e.path)).toEqual(
-      [],
-    );
+  //   欄で名指しして外した口の :id（ROW_EXEMPT_FIELDS・K-441）：口の名前と欄の名前と理由が要る。口ごとは外さない
+  const FIELD_EXEMPT = ROW_EXEMPT_FIELDS as Record<string, Record<string, string> | undefined>;
+  const fieldExempt = (e: { operationId: string }) => (FIELD_EXEMPT[e.operationId]?.["id"] ?? "").trim() !== "";
+  it("行に結ぶ口で :id があるものは全部、どの表のどの条件で確かめるかを持つ（除外はパスキーとつないだ PC と、欄で名指しして理由を書いた :id だけ）", () => {
+    expect(
+      withId
+        .filter((e) => !e.perm.row && !EXEMPT.some((x) => e.path.startsWith(x)) && !fieldExempt(e))
+        .map((e) => e.path),
+    ).toEqual([]);
+  });
+  it("欄で名指しして外した :id は、本当にある口の :id で、理由が 15 文字以上あり、外した口は行の確かめを持たない（口の名前の書き間違いで黙って外れない）", () => {
+    for (const [op, fields] of Object.entries(FIELD_EXEMPT)) {
+      const e = ENDPOINTS.find((x) => x.operationId === op);
+      expect(e, `${op} が契約に無い`).toBeDefined();
+      for (const [field, why] of Object.entries(fields ?? {})) {
+        expect(field, `${op} の欄`).toBe("id");
+        expect(e!.path, `${op} の道に :id が無い`).toContain(":id");
+        expect((why ?? "").trim().length, `${op}.${field} の理由が短い`).toBeGreaterThanOrEqual(15);
+        expect(e!.perm.row, `${op} は行の確かめを外したはず`).toBeNull();
+      }
+    }
   });
   const rows = withId.filter((e) => e.perm.row);
   it.each(rows.map((e) => [`${e.method} ${e.path}`, e] as const))(

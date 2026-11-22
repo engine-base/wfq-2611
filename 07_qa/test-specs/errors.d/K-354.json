@@ -1,0 +1,32 @@
+{
+ "errors": [
+  {
+   "id": "E-CRED-016",
+   "class": "gate",
+   "where": {
+    "screen": "credentials"
+   },
+   "when": "PC が、預けたログイン情報を使える場所（宛先のドメイン）の外の画面に入れようとした",
+   "false_when": "入れる場所の名前が、使える場所と同じか、その下の名前（*. の印は下の名前だけ）",
+   "message": "使える場所の外には入れません。必要なら、預けたログイン情報の使える場所に足してください",
+   "action": "預けたログイン情報の使える場所に足す（持ち主に知らせる）",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "使える場所が hacchu-navi.example の預けたログイン情報と、その人の PC（Bridge）の動いている仕事",
+    "steps": [
+     "PC が evil.example に入れるために取り出しを頼む"
+    ],
+    "needs": "自分の PC（Bridge）"
+   },
+   "severity": "medium",
+   "source": [
+    "D-128.57"
+   ]
+  }
+ ]
+}

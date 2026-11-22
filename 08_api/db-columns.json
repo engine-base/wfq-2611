@@ -7000,7 +7000,19 @@
   "test_specs": {
    "check_kind": {
     "type": "text",
+    "nullable": true
+   },
+   "checked_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "checked_by_ai": {
+    "type": "boolean",
     "nullable": false
+   },
+   "checked_by_member_id": {
+    "type": "uuid",
+    "nullable": true
    },
    "created_at": {
     "type": "timestamp with time zone",
@@ -7029,6 +7041,14 @@
    "params": {
     "type": "jsonb",
     "nullable": false
+   },
+   "source": {
+    "type": "text",
+    "nullable": false
+   },
+   "source_ref_id": {
+    "type": "uuid",
+    "nullable": true
    },
    "tenant_id": {
     "type": "uuid",
@@ -7094,6 +7114,18 @@
    }
   },
   "ticket_decisions": {
+   "cancel_reason": {
+    "type": "text",
+    "nullable": true
+   },
+   "cancelled_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
+   "cancelled_by": {
+    "type": "uuid",
+    "nullable": true
+   },
    "created_at": {
     "type": "timestamp with time zone",
     "nullable": false
@@ -7108,6 +7140,10 @@
    },
    "decided_by": {
     "type": "uuid",
+    "nullable": true
+   },
+   "decided_note": {
+    "type": "text",
     "nullable": true
    },
    "deleted_at": {
@@ -7338,6 +7374,10 @@
    }
   },
   "ticket_kinds": {
+   "body_template": {
+    "type": "jsonb",
+    "nullable": true
+   },
    "color": {
     "type": "text",
     "nullable": true
@@ -7733,6 +7773,10 @@
    "kind_id": {
     "type": "uuid",
     "nullable": false
+   },
+   "no_spec_reason": {
+    "type": "text",
+    "nullable": true
    },
    "number": {
     "type": "text",

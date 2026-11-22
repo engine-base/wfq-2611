@@ -1,0 +1,26 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/hooks/search.ts",
+    "apps/api/src/features/F7/search/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F7/search-tickets.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F7/search-tickets.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_search.test.ts"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "apps/api/test/features/F7/search-tickets.test.ts": "探す口の hooks のファイル（apps/api/src/hooks/search.ts）と種類の置き場（features/F7/search/kinds.ts）を動的 import で読む（失敗の道の確かめ。data_links で結ぶ・K-468）"
+ }
+}

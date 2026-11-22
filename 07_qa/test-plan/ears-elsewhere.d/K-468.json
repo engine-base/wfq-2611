@@ -1,0 +1,20 @@
+{
+ "ops": {
+  "search": {
+   "file": "apps/api/test/features/F7/search-tickets.test.ts",
+   "reason": "探すは、見える範囲（行の守り）・消したもの・他の人の下書き・権限の付け外しの組み合わせで答えが変わる。生成の試験の種では会社・人・権限・チケットを作れない（K-468）",
+   "covers": {
+    "test_get_search_ok": "K468-API-002",
+    "test_get_search_rejected_401": "K468-API-016",
+    "test_get_search_rejected_403": "K468-API-016",
+    "test_get_search_rejected_422": "K468-API-009",
+    "test_get_search_rate_limited": "K468-API-017",
+    "test_get_search_terms_pending": "K468-API-016",
+    "test_get_search_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   }
+  }
+ }
+}

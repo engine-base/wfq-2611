@@ -5,7 +5,8 @@
       "name": "Google Chrome",
       "needed_by": [
         "apps/bridge/test/login-check.test.ts",
-        "apps/bridge/test/login-check-2fa.test.ts"
+        "apps/bridge/test/login-check-2fa.test.ts",
+        "apps/bridge/test/k354-credential-bridge.test.ts"
       ],
       "paths": {
         "linux": [

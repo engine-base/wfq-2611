@@ -1,0 +1,7 @@
+{
+ "data_links": [
+  {"paths": ["apps/api/src/features/F1/password-reset/**", "apps/api/src/hooks/password-reset.ts", "apps/api/src/features/F1/admin-recovery/**"], "tests": ["apps/api/test/features/F1/pm-fuzz-auth.test.ts"]},
+  {"paths": ["apps/web/features/F1/password-reset/**"], "tests": ["apps/web/tests/k/k638-reset-gone.spec.ts"]},
+  {"paths": ["05_flow/screen_api.d/K-638.py", "scripts/ci/contract_shape.d/K-638.py"], "tests": ["apps/api/test/features/F1/pm-fuzz-auth.test.ts"]}
+ ]
+}

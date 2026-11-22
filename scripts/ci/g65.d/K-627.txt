@@ -1,0 +1,1 @@
+python3 scripts/ci/k627_db_fresh_run_test.py

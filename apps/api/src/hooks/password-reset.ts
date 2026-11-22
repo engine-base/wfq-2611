@@ -6,7 +6,7 @@ import { defineHooks } from "./registry.js";
 export function passwordResetHooks(d: PasswordResetDeps): Record<string, Hook> {
   const f = passwordResetFeature(d);
   // 冪等キーは使わない：答えは誰にでも同じで、器に残すものが無い（登録の有無を残さない）
-  // 決める口も冪等キーを使わない：リンクは 1 回だけ使え、2 回目は 410（器に残すと 2 回目に 201 を返してしまう）
+  // 決める口も冪等キーを使わない：リンクは 1 回だけ使え、2 回目は 410（器に残すと 2 回目に 201 を返してしまう）。リンクが DB に無い（でたらめ・空）は 409 E-PAGE-006（K-638）
   return {
     requestPasswordReset: { before: f.request, noIdempotency: true },
     resetPassword: { before: f.reset, noIdempotency: true },

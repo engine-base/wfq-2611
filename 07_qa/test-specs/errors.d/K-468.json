@@ -1,0 +1,61 @@
+{
+ "errors": [
+  {
+   "id": "E-SRC-001",
+   "class": "validation",
+   "where": {
+    "screen": "tickets",
+    "state": "search"
+   },
+   "when": "探す言葉（q）が、送られたままの文字で 100 文字を超える（前後の空白も数える）",
+   "false_when": "送られたままの文字で 100 文字まで（全角も 1 文字・正規化で伸びる字も送られた字の数）。空と空白だけは探さない",
+   "message": "探す言葉は 100 文字までにしてください",
+   "action": "探す言葉を短くする",
+   "undo": false,
+   "layers": [
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "探す口（⌘K の探す欄が呼ぶ口）",
+    "steps": [
+     "q に 101 文字を入れて GET /api/v1/search を呼ぶ"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.157",
+    "D-151.8"
+   ]
+  },
+  {
+   "id": "E-SRC-002",
+   "class": "validation",
+   "where": {
+    "screen": "tickets",
+    "state": "search"
+   },
+   "when": "kinds が決まった形でない（ticket・decision・conversation・knowledge の小文字の名前を空白なしでコンマでつないだ形でない：知らない種類・空の項目・大文字・全角・空白）",
+   "false_when": "小文字の決まった名前を空白なしでコンマでつないだ形。空は全部",
+   "message": "探す種類は チケット・決定・会話・ナレッジ から選んでください",
+   "action": "種類を選び直す",
+   "undo": false,
+   "layers": [
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "探す口（⌘K の探す欄が呼ぶ口）",
+    "steps": [
+     "kinds に foo を入れて GET /api/v1/search を呼ぶ"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-151.8"
+   ]
+  }
+ ]
+}

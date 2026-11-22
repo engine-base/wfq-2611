@@ -970,6 +970,40 @@ class ContractShapeTest(unittest.TestCase):
                     bad.append(f"{o}: 422 の説明に無い理由 {missing}")
         self.assertEqual(bad, [], "契約に書けない値の決まりが 422 に書かれていない")
 
+    def test_K144_SHAPE_028_query_value_ranges_are_in_the_contract(self) -> None:
+        """口が値で断る問い合わせの欄のうち書けるもの（screen_api.py の QUERY_RANGES：operationId → 名前 → JSON Schema の言葉。チケットごとの分は screen_api.d）は、その口の問い合わせの欄に同じ言葉がある（enum・pattern・minLength・maxLength・format・anyOf）。
+        表に無い欄は、一覧の共通の形（cursor の pattern・sort の既定の enum・*_id の uuid）のほか値の言葉を持たない（書いたのに表に無い言葉を残さない）。
+        契約に書ける決まりは契約に書き、書けない決まりを x-unexpressible-422 で残さない：表の口は x-unexpressible-422 を持たない（K-468）"""
+        QUERY_RANGES = SA.QUERY_RANGES
+        words = ("enum", "pattern", "minLength", "maxLength", "anyOf", "oneOf")
+        generic = {("cursor", "pattern"), ("sort", "pattern"), ("sort", "enum")}
+        bad = []
+        for _path, methods in OA["paths"].items():
+            for _m, op in methods.items():
+                if not isinstance(op, dict) or "operationId" not in op:
+                    continue
+                o = op["operationId"]
+                want = QUERY_RANGES.get(o, {})
+                params = {x["name"]: x["schema"] for x in op.get("parameters", []) if x["in"] == "query"}
+                for name, ws in want.items():
+                    if name not in params:
+                        bad.append(f"{o}: 問い合わせに {name} が無い")
+                        continue
+                    for key, val in ws.items():
+                        if params[name].get(key) != val:
+                            bad.append(f"{o}.{name}.{key}: 契約 {params[name].get(key)!r} ／ 表 {val!r}")
+                for name, sc in params.items():
+                    for key in (*words, "format"):
+                        if key not in sc or (name, key) in generic or (key == "format" and sc[key] == "uuid"):
+                            continue
+                        if key not in want.get(name, {}):
+                            bad.append(f"{o}.{name}.{key}: 契約にあるのに QUERY_RANGES に無い")
+                if want and "x-unexpressible-422" in op.get("responses", {}).get("422", {}):
+                    bad.append(f"{o}: 問い合わせの値域を契約に書いたのに x-unexpressible-422 が残っている")
+        known = {op["operationId"] for methods in OA["paths"].values() for op in methods.values() if isinstance(op, dict) and "operationId" in op}
+        bad += [f"{o}: 契約に無い口" for o in QUERY_RANGES if o not in known]
+        self.assertEqual(bad, [], "問い合わせの値域が契約と合わない")
+
     # ---- 会話と記憶の口の成功の答えの形（類 C/D の続き・回 9）
     def test_K144_SHAPE_025_agent_answers_are_the_shape_the_hooks_return(self) -> None:
         """会話と記憶の口（hooks/agent.ts）の成功の答えは、表の行（Conversations・Memories）ではなく、口が返すとおりの形（AGENT_ANSWERS）。

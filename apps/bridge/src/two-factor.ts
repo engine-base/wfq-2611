@@ -3,6 +3,8 @@
 //   SMS・メール・スマホで承認：Bridge がコードの画面で止まり、Kaname を通して本人に頼む（仕事は asking）。
 //   本人が入れたコードは Kaname の答えの行に一時的に置かれ、Bridge が取った時点で消える（AI の会話にも記録にも出ない）。
 //   10 分返事が無ければ頼むのをやめる（null）。呼ぶ側が理由つきで止める。勝手に何度も頼まない
+//   頼む・待つは契約の口（POST /api/v1/bridge/credentials/:id/check-result の asking・waiting・K-354 でつなぎ替えた）。
+//   頼みの印は request_ref（代表の答え answer=cf9e0174b6fb）。体は決めた欄だけ（口は知らない欄を 422 で止める）
 import { createHmac, randomUUID } from "node:crypto";
 import { BRIDGE_UA } from "./pairing";
 
@@ -34,11 +36,16 @@ export interface AskDeps {
 export const ANSWER_WAIT_MS = 10 * 60_000;
 const POLL_MS = 2_000;
 
-async function call(d: AskDeps, path: string, body: unknown): Promise<Record<string, unknown> | null> {
+/** 確かめの口に途中を知らせる。断られた・届かない・切れた → null */
+async function report(
+  d: AskDeps,
+  credentialId: string,
+  body: Record<string, unknown>,
+): Promise<Record<string, unknown> | null> {
   const sid = d.sessionId();
   if (!sid) return null;
   try {
-    const r = await fetch(`${d.apiBase}/api/auth-ext${path}`, {
+    const r = await fetch(`${d.apiBase}/api/v1/bridge/credentials/${encodeURIComponent(credentialId)}/check-result`, {
       method: "POST",
       headers: { "content-type": "application/json", "x-bridge-session": sid, "user-agent": BRIDGE_UA },
       body: JSON.stringify(body),
@@ -57,21 +64,23 @@ async function call(d: AskDeps, path: string, body: unknown): Promise<Record<str
 export async function askPerson(
   d: AskDeps,
   jobId: string,
+  credentialId: string,
   kind: "code" | "approve",
   text: string,
 ): Promise<string | null> {
-  const requestId = randomUUID();
-  const asked = await call(d, "/bridge/ask", {
+  const requestRef = randomUUID();
+  const asked = await report(d, credentialId, {
     job_id: jobId,
-    request_id: requestId,
-    tool: kind === "approve" ? "TwoFactorApprove" : "TwoFactorCode",
-    summary: text.slice(0, 300),
+    state: "asking",
+    request_ref: requestRef,
+    ask_kind: kind,
+    text: text.slice(0, 300),
   });
   if (!asked) return null;
   const until = Date.now() + (d.answerWaitMs ?? ANSWER_WAIT_MS);
   const every = d.pollMs ?? POLL_MS;
   while (Date.now() < until) {
-    const r = await call(d, "/bridge/code", { job_id: jobId, request_id: requestId });
+    const r = await report(d, credentialId, { job_id: jobId, state: "waiting", request_ref: requestRef });
     const code = r?.["code"];
     if (typeof code === "string" && code) return code;
     await new Promise((res) => setTimeout(res, every));

@@ -15,9 +15,14 @@ describe("POST /api/v1/auth/password/reset", () => {
     expect(readFileSync("apps/api/test/features/F1/password-reset.test.ts", "utf8")).toContain("K314-API-009 新しいパスワード 11 文字は 422");
   });
   it("test_post_auth_password_reset_gone", () => {
-    // UNWANTED: IF リンクが期限切れ・使用済み・前のリンク・無いなら、Kaname は 410 と次の一手を返し、パスワードを変えない
+    // UNWANTED: IF リンクが期限切れ・使用済み・前のリンクなら、Kaname は 410 と次の一手を返し、パスワードを変えない
     // 本物の試験：apps/api/test/features/F1/password-reset.test.ts の「K314-API-003 期限切れ」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F1/password-reset.test.ts", "utf8")).toContain("K314-API-003 期限切れ");
+  });
+  it("test_post_auth_password_reset_conflict", () => {
+    // UNWANTED: IF リンクが無い（でたらめ・空）なら、Kaname は 409 と E-PAGE-006 を返し、パスワードを変えない
+    // 本物の試験：apps/api/test/features/F1/pm-fuzz-auth.test.ts の「K638-API-009」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F1/pm-fuzz-auth.test.ts", "utf8")).toContain("K638-API-009");
   });
   it("test_post_auth_password_reset_server_error", () => {
     // UNWANTED: IF 端末を切る所かパスワードを変える所で落ちたなら、Kaname は 500 と E-PAGE-003 を返し、リンクを使えるまま残す

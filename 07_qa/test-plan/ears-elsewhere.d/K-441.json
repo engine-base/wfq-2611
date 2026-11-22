@@ -1,0 +1,81 @@
+{
+ "ops": {
+  "listTicketLinks": {
+   "file": "apps/api/test/features/F4/ticket-links.test.ts",
+   "reason": "つながりの一覧は、相手が見えるか・消えているか・書けるかで答えの形が変わる。生成の試験の種ではグループと権限を作れない（K-441）",
+   "covers": {
+    "test_get_tickets_id_links_ok": "K441-API-001",
+    "test_get_tickets_id_links_rejected_401": "K441-API-022",
+    "test_get_tickets_id_links_not_found": "K441-API-004",
+    "test_get_tickets_id_links_shape": "K441-API-001",
+    "test_get_tickets_id_links_rate_limited": "K441-API-023",
+    "test_get_tickets_id_links_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_get_tickets_id_links_session_unresolved": "K441-API-028",
+    "test_get_tickets_id_links_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_get_tickets_id_links_rejected_403": "見えないときは 404（有ることを漏らさない）で、読む口に 403 は無い（受けは K441-API-004）",
+    "test_get_tickets_id_links_rejected_422": "入力は道の id だけ（uuid の確かめは入口の共通・K144-API-541）",
+    "test_get_tickets_id_links_not_found_2": "入口の確かめの後で消える・見えなくなる競合だけで、入口の 404（K441-API-004）と同じ 404。口の答えは E-PAGE-001（関数が null を返す枝）で、試験で競合を作れない（K-441）"
+   }
+  },
+  "createTicketLink": {
+   "file": "apps/api/test/features/F4/ticket-links.test.ts",
+   "reason": "つながりを足す口は、両端の権限・重複・派生元の輪の組み合わせで答えが変わる。生成の試験の種ではグループと権限を作れない（K-441）",
+   "covers": {
+    "test_post_tickets_id_links_ok": "K441-API-005",
+    "test_post_tickets_id_links_rejected_401": "K441-API-022",
+    "test_post_tickets_id_links_rejected_403": "K441-API-011",
+    "test_post_tickets_id_links_not_found": "K441-API-010",
+    "test_post_tickets_id_links_rejected_422": "K441-API-013",
+    "test_post_tickets_id_links_rate_limited": "K441-API-023",
+    "test_post_tickets_id_links_shape": "K441-API-005",
+    "test_post_tickets_id_links_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_tickets_id_links_session_unresolved": "K441-API-019",
+    "test_post_tickets_id_links_conflict": "K441-API-007",
+    "test_post_tickets_id_links_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_tickets_id_links_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_tickets_id_links_not_found_2": "K441-API-010"
+   }
+  },
+  "deleteTicketLink": {
+   "file": "apps/api/test/features/F4/ticket-links.test.ts",
+   "reason": "つながりを外す口は、両端のどちらに書けるか・見えるかで答えが変わる。生成の試験の種ではグループと権限を作れない（K-441）",
+   "covers": {
+    "test_delete_ticket_links_id_ok": "K441-API-015",
+    "test_delete_ticket_links_id_rejected_401": "K441-API-022",
+    "test_delete_ticket_links_id_rejected_403": "K441-API-017",
+    "test_delete_ticket_links_id_not_found": "K441-API-018",
+    "test_delete_ticket_links_id_shape": "K441-API-015",
+    "test_delete_ticket_links_id_rate_limited": "K441-API-023",
+    "test_delete_ticket_links_id_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_delete_ticket_links_id_session_unresolved": "K441-API-020",
+    "test_delete_ticket_links_id_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_delete_ticket_links_id_rejected_422": "入力は道の id だけ（uuid の確かめは入口の共通・K144-API-543）"
+   }
+  }
+ }
+}

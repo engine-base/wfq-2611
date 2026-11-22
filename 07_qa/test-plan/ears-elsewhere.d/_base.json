@@ -923,6 +923,10 @@
     "test_post_auth_password_reset_session_unresolved": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
+    },
+    "test_post_auth_password_reset_conflict": {
+     "file": "apps/api/test/features/F1/pm-fuzz-auth.test.ts",
+     "mark": "K638-API-009"
     }
    }
   },

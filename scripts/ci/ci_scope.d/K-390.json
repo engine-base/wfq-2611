@@ -1,0 +1,29 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/hooks/ticket-decisions.ts",
+    "apps/api/src/features/F6/decisions/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F6/decisions.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F6/decisions.test.ts",
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_tickets_id_decisions.test.ts",
+    "apps/api/test/generated/post_tickets_id_decisions.test.ts"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "apps/api/test/features/F6/decisions.harness.ts": "決定の口の hooks のファイル（apps/api/src/hooks/ticket-decisions.ts）を最初の要求の前に動的 import で読む（data_links で結ぶ・K-390）",
+  "apps/api/test/features/contract/k144.d/K-390.ts": "この葉の hooks のファイルを本体の準備の中で動的 import で読む（data_links で結ぶ・K-390）"
+ }
+}

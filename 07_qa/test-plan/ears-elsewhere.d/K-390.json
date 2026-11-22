@@ -1,0 +1,54 @@
+{
+ "ops": {
+  "listTicketDecisions": {
+   "file": "apps/api/test/features/F6/decisions.test.ts",
+   "reason": "決定は見えるか・書けるか・決めた人・元の書き込みの組み合わせで答えが変わり、生成の試験の種では作れない（K-390）",
+   "covers": {
+    "test_get_tickets_id_decisions_ok": "K390-API-002",
+    "test_get_tickets_id_decisions_rejected_401": "K390-API-014",
+    "test_get_tickets_id_decisions_not_found": "K390-API-014",
+    "test_get_tickets_id_decisions_shape": "K390-API-002",
+    "test_get_tickets_id_decisions_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_get_tickets_id_decisions_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_get_tickets_id_decisions_rejected_403": "見るだけの人も読める。見えない人は 404（K390-API-014）",
+    "test_get_tickets_id_decisions_rate_limited": "上限は入口の共通の数え方。同じ道を足す口で K390-API-019 が確かめる",
+    "test_get_tickets_id_decisions_rejected_422": "入口の uuid の確かめ（K144-API-750）"
+   }
+  },
+  "createTicketDecision": {
+   "file": "apps/api/test/features/F6/decisions.test.ts",
+   "reason": "決定は見えるか・書けるか・決めた人・元の書き込みの組み合わせで答えが変わり、生成の試験の種では作れない（K-390）",
+   "covers": {
+    "test_post_tickets_id_decisions_ok": "K390-API-004",
+    "test_post_tickets_id_decisions_rejected_401": "K390-API-014",
+    "test_post_tickets_id_decisions_rejected_403": "K390-API-014",
+    "test_post_tickets_id_decisions_not_found": "K390-API-014",
+    "test_post_tickets_id_decisions_rejected_422": "K390-API-008",
+    "test_post_tickets_id_decisions_unavailable": "K390-API-016",
+    "test_post_tickets_id_decisions_rate_limited": "K390-API-019",
+    "test_post_tickets_id_decisions_shape": "K390-API-004",
+    "test_post_tickets_id_decisions_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_tickets_id_decisions_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_tickets_id_decisions_conflict": "K390-API-011",
+    "test_post_tickets_id_decisions_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   }
+  }
+ }
+}

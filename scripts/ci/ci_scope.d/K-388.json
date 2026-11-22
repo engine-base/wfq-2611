@@ -1,0 +1,16 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "packages/db/migrations/20261120130500_ticket_reopen.sql",
+    "apps/api/src/features/F6/progress/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F6/progress-reopen.test.ts"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "apps/api/test/features/F6/progress-reopen.test.ts": "承認と完了の口の hooks のファイル（apps/api/src/hooks/approve-complete.ts）を最初の要求の前に動的 import で読む（K-388）"
+ }
+}

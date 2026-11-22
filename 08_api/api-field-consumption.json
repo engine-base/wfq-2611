@@ -10207,6 +10207,28 @@
    "reason": null
   },
   {
+   "entity": "tickets",
+   "field": "no_spec_reason",
+   "consumed_by_screens": [
+    "bridge-setup",
+    "approvals",
+    "clone-chat",
+    "ai-activity",
+    "audit",
+    "account",
+    "member-detail",
+    "tickets",
+    "masters",
+    "work-types",
+    "knowledge",
+    "clients",
+    "requests",
+    "portal"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
    "entity": "ticket_sections",
    "field": "<common>",
    "consumed_by_screens": [],
@@ -10838,6 +10860,51 @@
    "reason": null
   },
   {
+   "entity": "test_specs",
+   "field": "checked_at",
+   "consumed_by_screens": [
+    "tickets"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "test_specs",
+   "field": "checked_by_member_id",
+   "consumed_by_screens": [
+    "tickets"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "test_specs",
+   "field": "checked_by_ai",
+   "consumed_by_screens": [
+    "tickets"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "test_specs",
+   "field": "source",
+   "consumed_by_screens": [
+    "tickets"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "test_specs",
+   "field": "source_ref_id",
+   "consumed_by_screens": [
+    "tickets"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
    "entity": "checks",
    "field": "<common>",
    "consumed_by_screens": [],
@@ -11025,6 +11092,42 @@
   {
    "entity": "ticket_decisions",
    "field": "promoted_to",
+   "consumed_by_screens": [
+    "tickets"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "ticket_decisions",
+   "field": "decided_note",
+   "consumed_by_screens": [
+    "tickets"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "ticket_decisions",
+   "field": "cancelled_at",
+   "consumed_by_screens": [
+    "tickets"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "ticket_decisions",
+   "field": "cancelled_by",
+   "consumed_by_screens": [
+    "tickets"
+   ],
+   "internal": false,
+   "reason": null
+  },
+  {
+   "entity": "ticket_decisions",
+   "field": "cancel_reason",
    "consumed_by_screens": [
     "tickets"
    ],

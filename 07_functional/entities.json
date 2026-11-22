@@ -10401,6 +10401,10 @@
     {
      "name": "draft_import_id",
      "note": "CSV の取り込みの下書き。確定まで取り込んだ人だけ・D-128.119"
+    },
+    {
+     "name": "no_spec_reason",
+     "note": "「AI に任せる」で確認項目が 0 件のとき要る使わない理由。空白だけは断る ← K-434・K-565 が使う"
     }
    ],
    "relations": [
@@ -11630,7 +11634,7 @@
     },
     {
      "name": "check_kind",
-     "note": "① 機械・② AI・③ 人"
+     "note": "任意・使わない：確認項目は文とチェックだけ ← D-150.39"
     },
     {
      "name": "title",
@@ -11650,7 +11654,27 @@
     },
     {
      "name": "off_reason",
-     "note": "OFF にした理由"
+     "note": "使わない"
+    },
+    {
+     "name": "checked_at",
+     "note": null
+    },
+    {
+     "name": "checked_by_member_id",
+     "note": null
+    },
+    {
+     "name": "checked_by_ai",
+     "note": "チェックの印と付けた人。時刻なしで人・AI は不可・人と AI の両方は不可 ← 守り test_specs_checked_pair・test_specs_checked_one_who"
+    },
+    {
+     "name": "source",
+     "note": "manual・knowledge・ai・既定 manual。守り test_specs_source_check"
+    },
+    {
+     "name": "source_ref_id",
+     "note": "出どころのページなど・任意"
     }
    ],
    "relations": [
@@ -11710,14 +11734,15 @@
     }
    ],
    "legacy_drift_notes": null,
-   "note": "**★新設（D-125.17・D-125.79）**",
+   "note": "**★新設（D-125.17・D-125.79）。確認項目の形は K-434（D-150.39）で直した**",
    "status": "decided",
    "decided_at": "2026-11-22",
    "source": [
     "D-125",
     "D-125.17",
     "D-125.79",
-    "D-128"
+    "D-128",
+    "D-150.39"
    ]
   },
   {
@@ -11871,6 +11896,22 @@
     {
      "name": "promoted_to",
      "note": "このチケットだけ・取引先のルール"
+    },
+    {
+     "name": "decided_note",
+     "note": "決めた人のひとこと"
+    },
+    {
+     "name": "cancelled_at",
+     "note": null
+    },
+    {
+     "name": "cancelled_by",
+     "note": null
+    },
+    {
+     "name": "cancel_reason",
+     "note": "取り消しは印と理由を残し消さない・⑰"
     }
    ],
    "relations": [
@@ -11926,14 +11967,15 @@
     }
    ],
    "legacy_drift_notes": null,
-   "note": "**★新設（D-125.40・D-125.63）**",
+   "note": "**★新設（D-125.40・D-125.63）**。決めたことの 2000 字の決まりを外し、空白だけを断る決まりにした（D-130.1・K-390）",
    "status": "decided",
    "decided_at": "2026-11-22",
    "source": [
     "D-125",
     "D-125.40",
     "D-125.63",
-    "D-128"
+    "D-128",
+    "D-130.1"
    ]
   },
   {

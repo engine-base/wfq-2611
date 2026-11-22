@@ -36,6 +36,9 @@ function Back() {
   );
 }
 
+/** 待つ長さの言い方：60 秒以上は「1 分」（キャンバス AuthReset）。それより短いと秒 */
+const waitLabel = (sec: number): string => (sec >= 60 ? `${Math.floor(sec / 60)} 分` : `${sec} 秒`);
+
 /** メールを入れて頼む・送りました・新しいパスワード・済んだ・リンクが使えない */
 export function PasswordReset(p: PasswordResetProps) {
   if (p.step === "new")
@@ -119,13 +122,11 @@ export function PasswordReset(p: PasswordResetProps) {
             <ResultBox tone="ok">
               登録されていれば、{p.email} に作り直しのリンクを送りました。30 分のあいだ、1 回だけ使えます
             </ResultBox>
-            <NoteBox>
-              <ul>
-                <li>・ 届いたリンクを開くと、新しいパスワードを決められる</li>
-                <li>・ 2 段階認証を付けている人は、作り直したあとも 6 けたが要る</li>
-                <li>・ 作り直すと、ほかの端末はすべてログアウトする</li>
-              </ul>
-            </NoteBox>
+            <ul className="k-reset-points">
+              <li>・ 届いたリンクを開くと、新しいパスワードを決められる</li>
+              <li>・ 2 段階認証を付けている人は、作り直したあとも 6 けたが要る</li>
+              <li>・ 作り直すと、ほかの端末はすべてログアウトする</li>
+            </ul>
           </>
         ) : (
           <>
@@ -149,9 +150,12 @@ export function PasswordReset(p: PasswordResetProps) {
           パスキーがあるなら、パスワードを作り直さなくても <Link href="/login">パスキーで入れる</Link>
         </NoteBox>
         {sent ? (
-          <Button type="submit" size="lg" variant="outlined" disabled={(p.waitSec ?? 0) > 0}>
-            {(p.waitSec ?? 0) > 0 ? `もう一度送る（${p.waitSec} 秒あとから）` : "もう一度送る"}
-          </Button>
+          <div className="k-login-center k-reset-resend" data-part="resend">
+            <button type="submit" className="k-login-textbtn" disabled={(p.waitSec ?? 0) > 0}>
+              もう一度送る
+            </button>
+            {(p.waitSec ?? 0) > 0 ? <span>（{waitLabel(p.waitSec ?? 0)}あとから）</span> : null}
+          </div>
         ) : (
           <Button type="submit" size="lg" loading={p.busy}>
             再設定メールを送る

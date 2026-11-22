@@ -2,7 +2,7 @@
 
 > 生成物（`python3 scripts/ci/build_catalog.py`）。手で直さない。チケットを切るときは、まずここを探す。使えるなら依存として書き、無いときだけ作る（D-128.125・D-128.129）。
 
-API 370（作った 71・後のフェーズの行為だけ 20）・前の道すじ 26・表 148・画面の部品 18・共通の処理 13・エラー 219・部品 56・設定 41
+API 370（作った 80・後のフェーズの行為だけ 20）・前の道すじ 26・表 148・画面の部品 18・共通の処理 13・エラー 228・部品 56・設定 41
 
 ## 共通の処理
 
@@ -306,7 +306,7 @@ API 370（作った 71・後のフェーズの行為だけ 20）・前の道す�
 | `setBridgeBrowser` | POST /api/v1/bridge/browser | 作成・実行（bridge）— 自分の PC をつなぐ | F3 | 作った | K-366 |
 | `claimPairingCode` | POST /api/v1/bridge/claim | 作成・実行（bridge）— 自分の PC をつなぐ | F3 | 作った | K-57 |
 | `reportCredentialCheck` | POST /api/v1/bridge/credentials/:id/check-result | 作成・実行（bridge）— 設定（ログイン情報・API キー・決まった値）を整える | F3 | 作った | K-355 |
-| `resolveCredential` | POST /api/v1/bridge/credentials/resolve | 作成・実行（bridge）— 設定（ログイン情報・API キー・決まった値）を整える | F3 | 契約だけ（501） | K-56 |
+| `resolveCredential` | POST /api/v1/bridge/credentials/resolve | 作成・実行（bridge）— 設定（ログイン情報・API キー・決まった値）を整える | F3 | 作った | K-56,K-354 |
 | `listMyDevices` | GET /api/v1/bridge/devices | 取得（bridge）— 自分の PC をつなぐ | F3 | 作った | K-57 |
 | `updateMyDevice` | PATCH /api/v1/bridge/devices/:id | 更新（bridge）— 自分の PC をつなぐ | F3 | 作った | K-364 |
 | `revokeMyDevice` | DELETE /api/v1/bridge/devices/:id | 削除（bridge）— 自分の PC をつなぐ | F3 | 作った | K-362 |
@@ -317,8 +317,8 @@ API 370（作った 71・後のフェーズの行為だけ 20）・前の道す�
 | `getLatestBridgeRelease` | GET /api/v1/bridge/releases/latest | 取得（bridge）— 自分の PC をつなぐ | F3 | 作った | K-57 |
 | `listCredentials` | GET /api/v1/credentials | 取得（credentials）— 預けたログイン情報を名前の順に見る（自分の個人とワークスペース） | F3 | 作った | K-351 |
 | `createCredential` | POST /api/v1/credentials | 作成・実行（credentials）— 設定（ログイン情報・API キー・決まった値）を整える | F3 | 作った | K-352 |
-| `updateCredential` | PATCH /api/v1/credentials/:id | 更新（credentials）— 設定（ログイン情報・API キー・決まった値）を整える | F3 | 作った | K-353 |
-| `deleteCredential` | DELETE /api/v1/credentials/:id | 削除（credentials）— 設定（ログイン情報・API キー・決まった値）を整える | F3 | 作った | K-353 |
+| `updateCredential` | PATCH /api/v1/credentials/:id | 更新（credentials）— 設定（ログイン情報・API キー・決まった値）を整える | F3 | 作った | K-56,K-353 |
+| `deleteCredential` | DELETE /api/v1/credentials/:id | 削除（credentials）— 設定（ログイン情報・API キー・決まった値）を整える | F3 | 作った | K-56,K-353 |
 | `checkCredentialLogin` | POST /api/v1/credentials/:id/login-check | 作成・実行（credentials）— 設定（ログイン情報・API キー・決まった値）を整える | F3 | 作った | K-355 |
 | `answerCredentialLoginCheck` | POST /api/v1/credentials/:id/login-check/answer | 作成・実行（credentials）— 設定（ログイン情報・API キー・決まった値）を整える | F3 | 作った | K-355 |
 | `createTicket` | POST /api/v1/tickets | 作成・実行（tickets）— 過去のチケットを複製して作る／見本のチケットを試す | F3,F4 | 作った | K-60 |
@@ -336,7 +336,7 @@ API 370（作った 71・後のフェーズの行為だけ 20）・前の道す�
 | `commitTicketImport` | POST /api/v1/ticket_imports/:id/commit | 作成・実行（ticket_imports）— チケットを作る（画面で・下書きから） | F4 | 契約だけ（501） | K-59 |
 | `listTicketKinds` | GET /api/v1/ticket_kinds | 取得（ticket_kinds）— 振り分ける（責任者・期限・分類・親）。AI と相談しても | F4 | 作った | K-60 |
 | `makeKindTemplateFromTicket` | POST /api/v1/ticket_kinds/:id/template-from-ticket | 作成・実行（ticket_kinds）— チケットの中身（区画）を書く・直す | F4 | 契約だけ（501） | K-59 |
-| `deleteTicketLink` | DELETE /api/v1/ticket_links/:id | 削除（ticket_links）— 振り分ける（責任者・期限・分類・親）。AI と相談しても | F4 | 契約だけ（501） | K-59 |
+| `deleteTicketLink` | DELETE /api/v1/ticket_links/:id | 削除（ticket_links）— 振り分ける（責任者・期限・分類・親）。AI と相談しても | F4 | 作った | K-59,K-441 |
 | `listTicketStages` | GET /api/v1/ticket_stages | 取得（ticket_stages）— 振り分ける（責任者・期限・分類・親）。AI と相談しても | F4 | 契約だけ（501） | K-59 |
 | `listTickets` | GET /api/v1/tickets | 取得（tickets）— チケットの一覧を見る（自分に関わるもの・すべて・グループ・題名か番号で絞る・期限切れの印） | F4,F7 | 作った | K-92 |
 | `getTicket` | GET /api/v1/tickets/:id | 取得（tickets）— チケットの中身（区画）を書く・直す | F4 | 作った | K-60 |
@@ -346,12 +346,12 @@ API 370（作った 71・後のフェーズの行為だけ 20）・前の道す�
 | `createTicketAttachment` | POST /api/v1/tickets/:id/attachments | 作成・実行（tickets）— チケットの中身（区画）を書く・直す | F4 | 契約だけ（501） | K-59 |
 | `listChecks` | GET /api/v1/tickets/:id/checks | 取得（tickets）— テスト仕様を作る（AI の案・抜けの点検・種類と型を確か | F4 | 契約だけ（501） | K-59 |
 | `previewTicketKindChange` | GET /api/v1/tickets/:id/kind-change-preview | 取得（tickets）— 振り分ける（責任者・期限・分類・親）。AI と相談しても | F4 | 契約だけ（501） | K-59 |
-| `listTicketLinks` | GET /api/v1/tickets/:id/links | 取得（tickets）— 振り分ける（責任者・期限・分類・親）。AI と相談しても | F4 | 契約だけ（501） | K-59 |
-| `createTicketLink` | POST /api/v1/tickets/:id/links | 作成・実行（tickets）— 振り分ける（責任者・期限・分類・親）。AI と相談しても | F4 | 契約だけ（501） | K-59 |
+| `listTicketLinks` | GET /api/v1/tickets/:id/links | 取得（ticket_links）— チケットのつながり（関連・派生元）を見る。片方が見えないときは番号だけ。子チケットは meta.children | F4 | 作った | K-59,K-441 |
+| `createTicketLink` | POST /api/v1/tickets/:id/links | 作成・実行（tickets）— 振り分ける（責任者・期限・分類・親）。AI と相談しても | F4 | 作った | K-59,K-441 |
 | `listTicketReferences` | GET /api/v1/tickets/:id/references | 取得（tickets）— チケットの中身（区画）を書く・直す | F4 | 契約だけ（501） | K-59 |
 | `updateTicketSection` | PATCH /api/v1/tickets/:id/sections/:key | 更新（tickets）— チケットの中身（区画）を書く・直す | F4 | 契約だけ（501） | K-59 |
-| `listTestSpecs` | GET /api/v1/tickets/:id/test-specs | 取得（tickets）— テスト仕様を作る（AI の案・抜けの点検・種類と型を確か | F4 | 契約だけ（501） | K-59 |
-| `createTestSpec` | POST /api/v1/tickets/:id/test-specs | 作成・実行（tickets）— テスト仕様を作る（AI の案・抜けの点検・種類と型を確か | F4 | 契約だけ（501） | K-59 |
+| `listTestSpecs` | GET /api/v1/tickets/:id/test-specs | 取得（test_specs）— チケットの確認項目を作った順に見る（文・チェック・出どころ） | F4 | 作った | K-59,K-434 |
+| `createTestSpec` | POST /api/v1/tickets/:id/test-specs | 作成・実行（tickets）— テスト仕様を作る（AI の案・抜けの点検・種類と型を確か | F4 | 作った | K-59,K-434 |
 | `lintTestSpecs` | POST /api/v1/tickets/:id/test-specs/lint | 作成・実行（tickets）— テスト仕様を作る（AI の案・抜けの点検・種類と型を確か | F4 | 契約だけ（501） | K-59 |
 | `suggestTestSpecs` | POST /api/v1/tickets/:id/test-specs/suggest | 作成・実行（tickets）— テスト仕様を作る（AI の案・抜けの点検・種類と型を確か | F4 | 契約だけ（501） | K-59 |
 | `listTicketVersions` | GET /api/v1/tickets/:id/versions | 取得（tickets）— チケットの中身（区画）を書く・直す | F4 | 契約だけ（501） | K-59 |
@@ -398,8 +398,8 @@ API 370（作った 71・後のフェーズの行為だけ 20）・前の道す�
 | `updateTicketMessage` | PATCH /api/v1/ticket_messages/:id | 更新（ticket_messages）— チケットのスレッドで話す（@ で知らせる） | F6 | 契約だけ（501） | K-66 |
 | `deleteTicketMessage` | DELETE /api/v1/ticket_messages/:id | 削除（ticket_messages）— チケットのスレッドで話す（@ で知らせる） | F6 | 契約だけ（501） | K-66 |
 | `starTicketMessage` | POST /api/v1/ticket_messages/:id/star | 作成・実行（ticket_messages）— チケットのスレッドで話す（@ で知らせる） | F6 | 契約だけ（501） | K-66 |
-| `listTicketDecisions` | GET /api/v1/tickets/:id/decisions | 取得（tickets）— 決定を記録する（AI の候補を確定・直接書く） | F6 | 契約だけ（501） | K-66 |
-| `createTicketDecision` | POST /api/v1/tickets/:id/decisions | 作成・実行（tickets）— 決定を記録する（AI の候補を確定・直接書く） | F6 | 契約だけ（501） | K-66 |
+| `listTicketDecisions` | GET /api/v1/tickets/:id/decisions | 取得（ticket_decisions）— チケットの決定を見る（生きている決定・改められた・取り消した） | F6 | 作った | K-390 |
+| `createTicketDecision` | POST /api/v1/tickets/:id/decisions | 作成・実行（tickets）— 決定を記録する（AI の候補を確定・直接書く） | F6 | 作った | K-390 |
 | `createTicketMessage` | POST /api/v1/tickets/:id/messages | 作成・実行（tickets）— チケットのスレッドで話す（@ で知らせる） | F6 | 契約だけ（501） | K-66 |
 | `listTicketTimeline` | GET /api/v1/tickets/:id/timeline | 取得（ticket_messages）— やり取りを新しい方から読む（前を見る・すべて／話だけ／自分あて・新しい数・候補の人） | F6 | 作った | K-383 |
 | `markTicketTimelineSeen` | POST /api/v1/tickets/:id/timeline/seen | 作成・実行（tickets）— チケットのスレッドで話す（@ で知らせる） | F6 | 作った | K-384 |
@@ -413,7 +413,7 @@ API 370（作った 71・後のフェーズの行為だけ 20）・前の道す�
 | `updateSavedView` | PATCH /api/v1/saved_views/:id | 更新（saved_views）— 見え方を切り替える（一覧と詳細・カレンダー・ガント） | F7 | 契約だけ（501） | K-67 |
 | `deleteSavedView` | DELETE /api/v1/saved_views/:id | 削除（saved_views）— 見え方を切り替える（一覧と詳細・カレンダー・ガント） | F7 | 契約だけ（501） | K-67 |
 | `getScopeOverview` | GET /api/v1/scopes/:id/overview | 取得（scopes）— 見え方を切り替える（一覧と詳細・カレンダー・ガント） | F7 | 契約だけ（501） | K-67 |
-| `search` | GET /api/v1/search | 取得（search）— 探す（チケット・ナレッジのページ・決定・会話） | F7 | 契約だけ（501） | K-67 |
+| `search` | GET /api/v1/search | 取得（search）— 探す（チケット・決定・自分の会話・ナレッジのページ）。種類ごとに上位の分だけ。総数・続きは返さない | F7 | 作った | K-468 |
 | `getShell` | GET /api/v1/shell | 取得（shell）— 見え方を切り替える（一覧と詳細・カレンダー・ガント） | F7 | 契約だけ（501） | K-67 |
 | `deleteTicket` | DELETE /api/v1/tickets/:id | 削除（tickets）— チケットを消す・アーカイブする（子孫の扱いを決める） | F7 | 契約だけ（501） | K-67 |
 | `previewTicketDelete` | GET /api/v1/tickets/:id/delete-preview | 取得（tickets）— チケットを消す・アーカイブする（子孫の扱いを決める） | F7 | 契約だけ（501） | K-67 |

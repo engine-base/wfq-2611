@@ -38,3 +38,23 @@
 .k-auth-form .k-login-pk-note {
   margin: var(--k-c-auth-lead-sub-margin);
 }
+
+/* 再設定の「もう一度送る」（キャンバス AuthReset）：字のリンクと「（N 秒あとから）」を 1 行の真ん中に並べる。値は --k-* だけ */
+.k-reset-resend {
+  align-items: baseline;
+  font-size: var(--k-text-body-sm);
+}
+.k-reset-resend .k-login-textbtn:disabled {
+  opacity: 1;
+  color: var(--k-primary);
+  cursor: default;
+}
+/* 送りましたの 3 つの文（キャンバス AuthReset）：箱にせず、字だけ。字の大きさと行の高さは灰の案内の箱と同じ */
+.k-reset-points {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--k-c-auth-note-box-text);
+  line-height: var(--k-c-auth-note-box-lh);
+  color: var(--k-on-surface-variant);
+}

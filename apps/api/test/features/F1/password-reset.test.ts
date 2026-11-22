@@ -8,7 +8,7 @@
 // 試験が決める口の形（契約の口 resetPassword・POST /api/v1/auth/password/reset・リンクを持つ人）:
 //   要求の体 { token: string, new_password: string }
 //   201 { data: { reset: true } }（ログインの印は入れない）
-//   410 E-AUTH-006（期限切れ・使い終わった・前のリンク）／410 E-PAGE-006（無い・空）／422（欄 token・new_password。E-VAL-005・E-VAL-011）／
+//   410 E-AUTH-006（期限切れ・使い終わった・前のリンク）／409 E-PAGE-006（無い・空・K-638 で 410 から替えた）／422（欄 token・new_password。E-VAL-005・E-VAL-011）／
 //   500 E-PAGE-003（切る所・変える所で落ちた。リンクは残る）／429 retry_after_sec
 // 時刻は眠らずに、DB の行の時刻を DB の now() からずらして進める（D-128.130）。
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
@@ -130,7 +130,8 @@ const reset = (
 const json = async (r: Response) => (await r.json()) as Record<string, unknown> & { data?: Record<string, unknown> };
 const msg = (code: string) => CATALOG[code]?.message ?? `（errors.json に ${code} が無い）`;
 const expectGone = async (r: Response, code: "E-AUTH-006" | "E-PAGE-006") => {
-  expect(r.status, await r.clone().text()).toBe(410);
+  // 期限切れ・使い終わった・前のリンク（E-AUTH-006）は 410。リンクが DB に無い（E-PAGE-006）は 409（K-638：形どおりの入力が DB の中身で断られる所を 410 にしない）
+  expect(r.status, await r.clone().text()).toBe(code === "E-PAGE-006" ? 409 : 410);
   const j = await json(r);
   expect(j["code"]).toBe(code);
   expect(j["message"]).toBe(msg(code));
@@ -386,7 +387,7 @@ describe("K-314 リンクの状態 × 決める", () => {
     expect((await reset(second)).status).toBe(201);
   });
 
-  it("K314-API-007 でたらめ・空・空白だけは 410・E-PAGE-006（正本の文）。手がかりの欄が無いは 422（欄 token）", async () => {
+  it("K314-API-007 でたらめ・空・空白だけは 409・E-PAGE-006（正本の文）。手がかりの欄が無いは 422（欄 token）", async () => {
     for (const t of ["not-a-real-token-k314", "", "   "]) await expectGone(await reset(t), "E-PAGE-006");
     const r = await reset(undefined);
     expect(r.status).toBe(422);
@@ -567,7 +568,7 @@ describe("K-314 揺れ・失敗・守り", () => {
     const ip = nextIp();
     for (let i = 0; i < 10; i++) {
       const r = await reset(`not-a-token-${i}`, NEW_PW, { ip });
-      expect(r.status, `${i + 1} 回目は上限の内`).toBe(410);
+      expect(r.status, `${i + 1} 回目は上限の内`).toBe(409);
     }
     const r = await reset("not-a-token-10", NEW_PW, { ip });
     expect(r.status).toBe(429);

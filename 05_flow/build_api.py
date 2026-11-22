@@ -206,10 +206,18 @@ def qtype(q, table, op=None):
     if q == "cursor" and op in KEY_CURSOR_OPS: return {"type": "string", "pattern": "^[A-Za-z0-9_-]{1,200}$"}   # 鍵の文字列（base64url）
     if q == "cursor": return {"type": "string", "pattern": "^[0-9]{1,9}$"}
     return {"type": "string"}
+# 問い合わせの値域（QUERY_RANGES・K-468）：qtype の形に、その口・その名前の JSON Schema の言葉を重ねる。書き間違いを黙って捨てない
+_QR = getattr(_sa, "QUERY_RANGES", {}); _QR_WORDS = {"enum", "pattern", "minLength", "maxLength", "format", "anyOf"}
+def _qrange(op, q):
+    words = _QR.get(op, {}).get(q, {})
+    if not words: return {}
+    if set(words) - _QR_WORDS: raise SystemExit(f"QUERY_RANGES の {op}.{q} に使えない言葉 {sorted(set(words) - _QR_WORDS)}（{sorted(_QR_WORDS)} だけ）")
+    if q.endswith(("_id", "_ids")): raise SystemExit(f"QUERY_RANGES の {op}.{q}：_id・_ids で終わる欄は書けない（uuid の形を壊さない）")
+    return copy.deepcopy(words)
 def qparams(names, table, op=None):
     has = _DBC.get(table)
     names = list(dict.fromkeys(names))   # 同じ名前を二度出さない（画面の問い合わせに sort が入っていると、一覧の共通の分と重なっていた）
-    return [{"name": q, "in": "query", "allowEmptyValue": True, "schema": qtype(q, table, op)} for q in names if not (q == "scope_id" and has is not None and "scope_id" not in has)]
+    return [{"name": q, "in": "query", "allowEmptyValue": True, "schema": {**qtype(q, table, op), **_qrange(op, q)}} for q in names if not (q == "scope_id" and has is not None and "scope_id" not in has)]
 # 口ごとの入力の形（K-144 ⑰・㉑）：必須の欄（REQUIRED_INPUTS）と値域（VALUE_RANGES）を、その口の入力の形に書く。
 #   同じ形を必須か値域の違う口と分け合っているなら、その口に自分の形 <operationId の頭を大文字>Input を作る（欄は同じ・知らない項目は許さない）。
 #   写しは copy.deepcopy（同じ辞書を 2 か所に置くと YAML の別名が出て、contract.mjs が欄を読めない。表の入力の欄は答えの形と辞書を分け合っている）
@@ -251,6 +259,12 @@ for _name in dict.fromkeys(n for _, n in _body_ops):
             if _k not in sc["properties"]: raise SystemExit(f"{_op} の INPUT_RULES の欄 {_k} が入力の形 {_own} に無い")
         sc.update(copy.deepcopy(_rules))
         for _k, _words in _RANGES.get(_op, {}).items(): sc["properties"][_k] = {**copy.deepcopy(sc["properties"][_k]), **copy.deepcopy(_words)}
+for _op, _names in _QR.items():   # 表の口・名前がその口の問い合わせに無ければ止める
+    _e = next((x for x in endpoints if x.get("operation_id") == _op), None)
+    if _e is None: raise SystemExit(f"QUERY_RANGES の口 {_op} が無い")
+    _have = set(_sa.QUERIES.get(_op, [])) | ({"cursor", "limit"} | ({"sort"} if getattr(_sa, "LIST_DETAILS", {}).get(_op, {}).get("sort", True) else set()) if _e["returns_list"] else set())
+    for _n in _names:
+        if _n not in _have: raise SystemExit(f"QUERY_RANGES の {_op}.{_n} がその口の問い合わせに無い")
 paths = {}
 for e in endpoints:
     tname = e.get("table") or e["path"].split("/")[3]; name = _sa.RESPONSES[e["operation_id"]][0] if e.get("operation_id") in _sa.RESPONSES else "".join(w.capitalize() for w in tname.split("_")); op = {"operationId": e["implementation_path"].split("::")[1], "summary": e["description"], "tags": [tname], "x-acts": e["acts"], "x-screens": e["screens"], "x-choke-points": e["choke_points"], "x-source": e["source"], **({"x-permission": e["permission"]["who"], "x-permission-scope": e["permission"]["scope"], "x-step-up": e["permission"]["step_up"]} if e.get("permission") else {}), "security": [] if e["auth"]["role"] == "public" else [{"session": []}]}

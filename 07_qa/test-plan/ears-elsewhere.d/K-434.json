@@ -1,0 +1,61 @@
+{
+ "ops": {
+  "listTestSpecs": {
+   "file": "apps/api/test/features/F4/test-spec-create.test.ts",
+   "reason": "確認項目の一覧は、チケットが見えるか・書けるか・完了したかで答え（can_edit）が変わる。生成の試験の偽のセッションではチケットも項目も作れない（K-434）",
+   "covers": {
+    "test_get_tickets_id_test_specs_ok": "K434-API-001",
+    "test_get_tickets_id_test_specs_rejected_401": "K434-API-006",
+    "test_get_tickets_id_test_specs_not_found": "K434-API-005",
+    "test_get_tickets_id_test_specs_rate_limited": "K434-API-007",
+    "test_get_tickets_id_test_specs_shape": "K434-API-001",
+    "test_get_tickets_id_test_specs_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_get_tickets_id_test_specs_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_get_tickets_id_test_specs_rejected_422": {
+     "file": "apps/api/test/features/contract/k144.d/K-434.ts",
+     "mark": "K144-API-520"
+    }
+   },
+   "na": {
+    "test_get_tickets_id_test_specs_rejected_403": "読むだけの口で、見えない人は 404（行の守り）。権限の 403 は無い（受けは K434-API-005）",
+    "test_get_tickets_id_test_specs_upstream_failed": "外を呼ばない（C3 は契約の口の宣言に付いているだけ・AI も PC も呼ばない）"
+   }
+  },
+  "createTestSpec": {
+   "file": "apps/api/test/features/F4/test-spec-create.test.ts",
+   "reason": "確認項目を足す口は、チケットが見えるか・書けるか・完了したか・同時に完了したかで答えが変わり、DB の関数が行とやり取りと証跡を 1 つの取引で書く。生成の試験の偽のセッションでは作れない（K-434）",
+   "covers": {
+    "test_post_tickets_id_test_specs_ok": "K434-API-008",
+    "test_post_tickets_id_test_specs_shape": "K434-API-008",
+    "test_post_tickets_id_test_specs_rejected_401": "K434-API-011",
+    "test_post_tickets_id_test_specs_rejected_403": "K434-API-011",
+    "test_post_tickets_id_test_specs_not_found": "K434-API-011",
+    "test_post_tickets_id_test_specs_rejected_422": "K434-API-009",
+    "test_post_tickets_id_test_specs_rejected_422_2": "K434-API-010",
+    "test_post_tickets_id_test_specs_rate_limited": "K434-API-018",
+    "test_post_tickets_id_test_specs_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_tickets_id_test_specs_session_unresolved": "K434-API-016",
+    "test_post_tickets_id_test_specs_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_tickets_id_test_specs_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   },
+   "na": {
+    "test_post_tickets_id_test_specs_upstream_failed": "外を呼ばない（C3 は契約の口の宣言に付いているだけ・AI も PC も呼ばない）"
+   }
+  }
+ }
+}

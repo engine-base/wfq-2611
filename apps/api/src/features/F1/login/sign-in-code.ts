@@ -19,15 +19,19 @@ export function signInCodeFeature(
   d: LoginDeps,
   memberGone: (token: string, ua: string | undefined) => Promise<boolean>,
 ) {
-  /** 前処理（入口の strict な形の確かめより前）：待ちの印が無い・コードが 1 つでない・空・64 文字を超えるは 422（部品を呼ばない・失敗の数に入れない） */
+  /** 前処理（入口の strict な形の確かめより前）：待ちの印が無い・コードが 1 つでない・文字でない（null・数・真偽）・空・64 文字を超えるは 422（部品を呼ばない・失敗の数に入れない）。
+   *  コードは「どちらか 1 つだけが文字」で来る（契約の oneOf と同じ・K-638）。null は「無い」と見ない（本物の code と null の backup_code を通さない） */
   const input = (raw: unknown): { input: Record<string, unknown> } | { reply: HookReply } => {
     const b = raw && typeof raw === "object" && !Array.isArray(raw) ? (raw as Record<string, unknown>) : {};
-    const has = (k: string) => b[k] !== undefined && b[k] !== null;
+    const has = (k: string) => b[k] !== undefined;
     if (blank(str(b["pending"]))) return { reply: { status: 422, body: validation("pending", "待ちの印が要る") } };
     if (has("code") === has("backup_code"))
       return { reply: { status: 422, body: validation("code", "code と backup_code のどちらか 1 つ") } };
-    const code = str(b["code"] ?? b["backup_code"]);
-    if (code !== undefined && (blank(code) || code.length > CODE_MAX)) return { reply: reply(422, "E-VAL-009") };
+    const field = has("code") ? "code" : "backup_code";
+    const code = str(b[field]);
+    if (code === undefined) return { reply: { status: 422, body: validation(field, `${field} は文字で渡す`) } };
+    // 長さは文字（コードポイント）で数える（契約の maxLength と同じ。UTF-16 の長さだと絵文字 33 個を断ってしまう）
+    if (blank(code) || [...code].length > CODE_MAX) return { reply: reply(422, "E-VAL-009") };
     return { input: b };
   };
 

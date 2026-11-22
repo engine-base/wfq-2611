@@ -6376,6 +6376,34 @@
    ]
   },
   {
+   "id": "E-CRED-016",
+   "class": "gate",
+   "where": {
+    "screen": "credentials"
+   },
+   "when": "PC が、預けたログイン情報を使える場所（宛先のドメイン）の外の画面に入れようとした",
+   "false_when": "入れる場所の名前が、使える場所と同じか、その下の名前（*. の印は下の名前だけ）",
+   "message": "使える場所の外には入れません。必要なら、預けたログイン情報の使える場所に足してください",
+   "action": "預けたログイン情報の使える場所に足す（持ち主に知らせる）",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "使える場所が hacchu-navi.example の預けたログイン情報と、その人の PC（Bridge）の動いている仕事",
+    "steps": [
+     "PC が evil.example に入れるために取り出しを頼む"
+    ],
+    "needs": "自分の PC（Bridge）"
+   },
+   "severity": "medium",
+   "source": [
+    "D-128.57"
+   ]
+  },
+  {
    "id": "E-CRED-010",
    "class": "gate",
    "where": {
@@ -6649,7 +6677,7 @@
     "state": "progress"
    },
    "when": "完了したチケットの段を、作業中への開き直し以外（未着手・保留・会社が足した段）に変えようとした（K-387）",
-   "false_when": "完了していないチケット。完了したチケットでも実績だけの変更はできる",
+   "false_when": "完了していないチケット。完了したチケットでも、作業中を選んで開き直す（K-388）か実績だけの変更はできる",
    "message": "完了したチケットは、開き直してから状態を変えてください",
    "action": "「作業中（開き直す）」で開き直してから状態を変える",
    "undo": false,
@@ -6824,6 +6852,67 @@
    "support_code": "VAL-047"
   },
   {
+   "id": "E-VAL-042",
+   "class": "validation",
+   "where": {
+    "screen": "tickets",
+    "state": "decisions"
+   },
+   "when": "決定を足すとき、決めたことが無い・空・空白だけ（全角も）・制御文字だけ（K-390）",
+   "false_when": "決めたことに字がある（字数の上限は無い）",
+   "message": "決めたことを書いてください",
+   "action": "決めたことを書く",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "作業中のチケットの詳細",
+    "steps": [
+     "決定を足す欄を空のまま保存する"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.40",
+    "D-130.1"
+   ],
+   "support_code": "VAL-042"
+  },
+  {
+   "id": "E-CONF-037",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "decisions"
+   },
+   "when": "決定を足すとき、取引先のルールにした（promoted_to が client_rule・段 12 の取引先の画面ができるまで今の状態ではできない・K-390・K-391。断る番号の役割は代表の答え answer=f0f290e785a9）",
+   "false_when": "このチケットの決定にする（promoted_to が ticket か送らない）",
+   "message": "取引先の画面ができてから使えます",
+   "action": "このチケットの決定として残す",
+   "undo": false,
+   "layers": [
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "作業中のチケット",
+    "steps": [
+     "promoted_to に client_rule を付けて POST /api/v1/tickets/:id/decisions を呼ぶ"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.40"
+   ],
+   "support_code": "CONF-037"
+  },
+  {
    "id": "E-INV-009",
    "class": "validation",
    "where": {
@@ -6941,6 +7030,189 @@
    "source": [
     "D-148.29",
     "D-148.31"
+   ]
+  },
+  {
+   "id": "E-SPEC-001",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "完了したチケットの確認項目を足す・外す・直す・チェックを付け外しする",
+   "false_when": "まだ完了していないチケット（読むのは完了後もできる）",
+   "message": "このチケットは完了しています。完了したチケットの確認項目は変えられません",
+   "action": "新しいチケットで確かめる",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "完了したチケットの詳細を開き、確認項目の欄を見る",
+    "steps": [
+     "開いたまま別の画面でそのチケットを完了にし、元の画面で「項目を足す」を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-150.33",
+    "D-150.56"
+   ]
+  },
+  {
+   "id": "E-LNK-001",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "links"
+   },
+   "when": "チケットを自分自身とつなごうとした（関連・派生元とも）",
+   "false_when": "別のチケットとつなぐ",
+   "message": "同じチケットとはつなげられません",
+   "action": "ほかのチケットを選ぶ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットの詳細を開き、つながりを足す小窓を開く",
+    "steps": [
+     "つながりを足す小窓で、開いているチケットと同じチケットを選んで足す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.50",
+    "D-128.80",
+    "D-150.16"
+   ]
+  },
+  {
+   "id": "E-LNK-002",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "links"
+   },
+   "when": "もうつながっている相手に、同じつながりをもう一度足そうとした（関連は逆向きも・派生元は同じ向き）",
+   "false_when": "まだつながっていない相手に足す。または外してから足し直す",
+   "message": "このチケットとは、もうつながっています",
+   "action": "つながりの一覧を見る",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "関連でつながった 2 つのチケット",
+    "steps": [
+     "同じ相手を関連で 2 回足す",
+     "関連の逆向き（相手のチケットから）にも足す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.50",
+    "D-128.80",
+    "D-150.16"
+   ]
+  },
+  {
+   "id": "E-LNK-003",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "links"
+   },
+   "when": "派生元が輪になるつながりを足そうとした（A の派生元が B なのに B の派生元を A にする・間に挟んだ鎖も含む）",
+   "false_when": "派生元をたどって自分に戻らない",
+   "message": "派生元が輪になるので、つなげられません",
+   "action": "ほかのチケットを選ぶ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "派生元でつながった 2 つのチケット",
+    "steps": [
+     "B の派生元を A にしたあと、A の派生元を B にして足す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.50",
+    "D-128.80",
+    "D-150.16"
+   ]
+  },
+  {
+   "id": "E-SRC-001",
+   "class": "validation",
+   "where": {
+    "screen": "tickets",
+    "state": "search"
+   },
+   "when": "探す言葉（q）が、送られたままの文字で 100 文字を超える（前後の空白も数える）",
+   "false_when": "送られたままの文字で 100 文字まで（全角も 1 文字・正規化で伸びる字も送られた字の数）。空と空白だけは探さない",
+   "message": "探す言葉は 100 文字までにしてください",
+   "action": "探す言葉を短くする",
+   "undo": false,
+   "layers": [
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "探す口（⌘K の探す欄が呼ぶ口）",
+    "steps": [
+     "q に 101 文字を入れて GET /api/v1/search を呼ぶ"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.157",
+    "D-151.8"
+   ]
+  },
+  {
+   "id": "E-SRC-002",
+   "class": "validation",
+   "where": {
+    "screen": "tickets",
+    "state": "search"
+   },
+   "when": "kinds が決まった形でない（ticket・decision・conversation・knowledge の小文字の名前を空白なしでコンマでつないだ形でない：知らない種類・空の項目・大文字・全角・空白）",
+   "false_when": "小文字の決まった名前を空白なしでコンマでつないだ形。空は全部",
+   "message": "探す種類は チケット・決定・会話・ナレッジ から選んでください",
+   "action": "種類を選び直す",
+   "undo": false,
+   "layers": [
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "探す口（⌘K の探す欄が呼ぶ口）",
+    "steps": [
+     "kinds に foo を入れて GET /api/v1/search を呼ぶ"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-151.8"
    ]
   }
  ],

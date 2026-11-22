@@ -1000,6 +1000,43 @@
     "apps/api/test/features/F3/credential-device.harness.ts"
    ],
    "tests": [
+    "apps/api/test/features/F3/credential-resolve.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F3/credential-resolve.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_bridge_credentials_resolve.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/features/F3/credentials/host.ts",
+    "apps/bridge/src/host.ts"
+   ],
+   "tests": [
+    "apps/bridge/test/k354-credential-bridge.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F3/credential-host-cases.json"
+   ],
+   "tests": [
+    "apps/api/test/features/F3/credential-resolve.test.ts",
+    "apps/bridge/test/k354-credential-bridge.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/hooks/credentials-*.ts",
+    "apps/api/src/features/F3/credentials/**",
+    "apps/api/test/features/F3/credential-device.harness.ts"
+   ],
+   "tests": [
     "apps/api/test/features/F3/credential-login-check.test.ts"
    ]
   },
@@ -1240,6 +1277,36 @@
   },
   {
    "paths": [
+    "packages/db/migrations/20261120130500_ticket_reopen.sql",
+    "apps/api/src/features/F6/progress/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F6/progress-reopen.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/hooks/ticket-decisions.ts",
+    "apps/api/src/features/F6/decisions/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F6/decisions.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F6/decisions.test.ts",
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_tickets_id_decisions.test.ts",
+    "apps/api/test/generated/post_tickets_id_decisions.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/src/hooks/workspace-invitations.ts",
     "apps/api/src/features/F10/invite/**",
     "packages/db/migrations/20261121091900_workspace_invitations.sql"
@@ -1255,6 +1322,69 @@
    "readers": [
     "apps/api/test/generated/get_workspace_members.test.ts",
     "apps/api/test/generated/post_invitations.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/hooks/test-specs-*.ts",
+    "apps/api/src/features/F4/test-spec/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F4/test-spec-create.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F4/test-spec-create.test.ts",
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts",
+    "apps/api/test/features/contract/k144.d/K-434.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_tickets_id_test_specs.test.ts",
+    "apps/api/test/generated/post_tickets_id_test_specs.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/hooks/ticket-links.ts",
+    "apps/api/src/features/F4/ticket-links/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F4/ticket-links.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F4/ticket-links.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts",
+    "apps/api/test/features/F1/terms.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_tickets_id_links.test.ts",
+    "apps/api/test/generated/post_tickets_id_links.test.ts",
+    "apps/api/test/generated/delete_ticket_links_id.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/hooks/search.ts",
+    "apps/api/src/features/F7/search/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F7/search-tickets.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F7/search-tickets.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_search.test.ts"
    ]
   },
   {
@@ -1277,6 +1407,33 @@
    ],
    "tests": [
     "apps/api/test/generated/get_ticket_fields.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/features/F1/password-reset/**",
+    "apps/api/src/hooks/password-reset.ts",
+    "apps/api/src/features/F1/admin-recovery/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F1/pm-fuzz-auth.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/web/features/F1/password-reset/**"
+   ],
+   "tests": [
+    "apps/web/tests/k/k638-reset-gone.spec.ts"
+   ]
+  },
+  {
+   "paths": [
+    "05_flow/screen_api.d/K-638.py",
+    "scripts/ci/contract_shape.d/K-638.py"
+   ],
+   "tests": [
+    "apps/api/test/features/F1/pm-fuzz-auth.test.ts"
    ]
   }
  ],
@@ -1384,6 +1541,8 @@
   "apps/web/tests/k/k350-stage4-mock.spec.ts": "モックの置き場 apps/web/app/(dev)/dev/mock/f3/mocks.tsx・部品 apps/web/features/F3/credentials/views.tsx・画面のコード apps/web/{components,features,app}（鈴を外した後に名前が残っていないか）・道の一覧 apps/web/lib/built-routes.ts・写しの台本 07_functional/段4-F3/mock-shots.mjs・決定ログ 01_hearing/決定ログ_進行中.md・正本 04_design/DESIGN-kaname.md・キャンバスの絵 04_design/canvas/*.dc.html（作り手 shellfix.py・mb.py を data_links で結ぶ）・11_tickets/K-57.md・秘密の検査の設定 .gitleaks.toml・作り物の秘密の置き場（apps/{api,bridge}/test/_fake/secrets.ts・apps/e2e/_fake/secrets.ts）を読み、scripts/ci/design_gate.py を子プロセスで流す（K-350）",
   "apps/api/test/features/F3/credentials.harness.ts": "入っている葉の hooks のファイル apps/api/src/hooks/credentials-*.ts を readdirSync と動的 import で読む（まだ入っていない葉の物は無いので、在る物だけを差す）。読む物と使う試験は data_links で結ぶ・K-351",
   "apps/api/test/features/contract/k144.d/K-353.ts": "k144 の置き場の葉のファイル。準備の中で試験の土台の手助け（credentials.harness.ts）を動的 import する。ファイルは読まない（K-378）",
+  "apps/api/test/features/F3/credential-resolve.test.ts": "宛先の表 credential-host-cases.json を字として読む（Bridge の試験と同じ 1 つの表・K-354）",
+  "apps/bridge/test/k354-credential-bridge.test.ts": "宛先の表 credential-host-cases.json と、口と Bridge の host.ts を字として読む（同じ表と同じ字で両方を試す・K-354）",
   "apps/api/test/features/contract/k144.d/K-355.ts": "k144 の置き場の葉のファイル。準備の中で試験の土台の手助け（credentials.harness.ts）を動的 import する。ファイルは読まない（K-378）",
   "apps/web/tests/k/credentials-mock.ts": "試験の共通の道具。文言の正本 07_qa/test-specs/errors.json を読む（口の差し替えの答えの文）。jobs.web.paths に在る（実ブラウザの試験は web の組が流す）・K-356",
   "apps/bridge/test/k359-claude-setup.test.ts": "一時のフォルダ（mkdtemp）に作り物の claude の台本と記録を書いて読み、子プロセスで動かす（Bridge の入れる・ログインの処理が呼ぶ相手）。リポジトリの中の物は読まない・K-359",
@@ -1403,8 +1562,16 @@
   "apps/api/test/features/contract/k144.d/K-384.ts": "setup の中で土台 ../../F6/thread.harness.js を動的 import で読む（K-378.ts の注）・K-384",
   "apps/api/test/features/F6/progress.harness.ts": "段 7 の進める口の hooks のファイル（apps/api/src/hooks/ticket-update.ts）を最初の要求の前に動的 import で読む（data_links で結ぶ・K-387）",
   "apps/api/test/features/contract/k144.d/K-387.ts": "この葉の hooks のファイルを本体の準備の中で動的 import で読む（data_links で結ぶ・k144.d の README の決まり・K-387）",
+  "apps/api/test/features/F6/progress-reopen.test.ts": "承認と完了の口の hooks のファイル（apps/api/src/hooks/approve-complete.ts）を最初の要求の前に動的 import で読む（K-388）",
+  "apps/api/test/features/F6/decisions.harness.ts": "決定の口の hooks のファイル（apps/api/src/hooks/ticket-decisions.ts）を最初の要求の前に動的 import で読む（data_links で結ぶ・K-390）",
+  "apps/api/test/features/contract/k144.d/K-390.ts": "この葉の hooks のファイルを本体の準備の中で動的 import で読む（data_links で結ぶ・K-390）",
   "apps/api/test/features/F10/invite-create.test.ts": "葉の hooks のファイル apps/api/src/hooks/workspace-invitations.ts を existsSync で見て動的 import で読む（まだ入っていないときは差さない）。読む物と使う試験は data_links で結ぶ・K-419",
   "apps/api/test/features/F5/k429_runs_shape.test.ts": "契約 08_api/openapi.yaml を読み、実行の一覧の問い合わせ（limit・cursor・sort）の形が契約に書いた形と一致するかを確かめる。契約は _base の 47 に在り、この試験は api の組が流す・K-429",
+  "apps/api/test/features/F4/test-spec.harness.ts": "入っている葉の hooks のファイル apps/api/src/hooks/test-specs-*.ts を動的 import で読む（最初の要求のときに 1 回）。読む物と使う試験は data_links で結ぶ・K-434",
+  "apps/api/test/features/contract/k144.d/K-434.ts": "葉の hooks のファイルを F3/leaf-hooks.ts の動的 import で読む。読む物と使う試験は data_links で結ぶ・K-434",
+  "apps/api/test/features/F4/ticket-links.test.ts": "この葉の hooks のファイル apps/api/src/hooks/ticket-links.ts を、最初の要求の前に動的 import で読む（まだ無い実装の前の準備を落とさないため）。読む物と使う試験は data_links で結ぶ・K-441",
+  "apps/api/test/features/contract/k144.d/K-441.ts": "同じ。準備の中で hooks のファイルを動的 import で読む（k144 の置き場の決まり・K-441）",
+  "apps/api/test/features/F7/search-tickets.test.ts": "探す口の hooks のファイル（apps/api/src/hooks/search.ts）と種類の置き場（features/F7/search/kinds.ts）を動的 import で読む（失敗の道の確かめ。data_links で結ぶ・K-468）",
   "apps/api/test/features/F4/ticket-fields.test.ts": "読む口の hooks のファイル apps/api/src/hooks/ticket-fields-read.ts を動的 import で読む（最初の要求のときに 1 回）。読む物と使う試験は data_links で結ぶ・K-563",
   "apps/api/test/features/contract/k144.d/K-563.ts": "葉の hooks のファイルを F3/leaf-hooks.ts の動的 import で読む。読む物と使う試験は data_links で結ぶ・K-563",
   "apps/web/tests/k/k630-request-ref.spec.ts": "K-630 の試験。画面の型を確かめるため子プロセスで apps/web の tsc を流す（読む物は apps/web の画面のコードと型。web の組が流す）"

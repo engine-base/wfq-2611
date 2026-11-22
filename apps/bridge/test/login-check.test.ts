@@ -1,11 +1,15 @@
 // 預けたらその場で 1 回ログインだけ試す（T-B-38・D-117.1・D-117.6）の Bridge 側を、本物の Chrome（headless）と偽の Kaname・偽のサービスで通す。
 //   入れたらそのまま出る／パスワードが違う／2 段階／CAPTCHA／開けない／欄が無い／2 段の画面 を 1 つずつ実際に出す。値は結果にもディスクにも残らない
+//   K-354 で、取り出しを契約の口（封の形）に、開く先を仕事の prompt に替えた（切る段で替えた・carry）
 import { createServer, type Server } from "node:http";
 import { existsSync, mkdtempSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { playwright, runLoginCheck, targetUrl } from "../src/login-check";
+import { RESOLVE_PATH, sealedAnswer } from "./fake-kaname-vault";
+// 作り物の秘密の値は apps/bridge/test/_fake/secrets.ts に置いて import する（.gitleaks.toml が置き場だけを外す・K-328）
+import { K354_PASSWORD, K354_WRONG_PASSWORD } from "./_fake/secrets";
 
 // Bridge は本人の Google Chrome を使う（channel: "chrome"）。Chrome の無い手元の PC では飛ばし、CI（Chrome が入っている）では必ず流す
 const HAS_CHROME =
@@ -19,7 +23,9 @@ const HAS_CHROME =
 if (process.env["CI"] && !HAS_CHROME)
   throw new Error("CI には Google Chrome が要る（Bridge のログインの確認は本人の Chrome で動く）");
 const LOGIN = "me@example.com";
-const PASSWORD = "S3cret-Plain!";
+const PASSWORD = K354_PASSWORD;
+/** 偽サービスが通さない値 */
+const WRONG_PASSWORD = K354_WRONG_PASSWORD;
 const JOB = "11111111-1111-4111-8111-111111111111";
 const CRED = "22222222-2222-4222-8222-222222222222";
 let site: Server;
@@ -76,16 +82,14 @@ beforeAll(async () => {
     req.on("end", () => {
       const body = raw ? (JSON.parse(raw) as Record<string, unknown>) : {};
       resolves.push({ path: req.url, ...body, session: req.headers["x-bridge-session"] });
-      res.writeHead(200, { "content-type": "application/json" });
+      res.writeHead(201, { "content-type": "application/json" });
       res.end(
         JSON.stringify({
-          data: {
-            login: LOGIN,
-            password: PASSWORD,
-            totp_secret: null,
-            service_name: serviceName,
-            service_domain: "127.0.0.1",
-          },
+          data: sealedAnswer(
+            body,
+            { login: LOGIN, password: PASSWORD, totp_secret: null },
+            { destinations: ["127.0.0.1"] },
+          ),
         }),
       );
     });
@@ -109,7 +113,7 @@ const deps = (over: Partial<{ apiBase: string; timeoutMs: number }> = {}) => ({
 const run = async (mode: string) => {
   serviceName = `${siteBase}/?mode=${mode}`;
   resolves = [];
-  return runLoginCheck(deps(), JOB, CRED);
+  return runLoginCheck(deps(), JOB, CRED, serviceName);
 };
 /** Bridge の置き場（ログインの状態）に値が書かれていない */
 function filesContain(dir: string, needle: string): string[] {
@@ -131,10 +135,12 @@ function filesContain(dir: string, needle: string): string[] {
 }
 
 describe("CHT-38-001 預けたら 1 回ログインし、入れたらそのまま出る。ほかの操作はしない", () => {
-  it("targetUrl：URL で預けたらそのまま。名前だけなら https://<domain>/。どちらも無ければ null", () => {
-    expect(targetUrl("https://example.com/login", "example.com")).toBe("https://example.com/login");
-    expect(targetUrl("発注ナビ", "hacchu-navi.jp")).toBe("https://hacchu-navi.jp/");
-    expect(targetUrl("発注ナビ", null)).toBeNull();
+  it("targetUrl：仕事の prompt が http(s) の URL ならそのまま。名前だけなら https://<名前>/。空・ほかの形は null", () => {
+    // K-354：開く先は仕事の prompt（K-355 が https://<使える場所の 1 つ目>/ を入れる）
+    expect(targetUrl("https://example.com/login")).toBe("https://example.com/login");
+    expect(targetUrl("hacchu-navi.jp")).toBe("https://hacchu-navi.jp/");
+    expect(targetUrl("")).toBeNull();
+    expect(targetUrl("javascript:alert(1)")).toBeNull();
   });
   it("playwright-core を @playwright/mcp から借りられる（Bridge 専用のブラウザと同じ部品）", () => {
     expect(playwright()).not.toBeNull();
@@ -146,9 +152,10 @@ describe("CHT-38-001 預けたら 1 回ログインし、入れたらそのま�
       expect(r).toEqual({ state: "ok", detail: "ログインできました（入れたらそのまま出ました）" });
       expect(resolves).toHaveLength(1);
       expect(resolves[0]).toMatchObject({
-        path: "/api/auth-ext/bridge/credentials/resolve",
+        path: RESOLVE_PATH,
         job_id: JOB,
         credential_id: CRED,
+        destination: "127.0.0.1",
         session: "sess-1",
       });
     },
@@ -172,16 +179,14 @@ describe("CHT-38-002 入れなければ理由を出す（パスワードが違�
         let raw = "";
         req.on("data", (c) => (raw += c));
         req.on("end", () => {
-          res.writeHead(200, { "content-type": "application/json" });
+          res.writeHead(201, { "content-type": "application/json" });
           res.end(
             JSON.stringify({
-              data: {
-                login: LOGIN,
-                password: "wrong-pass-1234",
-                totp_secret: null,
-                service_name: `${siteBase}/?mode=ok`,
-                service_domain: "127.0.0.1",
-              },
+              data: sealedAnswer(
+                JSON.parse(raw) as Record<string, unknown>,
+                { login: LOGIN, password: WRONG_PASSWORD, totp_secret: null },
+                { destinations: ["127.0.0.1"] },
+              ),
             }),
           );
         });
@@ -189,7 +194,12 @@ describe("CHT-38-002 入れなければ理由を出す（パスワードが違�
       await new Promise<void>((r) => wrong.listen(0, "127.0.0.1", r));
       const a = wrong.address();
       try {
-        const r = await runLoginCheck(deps({ apiBase: `http://127.0.0.1:${(a as { port: number }).port}` }), JOB, CRED);
+        const r = await runLoginCheck(
+          deps({ apiBase: `http://127.0.0.1:${(a as { port: number }).port}` }),
+          JOB,
+          CRED,
+          `${siteBase}/?mode=ok`,
+        );
         expect(r.state).toBe("bad_password");
         expect(r.detail).toContain("預け直して");
         expect(r.detail).not.toContain("wrong-pass");
@@ -222,14 +232,19 @@ describe("CHT-38-002 入れなければ理由を出す（パスワードが違�
     async () => {
       expect((await run("noform")).state).toBe("no_form");
       serviceName = "http://127.0.0.1:9/";
-      const r = await runLoginCheck(deps(), JOB, CRED);
+      const r = await runLoginCheck(deps(), JOB, CRED, serviceName);
       expect(r.state).toBe("unreachable");
       expect(r.detail).toContain("開けません");
     },
     90_000,
   );
   it("CHT-38-002 Kaname に届かない（鍵を受け取れない）→ stopped と理由。ブラウザは開かない", async () => {
-    const r = await runLoginCheck(deps({ apiBase: "http://127.0.0.1:9", timeoutMs: 5_000 }), JOB, CRED);
+    const r = await runLoginCheck(
+      deps({ apiBase: "http://127.0.0.1:9", timeoutMs: 5_000 }),
+      JOB,
+      CRED,
+      `${siteBase}/?mode=ok`,
+    );
     expect(r.state).toBe("stopped");
     expect(r.detail).toContain("受け取れません");
   }, 20_000);

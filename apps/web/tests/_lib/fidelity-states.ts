@@ -505,6 +505,18 @@ export const FIDELITY_STATES: Record<string, (page: Page, path: string) => Promi
     await page.locator('[data-part="auth-box"]').getByRole("button", { name: "次へ", exact: true }).click();
     await expect(page.locator('[data-part="auth-box"] h1')).toHaveText("確認のコード");
   },
+  // 再設定（K-638・キャンバス AuthReset）：メールを入れて「再設定メールを送る」を押し、送りました（作り直しのリンクを送った）まで進める
+  // prettier-ignore
+  "password-reset": async (page, path) => {
+    await loginApi(page);
+    await page.route(/\/api\/v1\/auth\/password\/forgot/, (route) =>
+      route.fulfill({ status: 201, contentType: "application/json", body: JSON.stringify({ data: { sent: true } }) }),
+    );
+    await page.goto(path);
+    await page.getByRole("textbox", { name: "メールアドレス" }).fill(SIGNUP_EMAIL);
+    await page.locator('[data-part="auth-box"]').getByRole("button", { name: "再設定メールを送る", exact: true }).click();
+    await expect(page.locator('[data-auth="reset"]')).toContainText("作り直しのリンクを送りました");
+  },
   // 規約の文面（K-232・キャンバス LegalPage）：口を読まない画面なので開くだけ。箱の題が出るまで待つ（鍵は "<鍵>": の字で探されるので引用符を残す）
   // prettier-ignore
   "legal": async (page, path) => {

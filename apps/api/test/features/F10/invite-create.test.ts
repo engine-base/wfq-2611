@@ -13,6 +13,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { migrateAuth } from "@kaname/auth/migrate";
 import { EMAIL_RE, normalizeEmail } from "@kaname/auth/signup";
 import { createRepository } from "@kaname/db/repository";
 import type { TenantContext } from "@kaname/db/context";
@@ -115,6 +116,7 @@ async function failOn(table: string, cond: string, fn: () => Promise<void>): Pro
 
 beforeAll(async () => {
   f = await makeFixture();
+  await migrateAuth(process.env["DATABASE_URL"]!);
   const web = async (hd: Headers) => {
     const m = /^Bearer fake:(member):([0-9a-f-]{36}):([0-9a-f-]{36})(?::su=(\d+))?$/.exec(
       hd.get("authorization") ?? "",

@@ -1,7 +1,7 @@
 "use client";
 // パスワードを作り直す（T-U-06・A31・K-320）。見た目は段 2 の部品（views の PasswordReset）。ここは動きだけ。
 //   口は契約の口だけ：requestPasswordReset（POST /api/v1/auth/password/forgot・K-313）・resetPassword（POST /api/v1/auth/password/reset・K-314）・getMe。
-//   答えで画面を選ぶ：頼む 201 → 送りました／決める 201 → 済んだ／410 E-AUTH-006 → もう使えない／410 E-PAGE-006 → 正しくない／
+//   答えで画面を選ぶ：頼む 201 → 送りました／決める 201 → 済んだ／410 E-AUTH-006 → もう使えない／409 E-PAGE-006（リンクが無い・K-638）→ 正しくない／
 //   422 → 欄の下に口の文／429 → 待つ秒数の文／500・網の切れ → E-PAGE-003 の文（手がかりは残す）。
 //   リンクの手がかりは URL からすぐ消し、このタブだけ（sessionStorage）に置く（Referer・履歴に残さない）。済んだ・使えないで消す。
 //   60 秒に 1 通（D-128.141）は口の答えでは分からないので、画面が自分で数える
@@ -203,7 +203,8 @@ export function PasswordResetPage() {
         screenId: "password-reset",
       });
       if (r.ok) return finish();
-      if (r.status === 410) {
+      // 番号で分ける：リンクが無い（E-PAGE-006・409）は「正しくない」、期限切れ・使い終わった（E-AUTH-006・410）は「もう使えない」
+      if (r.code === "E-PAGE-006" || r.code === "E-AUTH-006" || r.status === 410) {
         session.drop(RESET_TOKEN_KEY);
         setTokenState(null);
         setStep(r.code === "E-PAGE-006" ? "invalid" : "dead");

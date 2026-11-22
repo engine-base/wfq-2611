@@ -1,0 +1,65 @@
+{
+ "errors": [
+  {
+   "id": "E-VAL-042",
+   "class": "validation",
+   "where": {
+    "screen": "tickets",
+    "state": "decisions"
+   },
+   "when": "決定を足すとき、決めたことが無い・空・空白だけ（全角も）・制御文字だけ（K-390）",
+   "false_when": "決めたことに字がある（字数の上限は無い）",
+   "message": "決めたことを書いてください",
+   "action": "決めたことを書く",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "作業中のチケットの詳細",
+    "steps": [
+     "決定を足す欄を空のまま保存する"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.40",
+    "D-130.1"
+   ],
+   "support_code": "VAL-042"
+  },
+  {
+   "id": "E-CONF-037",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "decisions"
+   },
+   "when": "決定を足すとき、取引先のルールにした（promoted_to が client_rule・段 12 の取引先の画面ができるまで今の状態ではできない・K-390・K-391。断る番号の役割は代表の答え answer=f0f290e785a9）",
+   "false_when": "このチケットの決定にする（promoted_to が ticket か送らない）",
+   "message": "取引先の画面ができてから使えます",
+   "action": "このチケットの決定として残す",
+   "undo": false,
+   "layers": [
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "作業中のチケット",
+    "steps": [
+     "promoted_to に client_rule を付けて POST /api/v1/tickets/:id/decisions を呼ぶ"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.40"
+   ],
+   "support_code": "CONF-037"
+  }
+ ]
+}

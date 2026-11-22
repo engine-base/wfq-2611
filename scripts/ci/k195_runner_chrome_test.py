@@ -29,7 +29,8 @@ import yaml
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 LIST = ROOT / "scripts" / "ci" / "runner_tools.json"
-BRIDGE_TESTS = ["apps/bridge/test/login-check.test.ts", "apps/bridge/test/login-check-2fa.test.ts"]
+BRIDGE_TESTS = ["apps/bridge/test/login-check.test.ts", "apps/bridge/test/login-check-2fa.test.ts",
+                "apps/bridge/test/k354-credential-bridge.test.ts"]
 # 台の道具を見る試験の鍵：道具の道を existsSync に直に渡す／道の並びを some・find などで existsSync に回す
 PROBE = re.compile(r"""existsSync\(\s*["']/(?:opt|usr|Applications)/|\[[^\]]*["']/(?:opt|usr|Applications)/[^\]]*\]\s*\.(?:some|find|filter|every)\(""")
 # CI で道具が無ければ落とす形：if (process.env の CI && …) の次で throw
@@ -191,7 +192,7 @@ class RunnerChrome(unittest.TestCase):
         本物：今の版に、黙って飛ぶ試験は 0 本。作り物：skipIf だけで飛ぶ試験を置くと、その名前を言う。throw を持つ試験と、
         CI をやり直しの回数に読むだけの試験は言わない"""
         self.assertEqual(silent_in_ci(ROOT), [], "道具が無いと CI で黙って飛ぶ試験がある（CI では throw する）")
-        self.assertEqual(tool_tests(ROOT), sorted(BRIDGE_TESTS), "今の版で台の道具を見る試験は 2 本")
+        self.assertEqual(tool_tests(ROOT), sorted(BRIDGE_TESTS), "今の版で台の道具を見る試験は 3 本")
         with tempfile.TemporaryDirectory() as d:
             root = pathlib.Path(d)
             self.seed(root)
