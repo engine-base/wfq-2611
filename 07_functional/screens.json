@@ -38203,12 +38203,32 @@
      "role": "action",
      "method": "POST",
      "path_draft": "/api/tickets/:id/versions/:v/restore",
-     "table": "ticket_section_versions",
+     "table": "ticket_sections",
      "operation_id": "restoreTicketVersion",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-108",
-      "E-107"
+      "E-107",
+      "E-108"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.27",
+      "D-125.58",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A101",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/tickets/:id/item-changes",
+     "table": "ticket_messages",
+     "operation_id": "listTicketItemChanges",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-119"
      ],
      "choke_points": [
       "C2"
@@ -40191,12 +40211,32 @@
      "role": "action",
      "method": "POST",
      "path_draft": "/api/tickets/:id/versions/:v/restore",
-     "table": "ticket_section_versions",
+     "table": "ticket_sections",
      "operation_id": "restoreTicketVersion",
      "auth": "session（会社・層・権限）",
      "related_entities": [
-      "E-108",
-      "E-107"
+      "E-107",
+      "E-108"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.27",
+      "D-125.58",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A101",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/tickets/:id/item-changes",
+     "table": "ticket_messages",
+     "operation_id": "listTicketItemChanges",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-119"
      ],
      "choke_points": [
       "C2"

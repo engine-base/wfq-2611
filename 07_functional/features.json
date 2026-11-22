@@ -95,7 +95,8 @@
     "E-LNK-002",
     "E-LNK-003",
     "E-SRC-001",
-    "E-SRC-002"
+    "E-SRC-002",
+    "E-SEC-020"
    ],
    "policies": [
     "C2",
@@ -820,7 +821,8 @@
     "E-LNK-002",
     "E-LNK-003",
     "E-SRC-001",
-    "E-SRC-002"
+    "E-SRC-002",
+    "E-SEC-020"
    ],
    "policies": [
     "C2",
@@ -1811,7 +1813,8 @@
     "E-LNK-002",
     "E-LNK-003",
     "E-SRC-001",
-    "E-SRC-002"
+    "E-SRC-002",
+    "E-SEC-020"
    ],
    "policies": [
     "C1",
@@ -2301,7 +2304,8 @@
     "E-LNK-002",
     "E-LNK-003",
     "E-SRC-001",
-    "E-SRC-002"
+    "E-SRC-002",
+    "E-SEC-020"
    ],
    "policies": [
     "C1",
@@ -3608,7 +3612,8 @@
     "E-LNK-002",
     "E-LNK-003",
     "E-SRC-001",
-    "E-SRC-002"
+    "E-SRC-002",
+    "E-SEC-020"
    ],
    "policies": [
     "C2",
@@ -5247,7 +5252,8 @@
     "E-LNK-002",
     "E-LNK-003",
     "E-SRC-001",
-    "E-SRC-002"
+    "E-SRC-002",
+    "E-SEC-020"
    ],
    "policies": [
     "C2",
@@ -7486,7 +7492,8 @@
     "E-LNK-002",
     "E-LNK-003",
     "E-SRC-001",
-    "E-SRC-002"
+    "E-SRC-002",
+    "E-SEC-020"
    ],
    "policies": [
     "C2",
@@ -7851,7 +7858,8 @@
     "E-LNK-002",
     "E-LNK-003",
     "E-SRC-001",
-    "E-SRC-002"
+    "E-SRC-002",
+    "E-SEC-020"
    ],
    "policies": [
     "C2"
@@ -8145,7 +8153,8 @@
     "E-LNK-002",
     "E-LNK-003",
     "E-SRC-001",
-    "E-SRC-002"
+    "E-SRC-002",
+    "E-SEC-020"
    ],
    "policies": [
     "C2",

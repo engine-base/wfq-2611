@@ -1,8 +1,8 @@
 {
  "meta": {
   "version": "v3.1",
-  "created_at": "2026-11-22",
-  "frozen_at": "2026-11-22",
+  "created_at": "2026-11-23",
+  "frozen_at": "2026-11-23",
   "base_url": "/api/v1",
   "_doc": "05_flow/build_api.py が機械生成。手で直さない。凍結後の変更は決定（ADR）＋影響解析",
   "source": [
@@ -55110,6 +55110,193 @@
   },
   {
    "method": "GET",
+   "path": "/api/v1/tickets/:id/item-changes",
+   "acts": [
+    "A101"
+   ],
+   "screens": [
+    "tickets"
+   ],
+   "related_entities": [
+    "E-119"
+   ],
+   "choke_points": [],
+   "source": [
+    "D-125.167",
+    "D-125.27",
+    "D-125.58"
+   ],
+   "features": [
+    "F-004"
+   ],
+   "table": "ticket_messages",
+   "operation_id": "listTicketItemChanges",
+   "auth": {
+    "role": "member",
+    "scheme": "session（Better Auth・sessions 表を見る。app.tenant_id / app.user_id / app.role を SET LOCAL）"
+   },
+   "rate_limit": "120/min/user",
+   "access_control_policies": [
+    "ticket_messages_ticket_read",
+    "ticket_messages_ops_read_with_grant"
+   ],
+   "outputs_4xx": [
+    {
+     "status": 401,
+     "code": "UNAUTHENTICATED",
+     "body": {
+      "error": "unauthenticated"
+     },
+     "trigger": "セッションが無い・失効している（退会・停止・権限変更・パスワード変更で即失効）",
+     "ears_form": "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）"
+    },
+    {
+     "status": 403,
+     "code": "FORBIDDEN",
+     "body": {
+      "error": "forbidden"
+     },
+     "trigger": "権限（誰に×何に×どの層で×できること）が無い、または運営が許可の無い会社を読もうとした",
+     "ears_form": "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）"
+    },
+    {
+     "status": 404,
+     "code": "NOT_FOUND",
+     "body": {
+      "error": "not_found",
+      "code": "NOT_FOUND"
+     },
+     "trigger": "別の会社・見えない・無い id（有ることも漏らさない）",
+     "ears_form": "UNWANTED: IF チケットが別の会社・見えない・無い id なら、Kaname は 404 と NOT_FOUND を返し、何も返さない"
+    },
+    {
+     "status": 422,
+     "code": "VALIDATION_ERROR",
+     "body": {
+      "error": "validation_failed",
+      "details": []
+     },
+     "trigger": "必須・形式・値域・表記ゆらぎ（全角半角・空白・記号）。id・一覧の limit・cursor・sort・scope_id の形",
+     "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"
+    },
+    {
+     "status": 404,
+     "code": "E-PAGE-001",
+     "body": {
+      "error": "not_found",
+      "code": "E-PAGE-001"
+     },
+     "errors": [
+      "E-PAGE-001"
+     ],
+     "trigger": "消したチケット・無い点・形の違う from・to（0・負・小数・文字）",
+     "ears_form": "UNWANTED: IF 消したチケット・無い点・形の違う from・to を指したなら、Kaname は 404 と E-PAGE-001 を返し、何も返さない"
+    },
+    {
+     "status": 503,
+     "code": "E-PAGE-003",
+     "body": {
+      "error": "dependency",
+      "code": "E-PAGE-003"
+     },
+     "errors": [
+      "E-PAGE-003"
+     ],
+     "trigger": "項目の変更を読む DB が落ちた",
+     "ears_form": "UNWANTED: IF 項目の変更を読む DB が落ちたなら、Kaname は 503 と E-PAGE-003 を返す"
+    },
+    {
+     "status": 429,
+     "code": "RATE_LIMITED",
+     "body": {
+      "error": "rate_limited",
+      "retry_after_sec": 60
+     },
+     "trigger": "120/min/user",
+     "ears_form": "UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す"
+    },
+    {
+     "status": 403,
+     "code": "E-AUTH-010",
+     "body": {
+      "error": "forbidden",
+      "code": "E-AUTH-010"
+     },
+     "trigger": "ログインしたときに今の版の利用規約かプライバシーポリシーに同意していない（同意し直しの印が立ったセッション）",
+     "ears_form": "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない"
+    },
+    {
+     "status": 403,
+     "code": "MFA_REQUIRED",
+     "body": {
+      "error": "forbidden",
+      "code": "MFA_REQUIRED"
+     },
+     "trigger": "パスキーも 2 段階認証も無い人のセッション（付けるまで進めないの印が立ったセッション・E-AUTH-019）",
+     "ears_form": "UNWANTED: IF 付けるまで進めないの印が立ったセッションなら、Kaname は 403 と MFA_REQUIRED を返し、副作用を起こさない"
+    },
+    {
+     "status": 503,
+     "code": "E-PAGE-003",
+     "body": {
+      "error": "unavailable",
+      "code": "E-PAGE-003"
+     },
+     "trigger": "入口でセッションを解く所が落ちた（止める側に倒す・K-53）",
+     "ears_form": "UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない"
+    }
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN GET /api/v1/tickets/:id/item-changes が「区画ごとに書く」として呼ばれたとき THEN Kaname は「区画ごとに版を残す」を行い 2xx を返す（自動側：抜けを指摘する）",
+    "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
+    "UNWANTED: IF チケットが別の会社・見えない・無い id なら、Kaname は 404 と NOT_FOUND を返し、何も返さない",
+    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 消したチケット・無い点・形の違う from・to を指したなら、Kaname は 404 と E-PAGE-001 を返し、何も返さない",
+    "UNWANTED: IF 項目の変更を読む DB が落ちたなら、Kaname は 503 と E-PAGE-003 を返す",
+    "UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
+    "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
+    "UNWANTED: IF 付けるまで進めないの印が立ったセッションなら、Kaname は 403 と MFA_REQUIRED を返し、副作用を起こさない",
+    "UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない",
+    "UBIQUITOUS: GET /api/v1/tickets/:id/item-changes の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+   ],
+   "terms_open": false,
+   "mfa_open": false,
+   "list_ignores_scope": false,
+   "outward_side_effects": [],
+   "side_effect_ordering": null,
+   "description": "取得（ticket_messages）— 項目の変更の点と、比べる 2 つの点の正味の変わりを見る",
+   "implementation_path": "apps/api/src/routes/ticket_messages.ts::listTicketItemChanges",
+   "permission": {
+    "who": "read",
+    "scope": "そのチケットを見られる人",
+    "step_up": false
+   },
+   "path_params": [
+    "id"
+   ],
+   "returns_list": true,
+   "inputs": {
+    "path": [
+     "id"
+    ],
+    "body": null,
+    "query": [
+     "from",
+     "to",
+     "cursor",
+     "limit"
+    ]
+   },
+   "outputs_2xx": {
+    "status": 200,
+    "body": "{ data: TicketMessages[], meta: { limit, truncated } }"
+   },
+   "id": "EP-322",
+   "feature_id": "F-004"
+  },
+  {
+   "method": "GET",
    "path": "/api/v1/tickets/:id/kind-change-preview",
    "acts": [
     "A103"
@@ -55265,7 +55452,7 @@
     "status": 200,
     "body": "{ data: Tickets, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-322",
+   "id": "EP-323",
    "feature_id": "F-004"
   },
   {
@@ -55451,7 +55638,7 @@
     "status": 200,
     "body": "{ data: TicketLinks[], meta: { limit, children } }"
    },
-   "id": "EP-323",
+   "id": "EP-324",
    "feature_id": "F-004"
   },
   {
@@ -55663,7 +55850,7 @@
     "status": 201,
     "body": "{ data: TicketLinks, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-324",
+   "id": "EP-325",
    "feature_id": "F-004"
   },
   {
@@ -55844,7 +56031,7 @@
     "status": 201,
     "body": "{ data: TicketMessages, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-325",
+   "id": "EP-326",
    "feature_id": "F-010"
   },
   {
@@ -55997,7 +56184,7 @@
     "status": 200,
     "body": "{ data: ReferenceLogs[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-326",
+   "id": "EP-327",
    "feature_id": "F-004"
   },
   {
@@ -56171,7 +56358,7 @@
     "status": 201,
     "body": "{ data: Tickets, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-327",
+   "id": "EP-328",
    "feature_id": "F-004"
   },
   {
@@ -56339,7 +56526,7 @@
     "status": 200,
     "body": "{ data: ActionRuns[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-328",
+   "id": "EP-329",
    "feature_id": "F-005"
   },
   {
@@ -56508,7 +56695,7 @@
     "status": 200,
     "body": "{ data: TicketSections, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-329",
+   "id": "EP-330",
    "feature_id": "F-004"
   },
   {
@@ -56678,7 +56865,7 @@
     "status": 200,
     "body": "{ data: TestSpecs[], meta: { count, limit, can_edit } }"
    },
-   "id": "EP-330",
+   "id": "EP-331",
    "feature_id": "F-006"
   },
   {
@@ -56891,7 +57078,7 @@
     "status": 201,
     "body": "{ data: TestSpecs, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-331",
+   "id": "EP-332",
    "feature_id": "F-006"
   },
   {
@@ -57081,7 +57268,7 @@
     "status": 201,
     "body": "{ data: TestSpecs, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-332",
+   "id": "EP-333",
    "feature_id": "F-006"
   },
   {
@@ -57273,7 +57460,7 @@
     "status": 201,
     "body": "{ data: TestSpecs, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-333",
+   "id": "EP-334",
    "feature_id": "F-006"
   },
   {
@@ -57437,7 +57624,7 @@
     "status": 200,
     "body": "{ data: TicketMessages[], meta: { limit, older_count, new_count, mine_count, post_count, people? } }"
    },
-   "id": "EP-334",
+   "id": "EP-335",
    "feature_id": "F-010"
   },
   {
@@ -57627,7 +57814,7 @@
     "status": 201,
     "body": "{ data: TicketMessages, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-335",
+   "id": "EP-336",
    "feature_id": "F-010"
   },
   {
@@ -57685,10 +57872,11 @@
      "status": 404,
      "code": "NOT_FOUND",
      "body": {
-      "error": "not_found"
+      "error": "not_found",
+      "code": "NOT_FOUND"
      },
-     "trigger": "無い・消えた・取り消された（期限切れ・削除済み・他社の行）",
-     "ears_form": "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）"
+     "trigger": "別の会社・見えない・無い id（有ることも漏らさない）",
+     "ears_form": "UNWANTED: IF チケットが別の会社・見えない・無い id なら、Kaname は 404 と NOT_FOUND を返し、何も返さない"
     },
     {
      "status": 422,
@@ -57699,6 +57887,32 @@
      },
      "trigger": "必須・形式・値域・表記ゆらぎ（全角半角・空白・記号）。id・一覧の limit・cursor・sort・scope_id の形",
      "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"
+    },
+    {
+     "status": 404,
+     "code": "E-PAGE-001",
+     "body": {
+      "error": "not_found",
+      "code": "E-PAGE-001"
+     },
+     "errors": [
+      "E-PAGE-001"
+     ],
+     "trigger": "消したチケット・無い版・形の違う from・to（0・負・小数・文字）",
+     "ears_form": "UNWANTED: IF 消したチケット・無い版・形の違う from・to を指したなら、Kaname は 404 と E-PAGE-001 を返し、何も返さない"
+    },
+    {
+     "status": 503,
+     "code": "E-PAGE-003",
+     "body": {
+      "error": "dependency",
+      "code": "E-PAGE-003"
+     },
+     "errors": [
+      "E-PAGE-003"
+     ],
+     "trigger": "版を読む DB が落ちた",
+     "ears_form": "UNWANTED: IF 版を読む DB が落ちたなら、Kaname は 503 と E-PAGE-003 を返す"
     },
     {
      "status": 429,
@@ -57745,8 +57959,10 @@
     "EVENT-DRIVEN: WHEN GET /api/v1/tickets/:id/versions が「区画ごとに書く」として呼ばれたとき THEN Kaname は「区画ごとに版を残す」を行い 2xx を返す（自動側：抜けを指摘する）",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
     "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
-    "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
+    "UNWANTED: IF チケットが別の会社・見えない・無い id なら、Kaname は 404 と NOT_FOUND を返し、何も返さない",
     "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 消したチケット・無い版・形の違う from・to を指したなら、Kaname は 404 と E-PAGE-001 を返し、何も返さない",
+    "UNWANTED: IF 版を読む DB が落ちたなら、Kaname は 503 と E-PAGE-003 を返す",
     "UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
     "UNWANTED: IF 付けるまで進めないの印が立ったセッションなら、Kaname は 403 と MFA_REQUIRED を返し、副作用を起こさない",
@@ -57758,7 +57974,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": null,
-   "description": "取得（tickets）— チケットの中身（区画）を書く・直す",
+   "description": "取得（ticket_section_versions）— 本文の版を新しい順に見て、比べる 2 つの版の text を受ける（差分は作らない）",
    "implementation_path": "apps/api/src/routes/ticket_section_versions.ts::listTicketVersions",
    "permission": {
     "who": "read",
@@ -57774,13 +57990,18 @@
      "id"
     ],
     "body": null,
-    "query": []
+    "query": [
+     "from",
+     "to",
+     "cursor",
+     "limit"
+    ]
    },
    "outputs_2xx": {
     "status": 200,
-    "body": "{ data: TicketSectionVersions[], meta?: { cursor, limit, total } }"
+    "body": "{ data: TicketSectionVersions[], meta: { limit, truncated, can_restore } }"
    },
-   "id": "EP-336",
+   "id": "EP-337",
    "feature_id": "F-004"
   },
   {
@@ -57807,7 +58028,7 @@
    "features": [
     "F-004"
    ],
-   "table": "ticket_section_versions",
+   "table": "ticket_sections",
    "operation_id": "restoreTicketVersion",
    "auth": {
     "role": "member",
@@ -57832,28 +58053,34 @@
      "status": 403,
      "code": "FORBIDDEN",
      "body": {
-      "error": "forbidden"
+      "error": "forbidden",
+      "code": "FORBIDDEN"
      },
-     "trigger": "権限（誰に×何に×どの層で×できること）が無い、または運営が許可の無い会社を読もうとした",
-     "ears_form": "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）"
+     "trigger": "そのチケットは見えるが、書く権限（グループの tickets の edit か担当者）が無い",
+     "ears_form": "UNWANTED: IF チケットは見えるが書く権限が無いなら、Kaname は 403 と FORBIDDEN を返し、本文も版も変えない"
     },
     {
      "status": 404,
      "code": "NOT_FOUND",
      "body": {
-      "error": "not_found"
+      "error": "not_found",
+      "code": "NOT_FOUND"
      },
-     "trigger": "無い・消えた・取り消された（期限切れ・削除済み・他社の行）",
-     "ears_form": "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）"
+     "trigger": "別の会社・見えない・無い id（有ることも漏らさない）",
+     "ears_form": "UNWANTED: IF チケットが別の会社・見えない・無い id なら、Kaname は 404 と NOT_FOUND を返し、何も書かない"
     },
     {
      "status": 409,
-     "code": "CONFLICT",
+     "code": "E-SEC-004",
      "body": {
-      "error": "conflict"
+      "error": "conflict",
+      "code": "E-SEC-004"
      },
-     "trigger": "二重送信・同時編集・既に登録済み（冪等キーで防ぐ）",
-     "ears_form": "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない"
+     "errors": [
+      "E-SEC-004"
+     ],
+     "trigger": "送った current_version が今の版と違う（先に別の人が直した・同じ版を持った 2 つの画面の後の方）",
+     "ears_form": "UNWANTED: IF 送った current_version が今の版と違うなら、Kaname は 409 と E-SEC-004 を返し、本文も版も変えない"
     },
     {
      "status": 422,
@@ -57862,8 +58089,60 @@
       "error": "validation_failed",
       "details": []
      },
-     "trigger": "必須・形式・値域・表記ゆらぎ（全角半角・空白・記号）。id・一覧の limit・cursor・sort・scope_id の形",
-     "ears_form": "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）"
+     "trigger": "current_version が無い・0・整数でない／知らない欄",
+     "ears_form": "UNWANTED: IF 入力が決まりに合わないなら、Kaname は 422 と欄ごとの理由を返し、本文も版も変えない"
+    },
+    {
+     "status": 404,
+     "code": "E-PAGE-001",
+     "body": {
+      "error": "not_found",
+      "code": "E-PAGE-001"
+     },
+     "errors": [
+      "E-PAGE-001"
+     ],
+     "trigger": "消したチケット・無い版・数字でない道の :v・本文の行が無いチケット",
+     "ears_form": "UNWANTED: IF 消したチケット・無い版・数字でない :v・本文の行が無いチケットを戻そうとしたなら、Kaname は 404 と E-PAGE-001 を返し、何も書かない"
+    },
+    {
+     "status": 409,
+     "code": "E-SEC-020",
+     "body": {
+      "error": "conflict",
+      "code": "E-SEC-020"
+     },
+     "errors": [
+      "E-SEC-020"
+     ],
+     "trigger": "戻す先の版の中身が今の本文と同じ",
+     "ears_form": "UNWANTED: IF 戻す先の版の中身が今の本文と同じなら、Kaname は 409 と E-SEC-020 を返し、版を増やさない"
+    },
+    {
+     "status": 409,
+     "code": "E-SEC-005",
+     "body": {
+      "error": "conflict",
+      "code": "E-SEC-005"
+     },
+     "errors": [
+      "E-SEC-005"
+     ],
+     "trigger": "完了したチケット（完了の時刻が入っているか段が done）",
+     "ears_form": "UNWANTED: IF 完了したチケットの本文を版に戻そうとしたなら、Kaname は 409 と E-SEC-005 を返し、本文も版も変えない"
+    },
+    {
+     "status": 503,
+     "code": "E-PAGE-003",
+     "body": {
+      "error": "dependency",
+      "code": "E-PAGE-003"
+     },
+     "errors": [
+      "E-PAGE-003"
+     ],
+     "trigger": "本文の行・版の行・やり取りの 1 行・証跡のどれかを書く DB が落ちた（1 つの取引で戻す）",
+     "ears_form": "UNWANTED: IF 戻す DB が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、本文・版・やり取り・証跡のどれも残さない"
     },
     {
      "status": 413,
@@ -57919,10 +58198,14 @@
    "ears_ac_seed": [
     "EVENT-DRIVEN: WHEN POST /api/v1/tickets/:id/versions/:v/restore が「区画ごとに書く」として呼ばれたとき THEN Kaname は「区画ごとに版を残す」を行い 2xx を返す（自動側：抜けを指摘する）",
     "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
-    "UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）",
-    "UNWANTED: IF 対象が無いか他社の行なら、Kaname は 404 を返す（存在を漏らさない）",
-    "UNWANTED: IF 同じ冪等キーで二度来たら、Kaname は最初の結果を返し副作用を繰り返さない",
-    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF チケットは見えるが書く権限が無いなら、Kaname は 403 と FORBIDDEN を返し、本文も版も変えない",
+    "UNWANTED: IF チケットが別の会社・見えない・無い id なら、Kaname は 404 と NOT_FOUND を返し、何も書かない",
+    "UNWANTED: IF 送った current_version が今の版と違うなら、Kaname は 409 と E-SEC-004 を返し、本文も版も変えない",
+    "UNWANTED: IF 入力が決まりに合わないなら、Kaname は 422 と欄ごとの理由を返し、本文も版も変えない",
+    "UNWANTED: IF 消したチケット・無い版・数字でない :v・本文の行が無いチケットを戻そうとしたなら、Kaname は 404 と E-PAGE-001 を返し、何も書かない",
+    "UNWANTED: IF 戻す先の版の中身が今の本文と同じなら、Kaname は 409 と E-SEC-020 を返し、版を増やさない",
+    "UNWANTED: IF 完了したチケットの本文を版に戻そうとしたなら、Kaname は 409 と E-SEC-005 を返し、本文も版も変えない",
+    "UNWANTED: IF 戻す DB が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、本文・版・やり取り・証跡のどれも残さない",
     "UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない",
     "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
     "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
@@ -57936,7 +58219,7 @@
    "outward_side_effects": [],
    "side_effect_ordering": "認可判定 → ポリシー判定 → 承認確認 → 副作用 → 記録",
    "description": "作成・実行（tickets）— チケットの中身（区画）を書く・直す",
-   "implementation_path": "apps/api/src/routes/ticket_section_versions.ts::restoreTicketVersion",
+   "implementation_path": "apps/api/src/routes/ticket_sections.ts::restoreTicketVersion",
    "permission": {
     "who": "write",
     "scope": "そのグループの人",
@@ -57952,14 +58235,14 @@
      "id",
      "v"
     ],
-    "body": "ticket_section_versions の入力（types.ts の TicketSectionVersionsInput）",
+    "body": "ticket_sections の入力（types.ts の TicketSectionsInput）",
     "query": []
    },
    "outputs_2xx": {
     "status": 201,
-    "body": "{ data: TicketSectionVersions, meta?: { cursor, limit, total } }"
+    "body": "{ data: TicketSections, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-337",
+   "id": "EP-338",
    "feature_id": "F-004"
   },
   {
@@ -58112,7 +58395,7 @@
     "status": 200,
     "body": "{ data: Skills[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-338",
+   "id": "EP-339",
    "feature_id": "F-005"
   },
   {
@@ -58276,7 +58559,7 @@
     "status": 201,
     "body": "{ data: Tickets, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-339",
+   "id": "EP-340",
    "feature_id": "F-004"
   },
   {
@@ -58436,7 +58719,7 @@
     "status": 200,
     "body": "{ data: Skills[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-340",
+   "id": "EP-341",
    "feature_id": "F-011"
   },
   {
@@ -58614,7 +58897,7 @@
     "status": 201,
     "body": "{ data: Skills, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-341",
+   "id": "EP-342",
    "feature_id": "F-011"
   },
   {
@@ -58786,7 +59069,7 @@
     "status": 200,
     "body": "{ data: Skills, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-342",
+   "id": "EP-343",
    "feature_id": "F-011"
   },
   {
@@ -58978,7 +59261,7 @@
     "status": 201,
     "body": "{ data: Skills, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-343",
+   "id": "EP-344",
    "feature_id": "F-011"
   },
   {
@@ -59159,7 +59442,7 @@
     "status": 200,
     "body": "{ data: SkillVersions, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-344",
+   "id": "EP-345",
    "feature_id": "F-011"
   },
   {
@@ -59351,7 +59634,7 @@
     "status": 201,
     "body": "{ data: SkillVersions, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-345",
+   "id": "EP-346",
    "feature_id": "F-011"
   },
   {
@@ -59544,7 +59827,7 @@
     "status": 201,
     "body": "{ data: Approvals, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-346",
+   "id": "EP-347",
    "feature_id": "F-011"
   },
   {
@@ -59737,7 +60020,7 @@
     "status": 201,
     "body": "{ data: SkillTestRuns, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-347",
+   "id": "EP-348",
    "feature_id": "F-011"
   },
   {
@@ -59904,7 +60187,7 @@
     "status": 200,
     "body": "{ data: SkillVersions[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-348",
+   "id": "EP-349",
    "feature_id": "F-011"
   },
   {
@@ -60062,7 +60345,7 @@
     "status": 200,
     "body": "{ data: Tenants, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-349",
+   "id": "EP-350",
    "feature_id": "F-011"
   },
   {
@@ -60217,7 +60500,7 @@
     "status": 200,
     "body": "{ data: Tenants, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-350",
+   "id": "EP-351",
    "feature_id": "F-011"
   },
   {
@@ -60373,7 +60656,7 @@
     "status": 200,
     "body": "{ data: Invoices, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-351",
+   "id": "EP-352",
    "feature_id": "F-015"
   },
   {
@@ -60532,7 +60815,7 @@
     "status": 200,
     "body": "{ data: Subscriptions, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-352",
+   "id": "EP-353",
    "feature_id": "F-015"
   },
   {
@@ -60704,7 +60987,7 @@
     "status": 201,
     "body": "{ data: AccountEvents, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-353",
+   "id": "EP-354",
    "feature_id": "F-011"
   },
   {
@@ -60838,7 +61121,7 @@
     "status": 200,
     "body": "{ data: AccountEvents, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-354",
+   "id": "EP-355",
    "feature_id": "F-011"
   },
   {
@@ -61002,7 +61285,7 @@
     "status": 201,
     "body": "{ data: Policies, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-355",
+   "id": "EP-356",
    "feature_id": "F-011"
   },
   {
@@ -61170,7 +61453,7 @@
     "status": 200,
     "body": "{ data: Policies, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-356",
+   "id": "EP-357",
    "feature_id": "F-011"
   },
   {
@@ -61327,7 +61610,7 @@
     "status": 200,
     "body": "{ data: Policies, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-357",
+   "id": "EP-358",
    "feature_id": "F-011"
   },
   {
@@ -61492,7 +61775,7 @@
     "status": 201,
     "body": "{ data: Policies, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-358",
+   "id": "EP-359",
    "feature_id": "F-011"
   },
   {
@@ -61658,7 +61941,7 @@
     "status": 201,
     "body": "{ data: Tenants, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-359",
+   "id": "EP-360",
    "feature_id": "F-011"
   },
   {
@@ -61827,7 +62110,7 @@
     "status": 200,
     "body": "{ data: Members, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-360",
+   "id": "EP-361",
    "feature_id": "F-010"
   },
   {
@@ -61984,7 +62267,7 @@
     "status": 200,
     "body": "{ data: Permissions, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-361",
+   "id": "EP-362",
    "feature_id": "F-011"
   },
   {
@@ -62159,7 +62442,7 @@
     "status": 201,
     "body": "{ data: Subscriptions, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-362",
+   "id": "EP-363",
    "feature_id": "F-015"
   },
   {
@@ -62313,7 +62596,7 @@
     "status": 200,
     "body": "{ data: Plans[], meta?: { cursor, limit, total } }"
    },
-   "id": "EP-363",
+   "id": "EP-364",
    "feature_id": "F-015"
   },
   {
@@ -62467,7 +62750,7 @@
     "status": 200,
     "body": "{ data: Policies, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-364",
+   "id": "EP-365",
    "feature_id": "F-011"
   },
   {
@@ -62631,7 +62914,7 @@
     "status": 201,
     "body": "{ data: Policies, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-365",
+   "id": "EP-366",
    "feature_id": "F-011"
   },
   {
@@ -62799,7 +63082,7 @@
     "status": 200,
     "body": "{ data: Policies, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-366",
+   "id": "EP-367",
    "feature_id": "F-011"
   },
   {
@@ -62956,7 +63239,7 @@
     "status": 200,
     "body": "{ data: Policies, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-367",
+   "id": "EP-368",
    "feature_id": "F-011"
   },
   {
@@ -63117,7 +63400,7 @@
     "status": 200,
     "body": "{ data: TicketKinds, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-368",
+   "id": "EP-369",
    "feature_id": "F-011"
   },
   {
@@ -63286,7 +63569,7 @@
     "status": 200,
     "body": "{ data: TicketKinds, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-369",
+   "id": "EP-370",
    "feature_id": "F-011"
   },
   {
@@ -63452,7 +63735,7 @@
     "status": 201,
     "body": "{ data: TicketKinds, meta?: { cursor, limit, total } }"
    },
-   "id": "EP-370",
+   "id": "EP-371",
    "feature_id": "F-011"
   }
  ],

@@ -1,0 +1,32 @@
+{
+ "errors": [
+  {
+   "id": "E-SEC-020",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "戻す先の版の中身が今の本文と同じ（版を無駄に増やさない）",
+   "false_when": "戻す先の版の中身が今の本文と違う",
+   "message": "もう同じ中身です",
+   "action": "別の版を選ぶ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットの詳細の版と差分を開く",
+    "steps": [
+     "今の版と同じ中身の版を選んで、本文をその版に戻す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-150.47"
+   ]
+  }
+ ]
+}

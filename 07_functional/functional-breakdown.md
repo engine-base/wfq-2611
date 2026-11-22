@@ -1,4 +1,4 @@
-# Kaname 機能分解（functional-breakdown）v3.1 — 2026-11-22
+# Kaname 機能分解（functional-breakdown）v3.1 — 2026-11-23
 
 > 信頼源は 07_functional/*.json（05_flow/build_functional.py が機械生成）。この文書は写し。
 
@@ -274,7 +274,7 @@
 | ops-review | 運営：公開の審査 | A63 | 1 | 0 | 1 | 6 | R6 |
 | ops-audit | 運営：運営の証跡 | A65 A73 | 1 | 0 | 2 | 9 | R6 |
 | member-detail | メンバーの 1 人 | A61 A62 | 4 | 45 | 53 | 30 | R2 |
-| tickets | チケット | A101 A102 A103 A104 A105 A106 A107 A108 A109 A110 A111 A112 A113 A115 A116 A123 A129 A130 A17 A21 A48 A51 A58 A98 A99 | 1 | 0 | 85 | 44 | R1 R2 R3 R4 |
+| tickets | チケット | A101 A102 A103 A104 A105 A106 A107 A108 A109 A110 A111 A112 A113 A115 A116 A123 A129 A130 A17 A21 A48 A51 A58 A98 A99 | 1 | 0 | 86 | 44 | R1 R2 R3 R4 |
 | masters | 決まり | A118 A120 | 1 | 0 | 14 | 18 | R1 R2 |
 | layers | グループ（メンバーの中） | A117 | 1 | 0 | 5 | 6 | R1 R2 |
 | rules | ルール | A131 | 1 | 0 | 6 | 10 | R1 R2 R3 |

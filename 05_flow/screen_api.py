@@ -36,7 +36,8 @@ SCREEN_API = {
         # 本文（区画）と版
         ("PATCH", "/tickets/:id/sections/:key", "A101", "ticket_sections", "updateTicketSection", ["ticket_section_versions"]),
         ("GET", "/tickets/:id/versions", "A101", "ticket_section_versions", "listTicketVersions", []),
-        ("POST", "/tickets/:id/versions/:v/restore", "A101", "ticket_section_versions", "restoreTicketVersion", ["ticket_sections"]),
+        ("POST", "/tickets/:id/versions/:v/restore", "A101", "ticket_sections", "restoreTicketVersion", ["ticket_section_versions"]),
+        ("GET", "/tickets/:id/item-changes", "A101", "ticket_messages", "listTicketItemChanges", []),
         ("POST", "/ticket_kinds/:id/template-from-ticket", "A101", "kind_sections", "makeKindTemplateFromTicket", [T]),
         # テスト仕様と確認
         ("GET", "/tickets/:id/test-specs", "A102", "test_specs", "listTestSpecs", []),
@@ -1215,6 +1216,7 @@ PERMS = {
     "updateTicketSection": ("write", "そのグループの人", False),
     "listTicketVersions": ("read", "そのチケットを見られる人", False),
     "restoreTicketVersion": ("write", "そのグループの人", False),
+    "listTicketItemChanges": ("read", "そのチケットを見られる人", False),
     "makeKindTemplateFromTicket": ("admin", "チケットの形を直せる人（D-128.48・D-128.83）", False),
     "listTestSpecs": ("read", "そのチケットを見られる人", False),
     "createTestSpec": ("write", "そのグループの人", False),
