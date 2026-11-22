@@ -1199,6 +1199,27 @@
   },
   {
    "paths": [
+    "apps/api/src/hooks/ticket-update.ts",
+    "apps/api/src/features/ticket-update/**",
+    "apps/api/src/features/F6/progress/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F6/progress.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F6/progress.test.ts",
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/patch_tickets_id.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/src/hooks/workspace-invitations.ts",
     "apps/api/src/features/F10/invite/**",
     "packages/db/migrations/20261121091900_workspace_invitations.sql"
@@ -1378,6 +1399,8 @@
   "apps/web/tests/k/k382-stage7-mock.spec.ts": "モックの置き場 apps/web/app/(dev)/dev/mock/f6/mocks.tsx・F6 の部品と CSS と区画のファイル（apps/web/features/F6）・道の一覧 apps/web/lib/built-routes.ts（作り手 gen_built_routes.py を data_links で結ぶ）・写しの台本 07_functional/段7-F6/mock-shots.mjs・決定ログ 01_hearing/決定ログ_進行中.md・決定ログに足す行.md・答えの記録 01_hearing/decider-answers.jsonl を読み、scripts/ci/design_gate.py を子プロセスで流す（K-382）",
   "apps/api/test/features/F6/thread.harness.ts": "葉の hooks のファイル apps/api/src/hooks/<名前>.ts を名前を組み立てて動的 import で読む（最初の要求の前に 1 回・まだ無いファイルを準備で読まない）。読む物と使う試験は data_links で結ぶ・K-383",
   "apps/api/test/features/contract/k144.d/K-383.ts": "setup の中で土台 ../../F6/thread.harness.js を動的 import で読む（土台を値で読み込まない・K-378.ts の注）・K-383",
+  "apps/api/test/features/F6/progress.harness.ts": "段 7 の進める口の hooks のファイル（apps/api/src/hooks/ticket-update.ts）を最初の要求の前に動的 import で読む（data_links で結ぶ・K-387）",
+  "apps/api/test/features/contract/k144.d/K-387.ts": "この葉の hooks のファイルを本体の準備の中で動的 import で読む（data_links で結ぶ・k144.d の README の決まり・K-387）",
   "apps/api/test/features/F10/invite-create.test.ts": "葉の hooks のファイル apps/api/src/hooks/workspace-invitations.ts を existsSync で見て動的 import で読む（まだ入っていないときは差さない）。読む物と使う試験は data_links で結ぶ・K-419",
   "apps/api/test/features/F5/k429_runs_shape.test.ts": "契約 08_api/openapi.yaml を読み、実行の一覧の問い合わせ（limit・cursor・sort）の形が契約に書いた形と一致するかを確かめる。契約は _base の 47 に在り、この試験は api の組が流す・K-429",
   "apps/api/test/features/F4/ticket-body.harness.ts": "入っている葉の hooks のファイル（ticket-body.ts・ticket-versions.ts）を動的 import で読む（最初の要求の前に 1 回・まだ入っていない葉の物は読まない）。読む物と使う試験は data_links で結ぶ・K-432",

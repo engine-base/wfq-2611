@@ -1,0 +1,40 @@
+{
+ "ops": {
+  "updateTicket": {
+   "file": "apps/api/test/features/F6/progress.test.ts",
+   "reason": "段・実績・保留の変更は、今の段・行き先の段・走っている実行・担当者の組み合わせで答えが変わる。生成の試験の種では作れない（K-387）",
+   "covers": {
+    "test_patch_tickets_id_ok": "K387-API-001",
+    "test_patch_tickets_id_ok_2": "K387-API-002",
+    "test_patch_tickets_id_ok_3": "K387-API-014",
+    "test_patch_tickets_id_ok_4": "K387-API-010",
+    "test_patch_tickets_id_rejected_401": "K387-API-020",
+    "test_patch_tickets_id_rejected_403": "K387-API-020",
+    "test_patch_tickets_id_not_found": "K387-API-020",
+    "test_patch_tickets_id_rejected_422": "K387-API-018",
+    "test_patch_tickets_id_rejected_422_2": "K387-API-028",
+    "test_patch_tickets_id_conflict": "K387-API-011",
+    "test_patch_tickets_id_conflict_2": "K387-API-012",
+    "test_patch_tickets_id_conflict_3": "K387-API-007",
+    "test_patch_tickets_id_conflict_4": "K387-API-005",
+    "test_patch_tickets_id_conflict_5": "K387-API-006",
+    "test_patch_tickets_id_unavailable": "K387-API-024",
+    "test_patch_tickets_id_server_error": "K387-API-029",
+    "test_patch_tickets_id_rate_limited": "K387-API-025",
+    "test_patch_tickets_id_shape": "K387-API-001",
+    "test_patch_tickets_id_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_patch_tickets_id_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_patch_tickets_id_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   }
+  }
+ }
+}

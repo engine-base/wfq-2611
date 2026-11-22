@@ -317,7 +317,7 @@
 | EP-302 | GET | `/api/v1/tickets` | 取得（tickets）— チケットの一覧を見る（自分に関わるもの・すべて | A113 A58 A99 | 1 | member |  | 401 403 422 429 403 403 503 |
 | EP-303 | POST | `/api/v1/tickets` | 作成・実行（tickets）— 過去のチケットを複製して作る／見本のチケ | A129 A98 A99 | 1 | member | C2 | 401 403 409 422 404 413 429 403 403 503 |
 | EP-304 | GET | `/api/v1/tickets/:id` | 取得（tickets）— チケットの中身（区画）を書く・直す | A101 | 1 | member |  | 401 403 404 422 429 403 403 503 |
-| EP-305 | PATCH | `/api/v1/tickets/:id` | 更新（tickets）— 振り分ける（責任者・期限・分類・親）。AI と | A103 A113 A115 A17 | 1 | member | C2 | 401 403 404 422 413 429 403 403 503 |
+| EP-305 | PATCH | `/api/v1/tickets/:id` | 更新（tickets）— 振り分ける（責任者・期限・分類・親）。AI と | A103 A113 A115 A17 | 1 | member | C2 | 401 403 404 422 409 409 409 409 409 422 500 503 413 429 403 403 503 |
 | EP-306 | DELETE | `/api/v1/tickets/:id` | 削除（tickets）— チケットを消す・アーカイブする（子孫の扱いを決 | A116 | 1 | member | C2 | 401 403 404 422 429 403 403 503 |
 | EP-307 | POST | `/api/v1/tickets/:id/acceptances` | 作成・実行（tickets）— 成果物を確認してもらう（検収を頼む） | A123 | 1 | member | C2 C6 | 401 403 404 409 422 413 429 403 403 503 |
 | EP-308 | GET | `/api/v1/tickets/:id/agent-session` | 取得（tickets）— 自分の AI に指示する・相談する（会話・添付 | A20 | 1 | member | C4 | 401 403 404 422 429 502 403 403 503 |

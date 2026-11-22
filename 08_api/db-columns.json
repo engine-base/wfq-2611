@@ -7338,6 +7338,10 @@
    }
   },
   "ticket_kinds": {
+   "body_template": {
+    "type": "jsonb",
+    "nullable": true
+   },
    "color": {
     "type": "text",
     "nullable": true

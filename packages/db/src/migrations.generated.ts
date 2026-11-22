@@ -128,6 +128,7 @@ export const MIGRATIONS = [
   "20261119120600_credential_login_check.sql",
   "20261119120800_credential_service_tenant.sql",
   "20261120130000_ticket_timeline.sql",
+  "20261120130400_ticket_progress.sql",
   "20261120143736_bridge_set_browser_acl.sql",
   "20261120215500_runs_view_real_runs_only.sql",
   "20261121091900_workspace_invitations.sql",
