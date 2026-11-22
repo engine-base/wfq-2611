@@ -214,7 +214,7 @@ export type Tickets = { number?: string; kind_id?: string; stage_id?: string; ti
 export type TicketsInput = { number?: string; kind_id?: string; stage_id?: string; title?: string; assignee_member_id?: string | null; completed_at?: string | null; completed_by?: string | null; delegated_to_clone?: boolean; client_id?: string | null; parent_ticket_id?: string | null; derived_from_ticket_id?: string | null; start_on?: string | null; due_on?: string | null; priority?: string; estimate_minutes?: number | null; actual_minutes?: number | null; work_type_id?: string | null; work_type_version?: number | null; hold_reason?: string | null; resume_condition?: string | null; priority_reason?: string | null; deleted_by?: string | null; draft_import_id?: string | null; no_spec_reason?: string | null };
 export type TicketSections = { ticket_id?: string; section_key?: string; position?: number; body?: unknown; version?: number; id: string; tenant_id?: string; created_at?: string; updated_at?: string; created_by?: string | null; deleted_at?: string | null; updated_by?: string | null };
 export type TicketSectionsInput = { ticket_id?: string; section_key?: string; position?: number; body?: unknown };
-export type TicketSectionVersions = { ticket_id?: string; section_id?: string; version?: number; body?: unknown; edited_by?: string | null; edited_at?: string; edited_by_clone?: boolean; id: string; tenant_id?: string; created_at?: string; updated_at?: string; created_by?: string | null; deleted_at?: string | null; updated_by?: string | null };
+export type TicketSectionVersions = { ticket_id?: string; section_id?: string; version?: number; body?: unknown; edited_by?: string | null; edited_at?: string; edited_by_clone?: boolean; id: string; tenant_id?: string; created_at?: string; updated_at?: string; created_by?: string | null; deleted_at?: string | null; restored_from?: number | null; updated_by?: string | null };
 export type TicketSectionVersionsInput = { ticket_id?: string; section_id?: string; body?: unknown; edited_by?: string | null; edited_at?: string; edited_by_clone?: boolean };
 export type TicketKinds = { name?: string; color?: string | null; position?: number; is_builtin?: boolean; id: string; tenant_id?: string; created_at?: string; updated_at?: string; body_template?: unknown | null; created_by?: string | null; deleted_at?: string | null; description?: string | null; updated_by?: string | null };
 export type TicketKindsInput = { name?: string; color?: string | null; position?: number; is_builtin?: boolean };
@@ -337,6 +337,7 @@ export type TicketTimelineSeenInput = { seen_at?: string | null };
 export type TicketUpdateInput = { stage_id?: string; stage_key?: string; actual_minutes?: number | null; hold_reason?: string; resume_condition?: string };
 export type TicketDecisionInput = { text: string; reason?: string | null; decided_by_member_id?: string | null; decided_note?: string | null; source_message_id?: string | null; promoted_to?: string | null };
 export type InvitationsCreateInput = { emails: string[]; scope_id: string; role_key: string; message?: string | null };
+export type TicketBodyInput = { version: number; doc: Record<string, unknown> };
 export type BodyRestoreInput = { current_version: number };
 export type TestSpecCreateInput = { title: string };
 export type TicketLinkInput = { other_ticket_id: string; kind: string };
@@ -459,6 +460,7 @@ export type TicketUpdated = { ticket?: Record<string, unknown>; stage?: Record<s
 export type TicketDecision = { id?: string; ticket_id?: string; text?: string; reason?: string | null; decided_by?: Record<string, unknown> | null; decided_note?: string | null; decided_at?: string; source?: Record<string, unknown> | null; revises_id?: string | null; superseded_by_id?: string | null; cancelled?: Record<string, unknown> | null; promoted_to?: string };
 export type TicketDecisionCreated = { decision?: Record<string, unknown>; message_id?: string };
 export type InvitationsSent = { invitations?: string[] };
+export type BodySaved = { version?: number; changed?: boolean; edited_at?: string };
 export type TicketVersionsView = { versions?: string[]; from?: Record<string, unknown> | null; to?: Record<string, unknown> | null };
 export type BodyRestored = { version?: number; changed?: boolean; edited_at?: string };
 export type TicketItemChangesView = { points?: string[]; from?: number | null; to?: number; diff?: string[] };
@@ -3936,6 +3938,17 @@ export const ENDPOINTS = [
  },
  {
   "id": "EP-313",
+  "method": "PATCH",
+  "path": "/api/v1/tickets/:id/body",
+  "acts": [
+   "A101"
+  ],
+  "screens": [
+   "tickets"
+  ]
+ },
+ {
+  "id": "EP-314",
   "method": "GET",
   "path": "/api/v1/tickets/:id/checks",
   "acts": [
@@ -3946,7 +3959,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-314",
+  "id": "EP-315",
   "method": "PATCH",
   "path": "/api/v1/tickets/:id/client-share",
   "acts": [
@@ -3957,7 +3970,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-315",
+  "id": "EP-316",
   "method": "POST",
   "path": "/api/v1/tickets/:id/complete",
   "acts": [
@@ -3968,19 +3981,8 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-316",
-  "method": "GET",
-  "path": "/api/v1/tickets/:id/decisions",
-  "acts": [
-   "A108"
-  ],
-  "screens": [
-   "tickets"
-  ]
- },
- {
   "id": "EP-317",
-  "method": "POST",
+  "method": "GET",
   "path": "/api/v1/tickets/:id/decisions",
   "acts": [
    "A108"
@@ -3992,6 +3994,17 @@ export const ENDPOINTS = [
  {
   "id": "EP-318",
   "method": "POST",
+  "path": "/api/v1/tickets/:id/decisions",
+  "acts": [
+   "A108"
+  ],
+  "screens": [
+   "tickets"
+  ]
+ },
+ {
+  "id": "EP-319",
+  "method": "POST",
   "path": "/api/v1/tickets/:id/delegate",
   "acts": [
    "A104"
@@ -4001,7 +4014,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-319",
+  "id": "EP-320",
   "method": "GET",
   "path": "/api/v1/tickets/:id/delete-preview",
   "acts": [
@@ -4012,7 +4025,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-320",
+  "id": "EP-321",
   "method": "POST",
   "path": "/api/v1/tickets/:id/dry-run",
   "acts": [
@@ -4023,7 +4036,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-321",
+  "id": "EP-322",
   "method": "POST",
   "path": "/api/v1/tickets/:id/handovers",
   "acts": [
@@ -4037,7 +4050,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-322",
+  "id": "EP-323",
   "method": "GET",
   "path": "/api/v1/tickets/:id/item-changes",
   "acts": [
@@ -4048,7 +4061,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-323",
+  "id": "EP-324",
   "method": "GET",
   "path": "/api/v1/tickets/:id/kind-change-preview",
   "acts": [
@@ -4059,19 +4072,8 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-324",
-  "method": "GET",
-  "path": "/api/v1/tickets/:id/links",
-  "acts": [
-   "A103"
-  ],
-  "screens": [
-   "tickets"
-  ]
- },
- {
   "id": "EP-325",
-  "method": "POST",
+  "method": "GET",
   "path": "/api/v1/tickets/:id/links",
   "acts": [
    "A103"
@@ -4083,6 +4085,17 @@ export const ENDPOINTS = [
  {
   "id": "EP-326",
   "method": "POST",
+  "path": "/api/v1/tickets/:id/links",
+  "acts": [
+   "A103"
+  ],
+  "screens": [
+   "tickets"
+  ]
+ },
+ {
+  "id": "EP-327",
+  "method": "POST",
   "path": "/api/v1/tickets/:id/messages",
   "acts": [
    "A107"
@@ -4092,7 +4105,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-327",
+  "id": "EP-328",
   "method": "GET",
   "path": "/api/v1/tickets/:id/references",
   "acts": [
@@ -4103,7 +4116,7 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-328",
+  "id": "EP-329",
   "method": "POST",
   "path": "/api/v1/tickets/:id/restore",
   "acts": [
@@ -4115,22 +4128,11 @@ export const ENDPOINTS = [
   ]
  },
  {
-  "id": "EP-329",
+  "id": "EP-330",
   "method": "GET",
   "path": "/api/v1/tickets/:id/runs",
   "acts": [
    "A104"
-  ],
-  "screens": [
-   "tickets"
-  ]
- },
- {
-  "id": "EP-330",
-  "method": "PATCH",
-  "path": "/api/v1/tickets/:id/sections/:key",
-  "acts": [
-   "A101"
   ],
   "screens": [
    "tickets"

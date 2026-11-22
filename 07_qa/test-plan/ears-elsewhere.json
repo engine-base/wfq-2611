@@ -1671,6 +1671,125 @@
    },
    "na": {}
   },
+  "updateTicketBody": {
+   "file": "apps/api/test/features/F4/ticket-body-update.test.ts",
+   "reason": "本文を書き終えるは、本物の DB の版の合わせ・完了したチケット・書ける人の判定・本文の行と版の行とやり取りと証跡の 1 つの取引で答えが変わる。生成の試験の偽のセッションでは作れない（K-432）",
+   "covers": {
+    "test_patch_tickets_id_body_ok": "K432-API-001",
+    "test_patch_tickets_id_body_rejected_401": "K432-API-017",
+    "test_patch_tickets_id_body_rejected_403": "K432-API-015",
+    "test_patch_tickets_id_body_not_found": "K432-API-016",
+    "test_patch_tickets_id_body_not_found_2": "K432-API-016",
+    "test_patch_tickets_id_body_rejected_422": "K432-API-011",
+    "test_patch_tickets_id_body_conflict": "K432-API-004",
+    "test_patch_tickets_id_body_conflict_2": "K432-API-014",
+    "test_patch_tickets_id_body_session_unresolved": "K432-API-018",
+    "test_patch_tickets_id_body_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_patch_tickets_id_body_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_patch_tickets_id_body_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_patch_tickets_id_body_shape": "K432-API-001"
+   },
+   "na": {
+    "test_patch_tickets_id_body_rate_limited": "回数は入口の共通の数えで、体を受ける口の型の確かめは K144-API の共通の試験が持つ"
+   }
+  },
+  "listTicketVersions": {
+   "file": "apps/api/test/features/F4/ticket-versions.test.ts",
+   "reason": "本文の版の一覧は、本物の DB の版の行・書ける人の判定・消したチケットで答えが変わる。生成の試験の偽のセッションでは版を作れない（K-433）",
+   "covers": {
+    "test_get_tickets_id_versions_ok": "K433-API-001",
+    "test_get_tickets_id_versions_shape": "K433-API-001",
+    "test_get_tickets_id_versions_rejected_401": "K433-API-007",
+    "test_get_tickets_id_versions_not_found": "K433-API-007",
+    "test_get_tickets_id_versions_not_found_2": "K433-API-008",
+    "test_get_tickets_id_versions_rejected_422": {
+     "file": "apps/api/test/features/contract/k144.d/K-433.ts",
+     "mark": "K144-API-510"
+    },
+    "test_get_tickets_id_versions_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_get_tickets_id_versions_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_get_tickets_id_versions_rejected_403": "読むだけの口で、そのチケットが見える人なら誰でも読める（閲覧のみの人も。見えない人は入口が 404 で止める。受けは K433-API-007・027）",
+    "test_get_tickets_id_versions_rate_limited": "回数は入口の共通の数えで、読む口の型の確かめは K144-API の共通の試験が持つ",
+    "test_get_tickets_id_versions_session_unresolved": "読む口の DB 落ちは、書く側と同じ bodyReply の 503・E-PAGE-003 の道を通る（本物の DB を落とせるのは書く側の K433-API-019 の取引の失敗だけ。読む側に専用の行は無い）"
+   }
+  },
+  "listTicketItemChanges": {
+   "file": "apps/api/test/features/F4/ticket-versions.test.ts",
+   "reason": "項目の変更の点と正味は、やり取りの更新の行の並びで答えが変わる。生成の試験の偽のセッションでは行を作れない（K-433）",
+   "covers": {
+    "test_get_tickets_id_item_changes_ok": "K433-API-021",
+    "test_get_tickets_id_item_changes_shape": "K433-API-025",
+    "test_get_tickets_id_item_changes_rejected_401": "K433-API-027",
+    "test_get_tickets_id_item_changes_not_found": "K433-API-027",
+    "test_get_tickets_id_item_changes_not_found_2": "K433-API-027",
+    "test_get_tickets_id_item_changes_rejected_422": {
+     "file": "apps/api/test/features/contract/k144.d/K-433.ts",
+     "mark": "K144-API-512"
+    },
+    "test_get_tickets_id_item_changes_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_get_tickets_id_item_changes_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_get_tickets_id_item_changes_rejected_403": "読むだけの口で、そのチケットが見える人なら誰でも読める（閲覧のみの人も。見えない人は入口が 404 で止める。受けは K433-API-007・027）",
+    "test_get_tickets_id_item_changes_rate_limited": "回数は入口の共通の数えで、読む口の型の確かめは K144-API の共通の試験が持つ",
+    "test_get_tickets_id_item_changes_session_unresolved": "読む口の DB 落ちは、書く側と同じ bodyReply の 503・E-PAGE-003 の道を通る（本物の DB を落とせるのは書く側の K433-API-019 の取引の失敗だけ。読む側に専用の行は無い）"
+   }
+  },
+  "restoreTicketVersion": {
+   "file": "apps/api/test/features/F4/ticket-versions.test.ts",
+   "reason": "本文を版に戻すは、本物の DB の版の合わせ・完了したチケット・書ける人の判定・本文の行と版の行とやり取りと証跡の 1 つの取引で答えが変わる。生成の試験の偽のセッションでは作れない（K-433）",
+   "covers": {
+    "test_post_tickets_id_versions_v_restore_ok": "K433-API-010",
+    "test_post_tickets_id_versions_v_restore_shape": "K433-API-010",
+    "test_post_tickets_id_versions_v_restore_rejected_401": "K433-API-016",
+    "test_post_tickets_id_versions_v_restore_rejected_403": "K433-API-016",
+    "test_post_tickets_id_versions_v_restore_not_found": "K433-API-016",
+    "test_post_tickets_id_versions_v_restore_rejected_422": "K433-API-017",
+    "test_post_tickets_id_versions_v_restore_conflict": "K433-API-012",
+    "test_post_tickets_id_versions_v_restore_conflict_2": "K433-API-013",
+    "test_post_tickets_id_versions_v_restore_conflict_3": "K433-API-015",
+    "test_post_tickets_id_versions_v_restore_not_found_2": "K433-API-014",
+    "test_post_tickets_id_versions_v_restore_session_unresolved": "K433-API-019",
+    "test_post_tickets_id_versions_v_restore_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_tickets_id_versions_v_restore_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_tickets_id_versions_v_restore_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_post_tickets_id_versions_v_restore_rate_limited": "回数は入口の共通の数えで、体を受ける口の型の確かめは K144-API の共通の試験が持つ"
+   }
+  },
   "listTestSpecs": {
    "file": "apps/api/test/features/F4/test-spec-create.test.ts",
    "reason": "確認項目の一覧は、チケットが見えるか・書けるか・完了したかで答え（can_edit）が変わる。生成の試験の偽のセッションではチケットも項目も作れない（K-434）",
@@ -1819,94 +1938,6 @@
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
     }
-   }
-  },
-  "listTicketVersions": {
-   "file": "apps/api/test/features/F4/ticket-versions.test.ts",
-   "reason": "本文の版の一覧は、本物の DB の版の行・書ける人の判定・消したチケットで答えが変わる。生成の試験の偽のセッションでは版を作れない（K-433）",
-   "covers": {
-    "test_get_tickets_id_versions_ok": "K433-API-001",
-    "test_get_tickets_id_versions_shape": "K433-API-001",
-    "test_get_tickets_id_versions_rejected_401": "K433-API-007",
-    "test_get_tickets_id_versions_not_found": "K433-API-007",
-    "test_get_tickets_id_versions_not_found_2": "K433-API-008",
-    "test_get_tickets_id_versions_rejected_422": {
-     "file": "apps/api/test/features/contract/k144.d/K-433.ts",
-     "mark": "K144-API-510"
-    },
-    "test_get_tickets_id_versions_terms_pending": {
-     "file": "apps/api/test/features/F1/terms.test.ts",
-     "mark": "K53-API-005"
-    },
-    "test_get_tickets_id_versions_session_unresolved_2": {
-     "file": "apps/api/test/features/contract/k144-contract.test.ts",
-     "mark": "K144-API-032"
-    }
-   },
-   "na": {
-    "test_get_tickets_id_versions_rejected_403": "読むだけの口で、そのチケットが見える人なら誰でも読める（閲覧のみの人も。見えない人は入口が 404 で止める。受けは K433-API-007・027）",
-    "test_get_tickets_id_versions_rate_limited": "回数は入口の共通の数えで、読む口の型の確かめは K144-API の共通の試験が持つ",
-    "test_get_tickets_id_versions_session_unresolved": "読む口の DB 落ちは、書く側と同じ bodyReply の 503・E-PAGE-003 の道を通る（本物の DB を落とせるのは書く側の K433-API-019 の取引の失敗だけ。読む側に専用の行は無い）"
-   }
-  },
-  "listTicketItemChanges": {
-   "file": "apps/api/test/features/F4/ticket-versions.test.ts",
-   "reason": "項目の変更の点と正味は、やり取りの更新の行の並びで答えが変わる。生成の試験の偽のセッションでは行を作れない（K-433）",
-   "covers": {
-    "test_get_tickets_id_item_changes_ok": "K433-API-021",
-    "test_get_tickets_id_item_changes_shape": "K433-API-025",
-    "test_get_tickets_id_item_changes_rejected_401": "K433-API-027",
-    "test_get_tickets_id_item_changes_not_found": "K433-API-027",
-    "test_get_tickets_id_item_changes_not_found_2": "K433-API-027",
-    "test_get_tickets_id_item_changes_rejected_422": {
-     "file": "apps/api/test/features/contract/k144.d/K-433.ts",
-     "mark": "K144-API-512"
-    },
-    "test_get_tickets_id_item_changes_terms_pending": {
-     "file": "apps/api/test/features/F1/terms.test.ts",
-     "mark": "K53-API-005"
-    },
-    "test_get_tickets_id_item_changes_session_unresolved_2": {
-     "file": "apps/api/test/features/contract/k144-contract.test.ts",
-     "mark": "K144-API-032"
-    }
-   },
-   "na": {
-    "test_get_tickets_id_item_changes_rejected_403": "読むだけの口で、そのチケットが見える人なら誰でも読める（閲覧のみの人も。見えない人は入口が 404 で止める。受けは K433-API-007・027）",
-    "test_get_tickets_id_item_changes_rate_limited": "回数は入口の共通の数えで、読む口の型の確かめは K144-API の共通の試験が持つ",
-    "test_get_tickets_id_item_changes_session_unresolved": "読む口の DB 落ちは、書く側と同じ bodyReply の 503・E-PAGE-003 の道を通る（本物の DB を落とせるのは書く側の K433-API-019 の取引の失敗だけ。読む側に専用の行は無い）"
-   }
-  },
-  "restoreTicketVersion": {
-   "file": "apps/api/test/features/F4/ticket-versions.test.ts",
-   "reason": "本文を版に戻すは、本物の DB の版の合わせ・完了したチケット・書ける人の判定・本文の行と版の行とやり取りと証跡の 1 つの取引で答えが変わる。生成の試験の偽のセッションでは作れない（K-433）",
-   "covers": {
-    "test_post_tickets_id_versions_v_restore_ok": "K433-API-010",
-    "test_post_tickets_id_versions_v_restore_shape": "K433-API-010",
-    "test_post_tickets_id_versions_v_restore_rejected_401": "K433-API-016",
-    "test_post_tickets_id_versions_v_restore_rejected_403": "K433-API-016",
-    "test_post_tickets_id_versions_v_restore_not_found": "K433-API-016",
-    "test_post_tickets_id_versions_v_restore_rejected_422": "K433-API-017",
-    "test_post_tickets_id_versions_v_restore_conflict": "K433-API-012",
-    "test_post_tickets_id_versions_v_restore_conflict_2": "K433-API-013",
-    "test_post_tickets_id_versions_v_restore_conflict_3": "K433-API-015",
-    "test_post_tickets_id_versions_v_restore_not_found_2": "K433-API-014",
-    "test_post_tickets_id_versions_v_restore_session_unresolved": "K433-API-019",
-    "test_post_tickets_id_versions_v_restore_too_large": {
-     "file": "apps/api/test/features/contract/k144-contract.test.ts",
-     "mark": "K144-API-042"
-    },
-    "test_post_tickets_id_versions_v_restore_terms_pending": {
-     "file": "apps/api/test/features/F1/terms.test.ts",
-     "mark": "K53-API-005"
-    },
-    "test_post_tickets_id_versions_v_restore_session_unresolved_2": {
-     "file": "apps/api/test/features/contract/k144-contract.test.ts",
-     "mark": "K144-API-032"
-    }
-   },
-   "na": {
-    "test_post_tickets_id_versions_v_restore_rate_limited": "回数は入口の共通の数えで、体を受ける口の型の確かめは K144-API の共通の試験が持つ"
    }
   },
   "listTicketFields": {

@@ -90,13 +90,15 @@
     "E-VAL-047",
     "E-VAL-042",
     "E-CONF-037",
+    "E-SEC-004",
+    "E-SEC-005",
+    "E-SEC-020",
     "E-SPEC-001",
     "E-LNK-001",
     "E-LNK-002",
     "E-LNK-003",
     "E-SRC-001",
-    "E-SRC-002",
-    "E-SEC-020"
+    "E-SRC-002"
    ],
    "policies": [
     "C2",
@@ -816,13 +818,15 @@
     "E-VAL-047",
     "E-VAL-042",
     "E-CONF-037",
+    "E-SEC-004",
+    "E-SEC-005",
+    "E-SEC-020",
     "E-SPEC-001",
     "E-LNK-001",
     "E-LNK-002",
     "E-LNK-003",
     "E-SRC-001",
-    "E-SRC-002",
-    "E-SEC-020"
+    "E-SRC-002"
    ],
    "policies": [
     "C2",
@@ -1808,13 +1812,15 @@
     "E-VAL-047",
     "E-VAL-042",
     "E-CONF-037",
+    "E-SEC-004",
+    "E-SEC-005",
+    "E-SEC-020",
     "E-SPEC-001",
     "E-LNK-001",
     "E-LNK-002",
     "E-LNK-003",
     "E-SRC-001",
-    "E-SRC-002",
-    "E-SEC-020"
+    "E-SRC-002"
    ],
    "policies": [
     "C1",
@@ -2299,13 +2305,15 @@
     "E-VAL-047",
     "E-VAL-042",
     "E-CONF-037",
+    "E-SEC-004",
+    "E-SEC-005",
+    "E-SEC-020",
     "E-SPEC-001",
     "E-LNK-001",
     "E-LNK-002",
     "E-LNK-003",
     "E-SRC-001",
-    "E-SRC-002",
-    "E-SEC-020"
+    "E-SRC-002"
    ],
    "policies": [
     "C1",
@@ -3607,13 +3615,15 @@
     "E-INV-010",
     "E-INV-011",
     "E-INV-012",
+    "E-SEC-004",
+    "E-SEC-005",
+    "E-SEC-020",
     "E-SPEC-001",
     "E-LNK-001",
     "E-LNK-002",
     "E-LNK-003",
     "E-SRC-001",
-    "E-SRC-002",
-    "E-SEC-020"
+    "E-SRC-002"
    ],
    "policies": [
     "C2",
@@ -5247,13 +5257,15 @@
     "E-VAL-047",
     "E-VAL-042",
     "E-CONF-037",
+    "E-SEC-004",
+    "E-SEC-005",
+    "E-SEC-020",
     "E-SPEC-001",
     "E-LNK-001",
     "E-LNK-002",
     "E-LNK-003",
     "E-SRC-001",
-    "E-SRC-002",
-    "E-SEC-020"
+    "E-SRC-002"
    ],
    "policies": [
     "C2",
@@ -7487,13 +7499,15 @@
     "E-VAL-047",
     "E-VAL-042",
     "E-CONF-037",
+    "E-SEC-004",
+    "E-SEC-005",
+    "E-SEC-020",
     "E-SPEC-001",
     "E-LNK-001",
     "E-LNK-002",
     "E-LNK-003",
     "E-SRC-001",
-    "E-SRC-002",
-    "E-SEC-020"
+    "E-SRC-002"
    ],
    "policies": [
     "C2",
@@ -7853,13 +7867,15 @@
     "E-VAL-047",
     "E-VAL-042",
     "E-CONF-037",
+    "E-SEC-004",
+    "E-SEC-005",
+    "E-SEC-020",
     "E-SPEC-001",
     "E-LNK-001",
     "E-LNK-002",
     "E-LNK-003",
     "E-SRC-001",
-    "E-SRC-002",
-    "E-SEC-020"
+    "E-SRC-002"
    ],
    "policies": [
     "C2"
@@ -8148,13 +8164,15 @@
     "E-VAL-047",
     "E-VAL-042",
     "E-CONF-037",
+    "E-SEC-004",
+    "E-SEC-005",
+    "E-SEC-020",
     "E-SPEC-001",
     "E-LNK-001",
     "E-LNK-002",
     "E-LNK-003",
     "E-SRC-001",
-    "E-SRC-002",
-    "E-SEC-020"
+    "E-SRC-002"
    ],
    "policies": [
     "C2",
