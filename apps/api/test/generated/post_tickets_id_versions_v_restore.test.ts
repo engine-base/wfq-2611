@@ -20,7 +20,7 @@ describe("POST /api/v1/tickets/:id/versions/:v/restore", () => {
     expect(readFileSync("apps/api/test/features/F4/ticket-versions.test.ts", "utf8")).toContain("K433-API-016");
   });
   it("test_post_tickets_id_versions_v_restore_not_found", () => {
-    // UNWANTED: IF チケットが別の会社・見えない・無い id なら、Kaname は 404 と NOT_FOUND を返し、何も書かない
+    // UNWANTED: IF チケットが別の会社・見えない・無い id・消したチケットなら、Kaname は 404 と NOT_FOUND を返し、何も書かない
     // 本物の試験：apps/api/test/features/F4/ticket-versions.test.ts の「K433-API-016」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F4/ticket-versions.test.ts", "utf8")).toContain("K433-API-016");
   });
@@ -35,7 +35,7 @@ describe("POST /api/v1/tickets/:id/versions/:v/restore", () => {
     expect(readFileSync("apps/api/test/features/F4/ticket-versions.test.ts", "utf8")).toContain("K433-API-017");
   });
   it("test_post_tickets_id_versions_v_restore_not_found_2", () => {
-    // UNWANTED: IF 消したチケット・無い版・数字でない :v・本文の行が無いチケットを戻そうとしたなら、Kaname は 404 と E-PAGE-001 を返し、何も書かない
+    // UNWANTED: IF 無い版・数字でない :v・本文の行が無いチケットを戻そうとしたなら、Kaname は 404 と E-PAGE-001 を返し、何も書かない
     // 本物の試験：apps/api/test/features/F4/ticket-versions.test.ts の「K433-API-014」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F4/ticket-versions.test.ts", "utf8")).toContain("K433-API-014");
   });
