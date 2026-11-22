@@ -3581,6 +3581,17 @@
   },
   {
    "method": "GET",
+   "path": "/api/v1/tickets/:id/item-changes",
+   "implementation_path": "apps/api/src/routes/ticket_messages.ts::listTicketItemChanges",
+   "screen_ids_referencing": [
+    "tickets"
+   ],
+   "acts": [
+    "A101"
+   ]
+  },
+  {
+   "method": "GET",
    "path": "/api/v1/tickets/:id/kind-change-preview",
    "implementation_path": "apps/api/src/routes/tickets.ts::previewTicketKindChange",
    "screen_ids_referencing": [
@@ -3726,7 +3737,7 @@
   {
    "method": "POST",
    "path": "/api/v1/tickets/:id/versions/:v/restore",
-   "implementation_path": "apps/api/src/routes/ticket_section_versions.ts::restoreTicketVersion",
+   "implementation_path": "apps/api/src/routes/ticket_sections.ts::restoreTicketVersion",
    "screen_ids_referencing": [
     "tickets"
    ],

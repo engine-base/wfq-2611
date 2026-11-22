@@ -4,7 +4,7 @@
  "frozen_at": "2026-11-22",
  "summary": {
   "total_screens": 37,
-  "total_apis": 369,
+  "total_apis": 370,
   "coverage_rate": 1.0,
   "uncovered_screens": [],
   "static_screens": [
@@ -2391,6 +2391,11 @@
     {
      "role": "action",
      "endpoint": "POST /api/v1/tickets/:id/versions/:v/restore",
+     "act": "A101"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/tickets/:id/item-changes",
      "act": "A101"
     },
     {

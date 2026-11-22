@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。214 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。215 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -3872,6 +3872,23 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "undo": false,
     "severity": "low",
     "support_code": "E-SEC-005",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-SEC-020": {
+    "id": "E-SEC-020",
+    "cls": "conflict",
+    "message": "もう同じ中身です",
+    "action": "別の版を選ぶ",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-SEC-020",
     "must_not": false,
     "layers": [
       "UI",

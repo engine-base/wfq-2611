@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:fb220c04eda2b45a
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:931d2db4caa45f2a
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -325,6 +325,7 @@ export interface Ops {
   previewTicketDelete: { params: { id: string }; query: never; body: never; data: T.TicketDeletePreview };
   dryRunTicket: { params: { id: string }; query: never; body: T.ActionRunsInput; data: T.ActionRuns };
   createTicketHandover: { params: { id: string }; query: never; body: T.TicketHandoversInput; data: T.TicketHandovers };
+  listTicketItemChanges: { params: { id: string }; query: { "from"?: string | number; "to"?: string | number; "cursor"?: string | number; "limit"?: string | number }; body: never; data: T.TicketItemChangesView[] };
   previewTicketKindChange: { params: { id: string }; query: never; body: never; data: T.TicketKindChangePreview };
   listTicketLinks: { params: { id: string }; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.TicketLinks[] };
   createTicketLink: { params: { id: string }; query: never; body: T.TicketLinksInput; data: T.TicketLinks };
@@ -337,8 +338,8 @@ export interface Ops {
   lintTestSpecs: { params: { id: string }; query: never; body: T.TestSpecsInput; data: T.TestSpecLint };
   suggestTestSpecs: { params: { id: string }; query: never; body: T.TestSpecsInput; data: T.TestSpecs };
   listTicketTimeline: { params: { id: string }; query: { "filter"?: string | number; "before_at"?: string | number; "before_id"?: string | number; "cursor"?: string | number; "limit"?: string | number }; body: never; data: T.TimelineItem[] };
-  listTicketVersions: { params: { id: string }; query: { "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.TicketSectionVersions[] };
-  restoreTicketVersion: { params: { id: string; v: string }; query: never; body: T.TicketSectionVersionsInput; data: T.TicketSectionVersions };
+  listTicketVersions: { params: { id: string }; query: { "from"?: string | number; "to"?: string | number; "cursor"?: string | number; "limit"?: string | number }; body: never; data: T.TicketVersionsView[] };
+  restoreTicketVersion: { params: { id: string; v: string }; query: never; body: T.BodyRestoreInput; data: T.BodyRestored };
   listWorkTypeCandidates: { params: { id: string }; query: { "scope_id"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.Skills[] };
   bulkUpdateTickets: { params: never; query: never; body: T.TicketsInput; data: T.BulkResult };
   listWorkTypes: { params: never; query: { "origin"?: string | number; "sort"?: string | number; "cursor"?: string | number; "limit"?: string | number }; body: never; data: T.Skills[] };

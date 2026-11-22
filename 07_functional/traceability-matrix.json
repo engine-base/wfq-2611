@@ -2931,6 +2931,7 @@
     "PATCH /api/tickets/:id/body",
     "GET /api/tickets/:id/versions",
     "POST /api/tickets/:id/versions/:v/restore",
+    "GET /api/tickets/:id/item-changes",
     "POST /api/ticket_kinds/:id/template-from-ticket",
     "GET /api/tickets/:id/test-specs",
     "POST /api/tickets/:id/test-specs",
@@ -10775,6 +10776,12 @@
      "role": "action",
      "method": "POST",
      "path_draft": "/api/tickets/:id/versions/:v/restore"
+    },
+    {
+     "act": "A101",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/tickets/:id/item-changes"
     },
     {
      "act": "A101",
