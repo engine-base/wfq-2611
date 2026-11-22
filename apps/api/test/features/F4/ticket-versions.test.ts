@@ -81,7 +81,7 @@ describe("K-433 本文の版を読む（listTicketVersions）", () => {
     const id = await history();
     const r = await get(w.writer, id);
     expect(r.headers.get("cache-control") ?? "").toMatch(/no-store/);
-    const d = await readData(r);
+    const d = await readData(r.clone());
     expect(d.versions.map((v) => v.version)).toEqual([3, 2, 1]);
     expect(Object.keys(d.versions[0]!).sort()).toEqual(VERSION_KEYS);
     expect(d.versions[0]).toMatchObject({
@@ -143,7 +143,7 @@ describe("K-433 本文の版を読む（listTicketVersions）", () => {
     expect((await h.json(r)).meta).toMatchObject({ can_restore: true });
   });
 
-  it("K433-API-007 見える範囲：閲覧のみは読める・別の会社の人と無い id は入口が 404・NOT_FOUND・消したチケットは口が 404・E-PAGE-001（error と code だけ）・ログインなしは 401", async () => {
+  it("K433-API-007 見える範囲：閲覧のみは読める・別の会社の人・無い id・消したチケットは入口の行の守りで 404・NOT_FOUND（error と code だけ）・ログインなしは 401", async () => {
     const id = await history();
     const rv = await get(w.viewer, id);
     expect((await readData(rv.clone())).versions).toHaveLength(3);
@@ -163,7 +163,7 @@ describe("K-433 本文の版を読む（listTicketVersions）", () => {
     const r = await get(w.writer, gone);
     expect(r.status).toBe(404);
     const j = await h.json(r);
-    expect(j["code"]).toBe("E-PAGE-001");
+    expect(j["code"]).toBe("NOT_FOUND");
     expect(bareKeys(j)).toEqual(BARE);
     expect((await get(null, id)).status).toBe(401);
   });
@@ -184,7 +184,7 @@ describe("K-433 本文の版を読む（listTicketVersions）", () => {
     const docs = Array.from({ length: 205 }, (_, i) => docOf(`版 ${i + 1} の本文`));
     await h.seedBody(t.id, docs);
     const r = await get(w.writer, t.id);
-    const d = await readData(r);
+    const d = await readData(r.clone());
     expect(d.versions).toHaveLength(200);
     expect(d.versions[0]!.version).toBe(205);
     expect(d.versions[199]!.version).toBe(6);
@@ -290,7 +290,7 @@ describe("K-433 本文の版に戻す（restoreTicketVersion）", () => {
     expect((await h.json(await get(w.writer, id))).meta).toMatchObject({ can_restore: false }); // 完了したら読めるが戻せない
   });
 
-  it("K433-API-016 戻せる人：閲覧のみは 403・FORBIDDEN・別の会社の人と無い id は入口が 404・NOT_FOUND・消したチケットは口が 404・E-PAGE-001・ログインなしは 401・どれも何も書かない", async () => {
+  it("K433-API-016 戻せる人：閲覧のみは 403・FORBIDDEN・別の会社の人・無い id・消したチケットは入口の行の守りで 404・NOT_FOUND・ログインなしは 401・どれも何も書かない", async () => {
     const id = await history();
     const r = await restore(w.viewer, id, 1, { current_version: 3 });
     expect(r.status).toBe(403);
@@ -307,7 +307,7 @@ describe("K-433 本文の版に戻す（restoreTicketVersion）", () => {
     await h.removeTicket(gone);
     const g = await restore(w.writer, gone, 1, { current_version: 3 });
     expect(g.status).toBe(404);
-    expect((await h.json(g))["code"]).toBe("E-PAGE-001");
+    expect((await h.json(g))["code"]).toBe("NOT_FOUND");
     expect((await restore(null, id, 1, { current_version: 3 })).status).toBe(401);
     await intact(id);
   });
@@ -347,7 +347,7 @@ describe("K-433 本文の版に戻す（restoreTicketVersion）", () => {
     const undo = await h.breakInsert("ticket_section_versions", `new.ticket_id = '${id}'::uuid and new.version = 4`);
     let status = 0;
     let code = "";
-    let logs = "";
+    let logs: string;
     try {
       logs = await h.captureLogs(async () => {
         const r = await restore(w.writer, id, 1, { current_version: 3 });
@@ -439,7 +439,7 @@ describe("K-433 項目の変更を比べる（listTicketItemChanges）", () => {
     const { id } = await changed();
     const r = await items(w.writer, id);
     expect(r.headers.get("cache-control") ?? "").toMatch(/no-store/);
-    const d = await readItems(r);
+    const d = await readItems(r.clone());
     expect(d.points.map((p) => p.n)).toEqual([4, 3, 2, 1]);
     expect(Object.keys(d.points[0]!).sort()).toEqual(["at", "by", "by_ai", "n", "summary"]);
     expect(d.points.map((p) => p.summary)).toEqual([
@@ -546,7 +546,7 @@ describe("K-433 項目の変更を比べる（listTicketItemChanges）", () => {
     expect(d.diff).toEqual([]);
   });
 
-  it("K433-API-027 見える範囲と入力：閲覧のみは読める・別の会社と無い id は入口が 404・NOT_FOUND・消したチケットは口が 404・E-PAGE-001・無い n（99）・from が 0・文字は 404・E-PAGE-001（形で 422 にしない）・ログインなしは 401", async () => {
+  it("K433-API-027 見える範囲と入力：閲覧のみは読める・別の会社・無い id・消したチケットは入口の行の守りで 404・NOT_FOUND・無い n（99）・from が 0・文字は 404・E-PAGE-001（形で 422 にしない）・ログインなしは 401", async () => {
     const { id } = await changed();
     expect((await readItems(await items(w.viewer, id))).points).toHaveLength(4);
     for (const [who, tid] of [
@@ -563,7 +563,7 @@ describe("K-433 項目の変更を比べる（listTicketItemChanges）", () => {
     await h.removeTicket(gone);
     const g = await items(w.writer, gone);
     expect(g.status).toBe(404);
-    expect((await h.json(g))["code"]).toBe("E-PAGE-001");
+    expect((await h.json(g))["code"]).toBe("NOT_FOUND");
     const miss = await items(w.writer, id, "?from=99");
     expect(miss.status).toBe(404);
     expect(bareKeys(await h.json(miss))).toEqual(BARE);

@@ -17,7 +17,7 @@ describe("GET /api/v1/tickets/:id/item-changes", () => {
   // 当てはまらない（読むだけの口で、そのチケットが見える人なら誰でも読める（閲覧のみの人も。見えない人は入口が 404 で止める。受けは K433-API-007・027））：UNWANTED: IF 権限が無いなら、Kaname は 403 を返し副作用を一切起こさない（認可 → ポリシー → 承認 → 副作用 → 記録の順）
   it.todo("test_get_tickets_id_item_changes_rejected_403");
   it("test_get_tickets_id_item_changes_not_found", () => {
-    // UNWANTED: IF チケットが別の会社・見えない・無い id なら、Kaname は 404 と NOT_FOUND を返し、何も返さない
+    // UNWANTED: IF チケットが別の会社・見えない・無い id・消したチケットなら、Kaname は 404 と NOT_FOUND を返し、何も返さない
     // 本物の試験：apps/api/test/features/F4/ticket-versions.test.ts の「K433-API-027」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F4/ticket-versions.test.ts", "utf8")).toContain("K433-API-027");
   });
@@ -27,7 +27,7 @@ describe("GET /api/v1/tickets/:id/item-changes", () => {
     expect(readFileSync("apps/api/test/features/contract/k144.d/K-433.ts", "utf8")).toContain("K144-API-512");
   });
   it("test_get_tickets_id_item_changes_not_found_2", () => {
-    // UNWANTED: IF 消したチケット・無い点・形の違う from・to を指したなら、Kaname は 404 と E-PAGE-001 を返し、何も返さない
+    // UNWANTED: IF 無い点・形の違う from・to を指したなら、Kaname は 404 と E-PAGE-001 を返し、何も返さない
     // 本物の試験：apps/api/test/features/F4/ticket-versions.test.ts の「K433-API-027」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F4/ticket-versions.test.ts", "utf8")).toContain("K433-API-027");
   });
