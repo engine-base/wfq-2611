@@ -7544,6 +7544,10 @@
     "type": "uuid",
     "nullable": false
    },
+   "restored_from": {
+    "type": "integer",
+    "nullable": true
+   },
    "section_id": {
     "type": "uuid",
     "nullable": false

@@ -7179,6 +7179,9 @@ components:
           type: string
           format: date-time
           nullable: true
+        restored_from:
+          type: integer
+          nullable: true
         updated_by:
           type: string
           format: uuid
@@ -43339,7 +43342,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: NOT_FOUND／E-PAGE-001
+          description: NOT_FOUND
           content:
             application/json:
               schema:
@@ -45587,6 +45590,7 @@ paths:
           - edited_by
           - edited_by_clone
           - id
+          - restored_from
           - section_id
           - tenant_id
           - ticket_id
