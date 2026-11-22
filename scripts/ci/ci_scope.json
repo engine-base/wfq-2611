@@ -1237,6 +1237,29 @@
   },
   {
    "paths": [
+    "apps/api/src/hooks/ticket-versions.ts",
+    "apps/api/src/features/F4/versions/**",
+    "apps/api/src/hooks/ticket-body.ts",
+    "apps/api/src/features/F4/body/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F4/ticket-versions.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F4/ticket-versions.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts",
+    "apps/api/test/features/F1/terms.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_tickets_id_versions.test.ts",
+    "apps/api/test/generated/post_tickets_id_versions_v_restore.test.ts",
+    "apps/api/test/generated/get_tickets_id_item_changes.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/src/hooks/ticket-fields-read.ts",
     "apps/api/src/features/F4/ticket-fields/**",
     "03_architecture/db-catalog.json"
@@ -1382,6 +1405,7 @@
   "apps/api/test/features/F5/k429_runs_shape.test.ts": "契約 08_api/openapi.yaml を読み、実行の一覧の問い合わせ（limit・cursor・sort）の形が契約に書いた形と一致するかを確かめる。契約は _base の 47 に在り、この試験は api の組が流す・K-429",
   "apps/api/test/features/F4/ticket-body.harness.ts": "入っている葉の hooks のファイル（ticket-body.ts・ticket-versions.ts）を動的 import で読む（最初の要求の前に 1 回・まだ入っていない葉の物は読まない）。読む物と使う試験は data_links で結ぶ・K-432",
   "apps/api/test/features/contract/k144.d/K-432.ts": "k144 の置き場の葉のファイル。最初の要求の前に hooks のファイルを動的 import する。ファイルは読まない（K-378）",
+  "apps/api/test/features/contract/k144.d/K-433.ts": "k144 の置き場の葉のファイル。最初の要求の前に hooks のファイルを動的 import する。ファイルは読まない（K-378）",
   "apps/api/test/features/F4/ticket-fields.test.ts": "読む口の hooks のファイル apps/api/src/hooks/ticket-fields-read.ts を動的 import で読む（最初の要求のときに 1 回）。読む物と使う試験は data_links で結ぶ・K-563",
   "apps/api/test/features/contract/k144.d/K-563.ts": "葉の hooks のファイルを F3/leaf-hooks.ts の動的 import で読む。読む物と使う試験は data_links で結ぶ・K-563",
   "apps/web/tests/k/k630-request-ref.spec.ts": "K-630 の試験。画面の型を確かめるため子プロセスで apps/web の tsc を流す（読む物は apps/web の画面のコードと型。web の組が流す）"

@@ -2411,11 +2411,9 @@
     "listTicketLinks",
     "listTicketReferences",
     "listTicketStages",
-    "listTicketVersions",
     "listWorkTypeCandidates",
     "makeKindTemplateFromTicket",
     "previewTicketKindChange",
-    "restoreTicketVersion",
     "sendConversationMessage",
     "suggestTestSpecs",
     "updateTestSpec",
@@ -2434,7 +2432,6 @@
     "apps/api/test/generated/get_tickets_id_links.test.ts",
     "apps/api/test/generated/get_tickets_id_references.test.ts",
     "apps/api/test/generated/get_tickets_id_test_specs.test.ts",
-    "apps/api/test/generated/get_tickets_id_versions.test.ts",
     "apps/api/test/generated/get_tickets_id_work_type_candidates.test.ts",
     "apps/api/test/generated/patch_test_specs_id.test.ts",
     "apps/api/test/generated/patch_tickets_id_body.test.ts",
@@ -2449,8 +2446,7 @@
     "apps/api/test/generated/post_tickets_id_links.test.ts",
     "apps/api/test/generated/post_tickets_id_test_specs.test.ts",
     "apps/api/test/generated/post_tickets_id_test_specs_lint.test.ts",
-    "apps/api/test/generated/post_tickets_id_test_specs_suggest.test.ts",
-    "apps/api/test/generated/post_tickets_id_versions_v_restore.test.ts"
+    "apps/api/test/generated/post_tickets_id_test_specs_suggest.test.ts"
    ],
    "depends_on": [],
    "sections": {
