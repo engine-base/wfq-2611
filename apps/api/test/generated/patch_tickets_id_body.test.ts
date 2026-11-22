@@ -20,7 +20,7 @@ describe("PATCH /api/v1/tickets/:id/body", () => {
     expect(readFileSync("apps/api/test/features/F4/ticket-body-update.test.ts", "utf8")).toContain("K432-API-015");
   });
   it("test_patch_tickets_id_body_not_found", () => {
-    // UNWANTED: IF チケットが別の会社・見えない・無い id なら、Kaname は 404 と NOT_FOUND を返し、何も書かない
+    // UNWANTED: IF チケットが別の会社・見えない・無い id・消したチケットなら、Kaname は 404 と NOT_FOUND を返し、何も書かない
     // 本物の試験：apps/api/test/features/F4/ticket-body-update.test.ts の「K432-API-016」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F4/ticket-body-update.test.ts", "utf8")).toContain("K432-API-016");
   });
@@ -28,11 +28,6 @@ describe("PATCH /api/v1/tickets/:id/body", () => {
     // UNWANTED: IF 入力が決まりに合わないなら、Kaname は 422 と欄ごとの理由を返し、本文も版も変えない
     // 本物の試験：apps/api/test/features/F4/ticket-body-update.test.ts の「K432-API-011」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F4/ticket-body-update.test.ts", "utf8")).toContain("K432-API-011");
-  });
-  it("test_patch_tickets_id_body_not_found_2", () => {
-    // UNWANTED: IF 消したチケットの本文を直そうとしたなら、Kaname は 404 と E-PAGE-001 を返し、何も書かない
-    // 本物の試験：apps/api/test/features/F4/ticket-body-update.test.ts の「K432-API-016」（同じ CI の G3 で流れる）
-    expect(readFileSync("apps/api/test/features/F4/ticket-body-update.test.ts", "utf8")).toContain("K432-API-016");
   });
   it("test_patch_tickets_id_body_conflict", () => {
     // UNWANTED: IF 送った version が今の版と違うなら、Kaname は 409 と E-SEC-004 を返し（誰が直したかは答えに入れない）、本文も版も変えない

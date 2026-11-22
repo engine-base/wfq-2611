@@ -1480,6 +1480,42 @@
    },
    "na": {}
   },
+  "updateTicket": {
+   "file": "apps/api/test/features/F6/progress.test.ts",
+   "reason": "段・実績・保留の変更は、今の段・行き先の段・走っている実行・担当者の組み合わせで答えが変わる。生成の試験の種では作れない（K-387）",
+   "covers": {
+    "test_patch_tickets_id_ok": "K387-API-001",
+    "test_patch_tickets_id_ok_2": "K387-API-002",
+    "test_patch_tickets_id_ok_3": "K387-API-014",
+    "test_patch_tickets_id_ok_4": "K387-API-010",
+    "test_patch_tickets_id_rejected_401": "K387-API-020",
+    "test_patch_tickets_id_rejected_403": "K387-API-020",
+    "test_patch_tickets_id_not_found": "K387-API-020",
+    "test_patch_tickets_id_rejected_422": "K387-API-018",
+    "test_patch_tickets_id_rejected_422_2": "K387-API-028",
+    "test_patch_tickets_id_conflict": "K387-API-011",
+    "test_patch_tickets_id_conflict_2": "K387-API-012",
+    "test_patch_tickets_id_conflict_3": "K387-API-007",
+    "test_patch_tickets_id_conflict_4": "K387-API-005",
+    "test_patch_tickets_id_conflict_5": "K387-API-006",
+    "test_patch_tickets_id_unavailable": "K387-API-024",
+    "test_patch_tickets_id_server_error": "K387-API-029",
+    "test_patch_tickets_id_rate_limited": "K387-API-025",
+    "test_patch_tickets_id_shape": "K387-API-001",
+    "test_patch_tickets_id_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_patch_tickets_id_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_patch_tickets_id_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   }
+  },
   "getWorkspaceMembers": {
    "file": "apps/api/test/features/F10/invite-create.test.ts",
    "reason": "メンバーの並びは、グループ・兼ねる所属・招待中・PC の様子・権限の組み合わせで答えが変わる。生成の試験の種では作れない（K-419）",
@@ -1570,12 +1606,15 @@
     "test_get_tickets_id_versions_session_unresolved_2": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
+    },
+    "test_get_tickets_id_versions_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
     }
    },
    "na": {
     "test_get_tickets_id_versions_rejected_403": "読むだけの口で、そのチケットが見える人なら誰でも読める（閲覧のみの人も。見えない人は入口が 404 で止める。受けは K433-API-007・027）",
-    "test_get_tickets_id_versions_rate_limited": "回数は入口の共通の数えで、読む口の型の確かめは K144-API の共通の試験が持つ",
-    "test_get_tickets_id_versions_session_unresolved": "読む口の DB 落ちは、書く側と同じ bodyReply の 503・E-PAGE-003 の道を通る（本物の DB を落とせるのは書く側の K433-API-019 の取引の失敗だけ。読む側に専用の行は無い）"
+    "test_get_tickets_id_versions_rate_limited": "回数は入口の共通の数えで、読む口の型の確かめは K144-API の共通の試験が持つ"
    }
   },
   "listTicketItemChanges": {
@@ -1598,12 +1637,15 @@
     "test_get_tickets_id_item_changes_session_unresolved_2": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
+    },
+    "test_get_tickets_id_item_changes_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
     }
    },
    "na": {
     "test_get_tickets_id_item_changes_rejected_403": "読むだけの口で、そのチケットが見える人なら誰でも読める（閲覧のみの人も。見えない人は入口が 404 で止める。受けは K433-API-007・027）",
-    "test_get_tickets_id_item_changes_rate_limited": "回数は入口の共通の数えで、読む口の型の確かめは K144-API の共通の試験が持つ",
-    "test_get_tickets_id_item_changes_session_unresolved": "読む口の DB 落ちは、書く側と同じ bodyReply の 503・E-PAGE-003 の道を通る（本物の DB を落とせるのは書く側の K433-API-019 の取引の失敗だけ。読む側に専用の行は無い）"
+    "test_get_tickets_id_item_changes_rate_limited": "回数は入口の共通の数えで、読む口の型の確かめは K144-API の共通の試験が持つ"
    }
   },
   "restoreTicketVersion": {

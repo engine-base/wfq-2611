@@ -14,7 +14,7 @@ RESPONSES = {
     "updateTicketBody": ("BodySaved", {"version": "integer", "changed": "boolean", "edited_at": "string"}),
 }
 
-# 403 は書けない人（見えるが書く権限が無い）。404 は入口（別の会社・無い id）と口（消したチケット・E-PAGE-001）。409 は先に直された（E-SEC-004）・完了した（E-SEC-005）。
+# 403 は書けない人（見えるが書く権限が無い）。404 は入口の行の守りで返す（別の会社・見えない・無い id・消したチケット。口には届かない）。409 は先に直された（E-SEC-004）・完了した（E-SEC-005）。
 # 404・409 の体は error と code（409 は message）だけで field・details・detail を付けない（控え帳 2026-11-20 20:50・2026-11-21 01:15）
 ERRORS_4XX = {
     "updateTicketBody": [
@@ -22,11 +22,8 @@ ERRORS_4XX = {
          "trigger": "そのチケットは見えるが、書く権限（グループの tickets の edit か担当者）が無い",
          "ears_form": "UNWANTED: IF チケットは見えるが書く権限が無いなら、Kaname は 403 と FORBIDDEN を返し、本文も版も変えない"},
         {"status": 404, "code": "NOT_FOUND", "body": {"error": "not_found", "code": "NOT_FOUND"},
-         "trigger": "別の会社・見えない・無い id（有ることも漏らさない）",
-         "ears_form": "UNWANTED: IF チケットが別の会社・見えない・無い id なら、Kaname は 404 と NOT_FOUND を返し、何も書かない"},
-        {"status": 404, "code": "E-PAGE-001", "body": {"error": "not_found", "code": "E-PAGE-001"}, "errors": ["E-PAGE-001"],
-         "trigger": "消したチケット（入口を通って口に届いたとき）",
-         "ears_form": "UNWANTED: IF 消したチケットの本文を直そうとしたなら、Kaname は 404 と E-PAGE-001 を返し、何も書かない"},
+         "trigger": "別の会社・見えない・無い id・消したチケット（入口の行の守りで返す・有ることも漏らさない）",
+         "ears_form": "UNWANTED: IF チケットが別の会社・見えない・無い id・消したチケットなら、Kaname は 404 と NOT_FOUND を返し、何も書かない"},
         {"status": 409, "code": "E-SEC-004", "body": {"error": "conflict", "code": "E-SEC-004"}, "errors": ["E-SEC-004"],
          "trigger": "送った version が今の版と違う（先に別の人が直した・同じ版を持った 2 つの画面の後の方・本文の行が無いのに 0 でない版）",
          "ears_form": "UNWANTED: IF 送った version が今の版と違うなら、Kaname は 409 と E-SEC-004 を返し（誰が直したかは答えに入れない）、本文も版も変えない"},

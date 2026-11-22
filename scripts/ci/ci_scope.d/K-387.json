@@ -1,0 +1,29 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/hooks/ticket-update.ts",
+    "apps/api/src/features/ticket-update/**",
+    "apps/api/src/features/F6/progress/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F6/progress.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F6/progress.test.ts",
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/patch_tickets_id.test.ts"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "apps/api/test/features/F6/progress.harness.ts": "段 7 の進める口の hooks のファイル（apps/api/src/hooks/ticket-update.ts）を最初の要求の前に動的 import で読む（data_links で結ぶ・K-387）",
+  "apps/api/test/features/contract/k144.d/K-387.ts": "この葉の hooks のファイルを本体の準備の中で動的 import で読む（data_links で結ぶ・k144.d の README の決まり・K-387）"
+ }
+}

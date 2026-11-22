@@ -31,6 +31,37 @@ interface TicketBand {
   completed_at?: string | null;
   completed_by_name?: string | null;
 }
+/** 詳細の進める分（DB の app.ticket_progress_info の答え・K-387） */
+interface TicketProgressInfo {
+  can_progress?: boolean;
+  can_actual?: boolean;
+  ai_minutes?: number;
+  hold?: { reason: string | null; resume: string | null; at: string; by: string | null } | null;
+}
+/** 詳細に足す欄を読む 1 文（文の数を増やさない・K234-API-004）。列は関数ごとに 1 つ。
+ *  欄を足す葉は、この文に列を 1 つ足し（例 app.ticket_handover_now($1) as h）、DetailExtras と detailExtras に鍵を 1 つ足す */
+const DETAIL_EXTRAS_SQL = "select app.ticket_band($1) as v, app.ticket_progress_info($1) as p";
+interface DetailExtras {
+  v: TicketBand | null;
+  p: TicketProgressInfo | null;
+}
+/** 詳細の答えのうち、DETAIL_EXTRAS_SQL の列から組む欄（承認の帯・できること・完了・時間・保留の帯） */
+function detailExtras(x: DetailExtras | undefined, t: Row): Row {
+  const band = x?.v ?? null;
+  const p = x?.p ?? null;
+  return {
+    approval: band?.approval ?? null,
+    can: { complete: band?.can_complete === true, progress: p?.can_progress === true, actual: p?.can_actual === true },
+    completed: band?.completed_at ? { at: band.completed_at, by: band.completed_by_name ?? null } : null,
+    // 予定・人の分（実績）・AI の分（終わった実行の長さの合計・K-387）
+    time: {
+      estimate_minutes: t["estimate_minutes"] ?? null,
+      human_minutes: t["actual_minutes"] ?? 0,
+      ai_minutes: p?.ai_minutes ?? 0,
+    },
+    hold: p?.hold ?? null,
+  };
+}
 
 export function createTicketHooks(appPool: pg.Pool): Record<string, Hook> {
   return {
@@ -144,11 +175,11 @@ export function createTicketHooks(appPool: pg.Pool): Record<string, Hook> {
         ]);
         // 承認の帯（K-162・D-128.178）：決まっていない成果物の承認待ち 1 つ（呼んだ人が決められるか）。読むだけ。
         //   完了（K-165）：呼んだ人が完了にできるか（can.complete）と、完了の時刻と押した人の名前（completed）
-        const band = await withTenant(
+        //   進める（K-387）：段を変えられるか（can.progress）・実績を入れられるか（can.actual）・AI の分の時間・保留の帯。帯と同じ 1 文で読む
+        const extras = await withTenant(
           appPool,
           a.ctx,
-          async (cl) =>
-            (await cl.query<{ v: TicketBand | null }>("select app.ticket_band($1) as v", [a.id])).rows[0]?.v,
+          async (cl) => (await cl.query<DetailExtras>(DETAIL_EXTRAS_SQL, [a.id])).rows[0],
         );
         const label = new Map(kindSecs.map((s: Row) => [s["section_key"], s["label"]]));
         return {
@@ -167,9 +198,7 @@ export function createTicketHooks(appPool: pg.Pool): Record<string, Hook> {
               kind: kind ? { id: kind["id"], name: kind["name"], color: kind["color"] ?? null } : null,
               stage: stage ? { id: stage["id"], key: stage["key"], name: stage["name"] } : null,
               assignee: assignee ? { id: assignee["id"], display_name: assignee["display_name"] } : null,
-              approval: band?.approval ?? null,
-              can: { complete: band?.can_complete === true },
-              completed: band?.completed_at ? { at: band.completed_at, by: band.completed_by_name ?? null } : null,
+              ...detailExtras(extras, t),
             },
           },
         };

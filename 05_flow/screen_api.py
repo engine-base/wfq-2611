@@ -1051,7 +1051,7 @@ RESPONSES = {
     "sendHeartbeat": ("BridgeHeartbeat", {"ok": "boolean", "browser": "string?", "outdated": "boolean", "device_id": "string"}),
     "listMyDevices": ("BridgeDevice", {"id": "string", "device_label": "string?", "state": "string", "last_seen_at": "string?", "connected_at": "string", "version": "string?", "health": "array", "health_at": "string?", "browser": "string", "revoke_reason": "string?"}),
     # can：見ている人ができること（K-62 が delegate を足す・D-128.138）
-    "getTicket": ("TicketDetail", {"ticket": "object", "sections": "array", "kind": "object?", "stage": "object?", "assignee": "object?", "can": "object", "approval": "object?", "completed": "object?"}),   # approval：決まっていない承認待ち 1 つ（K-162・D-128.178）。can.complete と completed（完了の時刻と押した人の名前。完了の前は null）は K-165
+    "getTicket": ("TicketDetail", {"ticket": "object", "sections": "array", "kind": "object?", "stage": "object?", "assignee": "object?", "can": "object", "approval": "object?", "completed": "object?", "time": "object", "hold": "object?"}),   # approval：決まっていない承認待ち 1 つ（K-162・D-128.178）。can.complete と completed（完了の時刻と押した人の名前。完了の前は null）は K-165。can.progress・can.actual・time（予定・人の分・AI の分）・hold（保留の理由・再開の条件・時刻・人。保留でなければ null）は K-387
     "listTicketKinds": ("TicketKindChoice", {"id": "string", "name": "string", "color": "string?", "position": "integer", "is_builtin": "boolean", "sections": "array"}),
     "listMyTicketDrafts": ("TicketDraft", {"draft_id": "string", "body": "object?", "saved_at": "string?"}),
     "saveMyTicketDraft": ("TicketDraft", {"draft_id": "string", "body": "object?", "saved_at": "string?"}),   # 捨てた・使い終わった下書きは body・saved_at が null
@@ -1195,7 +1195,7 @@ PERMS = {
     "search": ("read", "見られるチケット・ページ・決定・自分の会話だけ", False),
     "getTicket": ("read", "そのチケットのグループを見られる人", False),
     "createTicket": ("write", "書けるグループにだけ作れる。複製・AI の案も同じ", False),
-    "updateTicket": ("write", "そのグループの人。期限と担当を変えるときは理由が必須。グループを移すのは移す先にも書ける人", False),
+    "updateTicket": ("write", "そのチケットを書ける人（担当者・書ける権限の人）。今は段・実績・保留の理由と再開の条件だけ（ほかの欄は段 8・E-VAL-018）。期限と担当を変えるときは理由が必須（段 8）", False),
     "previewTicketKindChange": ("write", "そのグループの人", False),
     "listWorkTypeCandidates": ("read", "その人が使える業務の型だけ", False),
     "previewTicketDelete": ("assignee", "担当者・作成者・マネージャー", False),

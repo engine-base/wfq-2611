@@ -1,0 +1,218 @@
+{
+ "errors": [
+  {
+   "id": "E-CONF-030",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "progress"
+   },
+   "when": "AI が動いている（実行が待ち・実行中・聞いている）か、決まっていない承認待ちがあるか、仕組みの段（確認中・承認待ち・実行中）のチケットの段を人が変えようとした（K-387）",
+   "false_when": "仕組みの段でなく、走っている実行も決まっていない承認待ちも無い。実績だけ・保留の理由だけの変更はこの間もできる",
+   "message": "AI が動いている間と承認待ちの間は、状態を変えられません",
+   "action": "今の実行・承認が終わるのを待つ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "AI に任せて承認待ちになったチケット（K-62・K-63）",
+    "steps": [
+     "段を未着手にする口（PATCH /api/v1/tickets/:id の stage_key todo）を直に呼ぶ"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.68",
+    "D-128.49"
+   ],
+   "support_code": "CONF-030"
+  },
+  {
+   "id": "E-CONF-032",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "progress"
+   },
+   "when": "完了したチケットの段を、作業中への開き直し以外（未着手・保留・会社が足した段）に変えようとした（K-387）",
+   "false_when": "完了していないチケット。完了したチケットでも実績だけの変更はできる",
+   "message": "完了したチケットは、開き直してから状態を変えてください",
+   "action": "「作業中（開き直す）」で開き直してから状態を変える",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "完了したチケット（K-165）",
+    "steps": [
+     "段を未着手にする口（PATCH /api/v1/tickets/:id の stage_key todo）を直に呼ぶ"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.68"
+   ],
+   "support_code": "CONF-032"
+  },
+  {
+   "id": "E-CONF-034",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "progress"
+   },
+   "when": "段の id（stage_id）で、仕組みの段（確認中・承認待ち・実行中）か完了の段を行き先にした（段の口では移せない・完了は「完了にする」から・K-387。断る番号の役割は代表の答え answer=f0f290e785a9）",
+   "false_when": "同じ会社の消していない段のうち、未着手・作業中・保留・会社が足した段",
+   "message": "この状態には、ここから変えられません",
+   "action": "ほかの状態を選ぶ（完了は「完了にする」から）",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "作業中のチケット",
+    "steps": [
+     "段の口（PATCH /api/v1/tickets/:id）に、承認待ちの段の id を stage_id で送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.68",
+    "D-128.95"
+   ],
+   "support_code": "CONF-034"
+  },
+  {
+   "id": "E-CONF-035",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "progress"
+   },
+   "when": "段の id（stage_id）で保留の段を選んだのに、保留の理由か再開の条件を送っていない（どの段かは DB を見ないと決まらないので 409・K-387。stage_key hold で足りないときは 422 E-VAL-041・047）",
+   "false_when": "保留の理由と再開の条件の両方を送った。stage_key で選んだ",
+   "message": "保留にするときは、保留の理由と再開の条件を書いてください",
+   "action": "保留の理由と再開の条件を書いてから、もう一度保留にする",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "作業中のチケット",
+    "steps": [
+     "段の口に、保留の段の id を stage_id で、理由と条件を付けずに送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.33"
+   ],
+   "support_code": "CONF-035"
+  },
+  {
+   "id": "E-CONF-036",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "progress"
+   },
+   "when": "保留でないチケットで、段を送らずに保留の理由か再開の条件だけを直そうとした、または段の id（stage_id）で保留でない段を選んで理由か条件を付けた（今の段で決まるので 409・K-387。stage_key todo・doing に付けたときは形の誤りの 422）",
+   "false_when": "今が保留のチケットで理由と条件を直す。保留にする（行き先が保留）",
+   "message": "保留にしていないチケットには、保留の理由と再開の条件を書けません",
+   "action": "保留にしてから理由と条件を書く",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "作業中のチケット",
+    "steps": [
+     "段の口に hold_reason だけを送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.33"
+   ],
+   "support_code": "CONF-036"
+  },
+  {
+   "id": "E-VAL-041",
+   "class": "validation",
+   "where": {
+    "screen": "tickets",
+    "state": "progress"
+   },
+   "when": "保留にするとき（保留のまま直すときも）、保留の理由が無い・空・空白だけ・制御文字だけ（K-387）",
+   "false_when": "保留の理由に字がある",
+   "message": "保留の理由を書いてください",
+   "action": "保留の理由を書く",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "作業中のチケット",
+    "steps": [
+     "保留を選び、保留の理由を空のまま保存する"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.33"
+   ],
+   "support_code": "VAL-041"
+  },
+  {
+   "id": "E-VAL-047",
+   "class": "validation",
+   "where": {
+    "screen": "tickets",
+    "state": "progress"
+   },
+   "when": "保留にするとき（保留のまま直すときも）、再開の条件が無い・空・空白だけ・制御文字だけ（K-387）",
+   "false_when": "再開の条件に字がある",
+   "message": "再開の条件を書いてください",
+   "action": "再開の条件を書く",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "作業中のチケット",
+    "steps": [
+     "保留を選び、保留の理由だけを書いて保存する"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.33"
+   ],
+   "support_code": "VAL-047"
+  }
+ ]
+}

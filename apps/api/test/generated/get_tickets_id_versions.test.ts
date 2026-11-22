@@ -31,8 +31,11 @@ describe("GET /api/v1/tickets/:id/versions", () => {
     // 本物の試験：apps/api/test/features/F4/ticket-versions.test.ts の「K433-API-008」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F4/ticket-versions.test.ts", "utf8")).toContain("K433-API-008");
   });
-  // 当てはまらない（読む口の DB 落ちは、書く側と同じ bodyReply の 503・E-PAGE-003 の道を通る（本物の DB を落とせるのは書く側の K433-API-019 の取引の失敗だけ。読む側に専用の行は無い））：UNWANTED: IF 版を読む DB が落ちたなら、Kaname は 503 と E-PAGE-003 を返す
-  it.todo("test_get_tickets_id_versions_session_unresolved");
+  it("test_get_tickets_id_versions_session_unresolved", () => {
+    // UNWANTED: IF 版を読む DB が落ちたなら、Kaname は 503 と E-PAGE-003 を返す
+    // 本物の試験：apps/api/test/features/contract/k144-contract.test.ts の「K144-API-032」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/contract/k144-contract.test.ts", "utf8")).toContain("K144-API-032");
+  });
   // 当てはまらない（回数は入口の共通の数えで、読む口の型の確かめは K144-API の共通の試験が持つ）：UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
   it.todo("test_get_tickets_id_versions_rate_limited");
   it("test_get_tickets_id_versions_terms_pending", () => {

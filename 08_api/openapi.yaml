@@ -7179,6 +7179,9 @@ components:
           type: string
           format: date-time
           nullable: true
+        restored_from:
+          type: integer
+          nullable: true
         updated_by:
           type: string
           format: uuid
@@ -7224,6 +7227,8 @@ components:
         updated_at:
           type: string
           format: date-time
+        body_template:
+          nullable: true
         created_by:
           type: string
           format: uuid
@@ -10299,6 +10304,73 @@ components:
       required:
       - browser
       x-required-by: hooks
+    TicketUpdateInput:
+      type: object
+      properties:
+        stage_id:
+          type: string
+          format: uuid
+        stage_key:
+          type: string
+          enum:
+          - todo
+          - doing
+          - hold
+        actual_minutes:
+          type: integer
+          nullable: true
+          minimum: 0
+          maximum: 100000
+        hold_reason:
+          type: string
+          pattern: ^[^\u0000]*[^\s\u0000-\u001f\u007f][^\u0000]*$
+        resume_condition:
+          type: string
+          pattern: ^[^\u0000]*[^\s\u0000-\u001f\u007f][^\u0000]*$
+      additionalProperties: false
+      x-operation: updateTicket
+      allOf:
+      - not:
+          required:
+          - stage_id
+          - stage_key
+      - anyOf:
+        - required:
+          - stage_id
+        - required:
+          - stage_key
+        - required:
+          - actual_minutes
+        - required:
+          - hold_reason
+        - required:
+          - resume_condition
+      - anyOf:
+        - not:
+            required:
+            - stage_key
+        - properties:
+            stage_key:
+              enum:
+              - todo
+              - doing
+        - required:
+          - hold_reason
+          - resume_condition
+      - anyOf:
+        - not:
+            required:
+            - stage_key
+        - properties:
+            stage_key:
+              enum:
+              - hold
+        - not:
+            anyOf:
+            - required:
+              - hold_reason
+            - required:
+              - resume_condition
     InvitationsCreateInput:
       type: object
       properties:
@@ -12439,6 +12511,11 @@ components:
         completed:
           type: object
           nullable: true
+        time:
+          type: object
+        hold:
+          type: object
+          nullable: true
       x-operation: getTicket
     TicketKindChoice:
       type: object
@@ -13536,6 +13613,20 @@ components:
         browser:
           type: string
       x-operation: setBridgeBrowser
+    TicketUpdated:
+      type: object
+      properties:
+        ticket:
+          type: object
+        stage:
+          type: object
+        changed:
+          type: boolean
+        message_id:
+          type: string
+          format: uuid
+          nullable: true
+      x-operation: updateTicket
     InvitationsSent:
       type: object
       properties:
@@ -41328,6 +41419,7 @@ paths:
         schema:
           type: string
           enum:
+          - body_template
           - color
           - created_at
           - created_by
@@ -42410,7 +42502,7 @@ paths:
       - D-125.97
       - D-125.98
       x-permission: write
-      x-permission-scope: そのグループの人。期限と担当を変えるときは理由が必須。グループを移すのは移す先にも書ける人
+      x-permission-scope: そのチケットを書ける人（担当者・書ける権限の人）。今は段・実績・保留の理由と再開の条件だけ（ほかの欄は段 8・E-VAL-018）。期限と担当を変えるときは理由が必須（段 8）
       x-step-up: false
       security:
       - session: []
@@ -42426,7 +42518,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TicketsInput'
+              $ref: '#/components/schemas/TicketUpdateInput'
       responses:
         '200':
           description: 成功
@@ -42436,7 +42528,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Tickets'
+                    $ref: '#/components/schemas/TicketUpdated'
                   meta:
                     type: object
         '401':
@@ -42452,13 +42544,31 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: NOT_FOUND
+          description: E-PAGE-001
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: VALIDATION_ERROR
+          description: E-VAL-018／VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: E-CONF-030／E-CONF-032／E-CONF-034／E-CONF-035／E-CONF-036
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -42471,12 +42581,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '429':
           description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -43290,7 +43394,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: NOT_FOUND／E-PAGE-001
+          description: NOT_FOUND
           content:
             application/json:
               schema:

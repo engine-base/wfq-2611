@@ -284,7 +284,7 @@ describe("K-432 本文を書き終える（updateTicketBody）", () => {
     await untouched(id);
   });
 
-  it("K432-API-016 見えない物：別の会社の人・無い id は入口が 404・NOT_FOUND、消したチケットは口が 404・E-PAGE-001（どれも error と code だけ）", async () => {
+  it("K432-API-016 見えない物：別の会社の人・無い id・消したチケットは入口の行の守りで 404・NOT_FOUND（口に届かない。どれも error と code だけ）", async () => {
     const id = await withBody();
     for (const [who, tid] of [
       [w.outsider, id],
@@ -301,7 +301,7 @@ describe("K-432 本文を書き終える（updateTicketBody）", () => {
     const r = await put(w.writer, gone, { version: 1, doc: NEXT });
     expect(r.status).toBe(404);
     const j = await h.json(r);
-    expect(j["code"]).toBe("E-PAGE-001");
+    expect(j["code"]).toBe("NOT_FOUND");
     expect(bareKeys(j)).toEqual(BARE);
     await untouched(id);
   });
@@ -317,7 +317,7 @@ describe("K-432 本文を書き終える（updateTicketBody）", () => {
     const undo = await h.breakInsert("ticket_section_versions", `new.ticket_id = '${id}'::uuid and new.version = 2`);
     let status = 0;
     let code = "";
-    let logs = "";
+    let logs: string;
     try {
       logs = await h.captureLogs(async () => {
         const r = await put(w.writer, id, { version: 1, doc: NEXT });
