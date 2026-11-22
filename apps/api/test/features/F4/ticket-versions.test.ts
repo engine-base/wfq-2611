@@ -488,7 +488,7 @@ describe("K-433 項目の変更を比べる（listTicketItemChanges）", () => {
     const t = await h.ticket(w);
     const cf = (
       await h.f.admin.query<{ id: string }>(
-        "insert into custom_fields (tenant_id, name, field_type) values ($1, '取引先の区分', 'short_text') returning id",
+        "insert into custom_fields (tenant_id, name, field_type) values ($1, '契約区分', 'short_text') returning id",
         [w.tenantId],
       )
     ).rows[0]!.id;
