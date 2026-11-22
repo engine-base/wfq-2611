@@ -1,0 +1,11 @@
+{
+ "data_links": [
+  {"paths": ["apps/api/src/hooks/ticket-versions.ts", "apps/api/src/features/F4/versions/**", "apps/api/src/hooks/ticket-body.ts", "apps/api/src/features/F4/body/**"],
+   "tests": ["apps/api/test/features/F4/ticket-versions.test.ts"]},
+  {"paths": ["apps/api/test/features/F4/ticket-versions.test.ts", "apps/api/test/features/contract/k144-contract.test.ts", "apps/api/test/features/F1/terms.test.ts"],
+   "tests": ["apps/api/test/generated/get_tickets_id_versions.test.ts", "apps/api/test/generated/post_tickets_id_versions_v_restore.test.ts", "apps/api/test/generated/get_tickets_id_item_changes.test.ts"]}
+ ],
+ "reads_ok": {
+  "apps/api/test/features/contract/k144.d/K-433.ts": "k144 の置き場の葉のファイル。最初の要求の前に hooks のファイルを動的 import する。ファイルは読まない（K-378）"
+ }
+}
