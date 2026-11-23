@@ -1,0 +1,8 @@
+{
+ "data_links": [
+  {"paths": ["04_design/canvas/**", "04_design/canvas_gen/**", "05_flow/phase1.py", "05_flow/flow.json"], "tests": ["apps/web/tests/k/k1113-shell-words.spec.ts"]}
+ ],
+ "reads_ok": {
+  "apps/web/tests/k/k1113-shell-words.spec.ts": "正の絵 04_design/canvas/*.dc.html と並べ方の正 05_flow/phase1.py・画面のコード（shell.tsx・me-sub.tsx・pc-row-parts.tsx）を読み、古い字が無いかを見る。絵の写しに作り手 04_design/canvas_gen/shellfix.py を子プロセスで回し、絵が変わらないかを見る（K1113-UI-005〜008）。絵・作り手・正の変更でも流れるよう data_links で結ぶ（K-1113）"
+ }
+}

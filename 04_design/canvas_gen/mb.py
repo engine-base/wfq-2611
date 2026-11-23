@@ -19,9 +19,9 @@ def tabbar(cur):
             out += '<a href="%s"%s style="position: relative; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: 11px; color: %s; text-decoration: none; %s">%s%s%s</a>' % (h, ' aria-current="page"' if on else "", NAVY if on else MUTED, "font-weight: 600" if on else "", SVG % ic, t, badge)
     return out + '</nav>'
 # 前は見出しの右に鈴（BELL）を置いた。D-147 で上の帯（MBAR）に移した
-_OLD_BELL = '<a href="MbNotify.dc.html" aria-label="知らせ（3 件）" style="margin-left: auto; width: 44px; height: 44px; display: grid; place-items: center; color: #131B27; position: relative">' + SVG % '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"></path>' + '<span style="position: absolute; top: 6px; right: 6px; min-width: 16px; height: 16px; border-radius: 99px; background: #B45309; color: #FFFFFF; font-size: 10px; display: grid; place-items: center">3</span></a>'
+_OLD_BELL = '<a href="MbNotify.dc.html" aria-label="お知らせ（3 件）" style="margin-left: auto; width: 44px; height: 44px; display: grid; place-items: center; color: #131B27; position: relative">' + SVG % '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"></path>' + '<span style="position: absolute; top: 6px; right: 6px; min-width: 16px; height: 16px; border-radius: 99px; background: #B45309; color: #FFFFFF; font-size: 10px; display: grid; place-items: center">3</span></a>'
 # スマホの上の帯（D-147・2026-11-18 代表の直し・answer=0a262be577b2）：画面の外枠（components/k/shell.tsx）の幅 767 以下と同じ。
-#   高さ 48px・左に会社の印と名前、右に 探す（虫眼鏡）・知らせ・自分のアイコン。いまの場所と題は出さない（題は本文の h1）。
+#   高さ 48px・左に会社の印と名前、右に 探す（虫眼鏡）・お知らせ・自分のアイコン。いまの場所と題は出さない（題は本文の h1）。
 #   知らせ（鈴）は上の帯だけに置き、本文の見出しの右には置かない（前の決め＝見出しの右の鈴 は D-147 で置き換えた）
 MBAR = ('<div class="kn-mbar" style="height: 48px; flex: none; background: #FFFFFF; border-bottom: 1px solid #DDE2E9; display: flex; align-items: center; gap: 8px; padding: 0 8px 0 16px; box-sizing: border-box">'
         '<span aria-hidden="true" style="width: 24px; height: 24px; flex: none; border-radius: 6px; background: #22345C; color: #FFFFFF; display: grid; place-items: center; font-size: 12px; font-weight: 700">E</span>'
@@ -29,7 +29,7 @@ MBAR = ('<div class="kn-mbar" style="height: 48px; flex: none; background: #FFFF
         '<span style="display: flex; align-items: center">'
         '<button type="button" aria-label="探す" style="width: 44px; height: 44px; border: 0; background: transparent; color: #4A5563; display: grid; place-items: center; cursor: pointer">'
         '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg></button>'
-        '<a href="MbNotify.dc.html" aria-label="知らせ（3 件）" style="position: relative; width: 44px; height: 44px; display: grid; place-items: center; color: #131B27; text-decoration: none">'
+        '<a href="MbNotify.dc.html" aria-label="お知らせ（3 件）" style="position: relative; width: 44px; height: 44px; display: grid; place-items: center; color: #131B27; text-decoration: none">'
         '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"></path></svg>'
         '<b style="position: absolute; top: 2px; right: 2px; min-width: 16px; height: 16px; border-radius: 9999px; background: #B45309; color: #FFFFFF; font-size: 10px; display: grid; place-items: center">3</b></a>'
         '<a href="TopMe.dc.html" aria-label="自分のメニュー" style="display: inline-flex; align-items: center; gap: 4px; height: 36px; padding: 0 4px; color: #4A5563; text-decoration: none">'
@@ -109,7 +109,7 @@ for n in ("MobileList", "MobileDetail"):
     if 'class="kn-mbar"' not in s:
         i = s.index(">", s.index("<div", s.index("</helmet>"))) + 1
         s = s[:i] + "\n " + MBAR + s[i:]
-    s = re.sub(r'\n  <a href="StOverlay\.dc\.html" aria-label="知らせ（3 件）".*?</a>', "", s, count=1, flags=re.S)
+    s = re.sub(r'\n  <a href="StOverlay\.dc\.html" aria-label="お?知らせ（3 件）".*?</a>', "", s, count=1, flags=re.S)
     open(f, "w", encoding="utf-8").write(s)
 
 # スマホ：ナレッジ

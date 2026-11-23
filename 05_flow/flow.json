@@ -11144,7 +11144,6 @@
     "ai",
     "knowledge",
     "company",
-    "clients",
     "me"
    ],
    "R2": [
@@ -11153,7 +11152,6 @@
     "ai",
     "knowledge",
     "company",
-    "clients",
     "me"
    ],
    "R3": [
@@ -11296,8 +11294,6 @@
     "audit",
     "company-settings",
     "billing",
-    "clients",
-    "requests",
     "account",
     "credentials",
     "bridge-setup",
@@ -11319,8 +11315,6 @@
     "audit",
     "company-settings",
     "billing",
-    "clients",
-    "requests",
     "account",
     "credentials",
     "bridge-setup",
@@ -11513,7 +11507,7 @@
      "desc": "値は見せない"
     },
     {
-     "label": "知らせ",
+     "label": "お知らせ",
      "desc": "ワークスペースごと"
     }
    ],

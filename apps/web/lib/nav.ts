@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/gen_routes.mjs ← 05_flow/flow.json navigation／screens／product_states）。手で直さない。flow:17a514abc715d29c
+// 生成物（scripts/ci/gen_routes.mjs ← 05_flow/flow.json navigation／screens／product_states）。手で直さない。flow:364f93d139f0cbfe
 export interface NavSection { key: string; label: string; icon: string; screens: string[]; tab?: string }
 export interface SubItem { label: string; desc: string; group?: string; state?: string }
 export interface ScreenMeta { id: string; name: string; route: string; needsLogin: boolean; hasShell: boolean; roles: string[]; purpose: string; primaryAction: string; release: string }
@@ -115,7 +115,6 @@ export const NAV: NavData = {
       "ai",
       "knowledge",
       "company",
-      "clients",
       "me"
     ],
     "R2": [
@@ -124,7 +123,6 @@ export const NAV: NavData = {
       "ai",
       "knowledge",
       "company",
-      "clients",
       "me"
     ],
     "R3": [
@@ -157,8 +155,6 @@ export const NAV: NavData = {
       "audit",
       "company-settings",
       "billing",
-      "clients",
-      "requests",
       "account",
       "credentials",
       "bridge-setup",
@@ -180,8 +176,6 @@ export const NAV: NavData = {
       "audit",
       "company-settings",
       "billing",
-      "clients",
-      "requests",
       "account",
       "credentials",
       "bridge-setup",
@@ -374,7 +368,7 @@ export const NAV: NavData = {
         "desc": "値は見せない"
       },
       {
-        "label": "知らせ",
+        "label": "お知らせ",
         "desc": "ワークスペースごと"
       }
     ],

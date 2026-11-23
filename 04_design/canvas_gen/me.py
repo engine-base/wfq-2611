@@ -10,7 +10,7 @@ IC2.update({"user": '<circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 
 def sub(cur):
     return build("自分の設定の中", [("アカウント", [("MeProfile.dc.html", SV % IC2["user"], "プロフィール", "", False), ("MeLogin.dc.html", SV % IC2["lock"], "ログインと安全", "", False)]),
         ("分身", [("MePC.dc.html", SV % IC2["pc"], "PC と使った量", "", False), ("MeSecrets.dc.html", SV % IC2["key"], "預けたログイン情報", "5", False)]),
-        ("ワークスペースごと", [("MeNotify.dc.html", SV % IC2["bell"], "知らせ", "", False)])], cur, "アカウントは 1 人 1 つ。預けたログイン情報と知らせはワークスペースごと")
+        ("ワークスペースごと", [("MeNotify.dc.html", SV % IC2["bell"], "お知らせ", "", False)])], cur, "アカウントは 1 人 1 つ。預けたログイン情報とお知らせはワークスペースごと")
 def page(name, title, crumb, body, cur=None):
     s = MAIN
     a = s.index('<nav aria-label="いまの場所"'); b = s.index("</nav>", a) + 6
