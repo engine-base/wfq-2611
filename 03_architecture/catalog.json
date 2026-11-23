@@ -6,7 +6,7 @@
  ],
  "counts": {
   "api": 378,
-  "api_built": 84,
+  "api_built": 87,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
   "db": 149,
@@ -1990,7 +1990,7 @@
    "tables": [
     "knowledge_folders"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
     "K-678"
    ]
@@ -2007,7 +2007,7 @@
    "tables": [
     "knowledge_folders"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
     "K-678"
    ]
@@ -2024,7 +2024,7 @@
    "tables": [
     "knowledge_folders"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
     "K-678"
    ]

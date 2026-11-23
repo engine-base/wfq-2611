@@ -1,0 +1,103 @@
+{
+ "ops": {
+  "createKnowledgeFolder": {
+   "file": "apps/api/test/features/F9/knowledge-folders.test.ts",
+   "reason": "フォルダを足せるかは棚（会社・グループ・自分）と役・親の棚・深さ・同じ名前で変わる。生成の試験の偽のセッションでは棚も所属も作れない（K-678）",
+   "covers": {
+    "test_post_knowledge_folders_ok": "K678-API-001",
+    "test_post_knowledge_folders_shape": "K678-API-001",
+    "test_post_knowledge_folders_rejected_401": "K678-API-019",
+    "test_post_knowledge_folders_rejected_403": "K678-API-003",
+    "test_post_knowledge_folders_rejected_422": "K675-API-003",
+    "test_post_knowledge_folders_conflict": "K678-API-006",
+    "test_post_knowledge_folders_rate_limited": "K678-API-020",
+    "test_post_knowledge_folders_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_knowledge_folders_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_knowledge_folders_not_found": "K678-API-004",
+    "test_post_knowledge_folders_conflict_2": "K678-API-007",
+    "test_post_knowledge_folders_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_knowledge_folders_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_post_knowledge_folders_upstream_failed": "外を呼ばない（DB の失敗は K678-API-023・024 が見る）"
+   }
+  },
+  "updateKnowledgeFolder": {
+   "file": "apps/api/test/features/F9/knowledge-folders.test.ts",
+   "reason": "フォルダを直す・動かすは棚・役・循環・深さ・同じ名前で変わる。生成の試験の偽のセッションでは作れない（K-678）",
+   "covers": {
+    "test_patch_knowledge_folders_id_ok": "K678-API-008",
+    "test_patch_knowledge_folders_id_shape": "K678-API-008",
+    "test_patch_knowledge_folders_id_rejected_401": "K678-API-019",
+    "test_patch_knowledge_folders_id_rejected_403": "K678-API-013",
+    "test_patch_knowledge_folders_id_not_found": "K678-API-013",
+    "test_patch_knowledge_folders_id_rejected_422": "K675-API-003",
+    "test_patch_knowledge_folders_id_conflict": "K678-API-008",
+    "test_patch_knowledge_folders_id_rate_limited": "K678-API-020",
+    "test_patch_knowledge_folders_id_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_patch_knowledge_folders_id_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_patch_knowledge_folders_id_conflict_2": "K678-API-012",
+    "test_patch_knowledge_folders_id_conflict_3": "K678-API-010",
+    "test_patch_knowledge_folders_id_conflict_4": "K678-API-011",
+    "test_patch_knowledge_folders_id_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_patch_knowledge_folders_id_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   }
+  },
+  "deleteKnowledgeFolder": {
+   "file": "apps/api/test/features/F9/knowledge-folders.test.ts",
+   "reason": "フォルダを消せるかは棚・役・中が空かで変わる。生成の試験の偽のセッションでは作れない（K-678）",
+   "covers": {
+    "test_delete_knowledge_folders_id_ok": "K678-API-015",
+    "test_delete_knowledge_folders_id_shape": "K678-API-015",
+    "test_delete_knowledge_folders_id_rejected_401": "K678-API-019",
+    "test_delete_knowledge_folders_id_rejected_403": "K678-API-013",
+    "test_delete_knowledge_folders_id_not_found": "K678-API-017",
+    "test_delete_knowledge_folders_id_conflict": "K678-API-016",
+    "test_delete_knowledge_folders_id_rate_limited": "K678-API-020",
+    "test_delete_knowledge_folders_id_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_delete_knowledge_folders_id_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_delete_knowledge_folders_id_rejected_422": {
+     "file": "apps/api/test/features/contract/k144.d/K-675.ts",
+     "mark": "K144-API-104"
+    },
+    "test_delete_knowledge_folders_id_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_delete_knowledge_folders_id_conflict_2": "共有しているフォルダの 409 E-KNW-051 は共有の置き場（K-689）と確かめ（K-719 が folder-guard-share.ts を差し替える）が入ってから。K-719 が自分の試験に行を足す"
+   }
+  }
+ }
+}
