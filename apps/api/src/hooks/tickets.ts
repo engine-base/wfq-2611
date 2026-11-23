@@ -7,10 +7,10 @@ import { createTicketListHooks } from "../features/F4/ticket-list/hooks.js";
 import { defineHooks } from "./registry.js";
 
 export function ticketHooks(appPool: pg.Pool): Record<string, Hook> {
-  const h = createTicketHooks(appPool);
-  const l = createTicketListHooks(appPool);
+  // 契約の形の検査（scripts/ci/contract_shape_test.py の hook_regions）は h["口"] の形で作った口を拾う。一覧の口も同じ h に並べる（K-472）
+  const h = { ...createTicketHooks(appPool), ...createTicketListHooks(appPool) };
   return {
-    listTickets: { ...l["listTickets"] },
+    listTickets: { ...h["listTickets"] },
     createTicket: { ...h["createTicket"] },
     listTicketKinds: { ...h["listTicketKinds"] },
     listScopes: { ...h["listScopes"] },

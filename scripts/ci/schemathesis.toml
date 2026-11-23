@@ -24,11 +24,6 @@ checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403",
 include-operation-id = "listApprovalQueue"
 checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403", "404", "409", "422", "429", "5xx"]
 
-# K-92：チケットの一覧の「次の分の鍵」（cursor）も、口が前の答えで渡した鍵（base64url の JSON）だけを受け、復号できない印は 422（欄 cursor・K92-API-023）
-[[operations]]
-include-operation-id = "listTickets"
-checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403", "404", "409", "422", "429", "5xx"]
-
 # K-312：パスワードを変える・決める口は、新しいパスワードが漏れたもの（E-VAL-011・外の照合）・128 を部品と同じ UTF-16 の長さで超える（E-VAL-026）・
 #   今のパスワードが違う（欄 current_password）を 422 で断る。どれも契約の形（string）では書けない（x-unexpressible-422）ので、
 #   この 2 つの口に限って「形どおりの入力」を 422 で断るのを受け付けとして数えない（ST202 にしない）。決める口のもうある人の 409 は既定の並びに在る

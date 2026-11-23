@@ -1,0 +1,12 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/test/features/F7/list-filters.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_tickets.test.ts"
+   ]
+  }
+ ]
+}

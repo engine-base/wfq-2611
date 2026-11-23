@@ -1,0 +1,43 @@
+/* 探す欄の型（search-field.tsx）。枠は入力欄と同じ線・角。焦点は枠全体に輪（虫眼鏡ごと） */
+.k-search-field {
+  display: flex;
+  align-items: center;
+  gap: var(--k-s-sm);
+  min-height: var(--k-c-dialog-select-height);
+  padding: 0 var(--k-s-sm);
+  border: var(--k-c-input-border);
+  border-radius: var(--k-r-field);
+  background: var(--k-card);
+  color: var(--k-on-surface-variant);
+  box-sizing: border-box;
+}
+.k-search-field:hover {
+  border-color: var(--k-on-surface-variant);
+}
+.k-search-field:focus-within {
+  outline: var(--k-c-search-focus-border);
+  outline-offset: 0;
+}
+.k-search-field-input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: none;
+  color: var(--k-on-surface);
+  font: inherit;
+  font-size: var(--k-text-body);
+}
+/* 輪は枠だけ（全体の .k-root :focus-visible を中の入力では出さない） */
+.k-search-field-input:focus,
+.k-search-field-input:focus-visible {
+  outline: 0;
+}
+.k-search-field-input::placeholder {
+  color: var(--k-on-surface-variant);
+}
+/* 幅 767 以下は入力の字を 16px（16px 未満だと iPhone が入力のたびに拡大する・D-144.7） */
+@media (max-width: 767px) {
+  .k-search-field-input {
+    font-size: var(--k-text-input);
+  }
+}

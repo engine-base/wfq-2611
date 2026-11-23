@@ -5725,8 +5725,8 @@
     "screen": "tickets",
     "state": "list"
    },
-   "when": "チケットの一覧で、探す言葉（q）が 100 文字を超える（全角半角をそろえ、前後の空白を除いて数える）",
-   "false_when": "前後の空白を除いて 100 文字まで。空と空白だけは絞らない",
+   "when": "チケットの一覧で、探す言葉（q）が、送られたままの文字で 100 文字を超える（前後の空白も数える・全角も 1 文字）",
+   "false_when": "送られたままで 100 文字まで。空と空白だけは絞らない",
    "message": "探す言葉は 100 文字までにしてください",
    "action": "探す言葉を短くする",
    "undo": false,
@@ -6638,6 +6638,38 @@
    "severity": "high"
   },
   {
+   "id": "E-VAL-027",
+   "class": "validation",
+   "where": {
+    "screen": "tickets",
+    "state": "talk"
+   },
+   "when": "やり取りに書くとき・直すときに、本文が空・空白だけ（全角の空白・改行も）",
+   "false_when": "1 文字以上の字を書いた",
+   "message": "書き込む文を書いてください",
+   "action": "文を書いてから送る",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットの詳細のやり取りを開く",
+    "steps": [
+     "書く欄に空白だけを入れて送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.45",
+    "D-130.1"
+   ],
+   "support_code": "VAL-027"
+  },
+  {
    "id": "E-CONF-030",
    "class": "conflict",
    "where": {
@@ -6911,6 +6943,35 @@
     "D-125.40"
    ],
    "support_code": "CONF-037"
+  },
+  {
+   "id": "E-VAL-046",
+   "class": "validation",
+   "where": {
+    "screen": "tickets",
+    "state": "progress"
+   },
+   "when": "チケットの詳細の「実績」を直すとき、時間か分に 0 以上の整数でない字（負の数・小数・文字）を入れた、または分が 60 以上だった（K-395・画面だけの確かめ。口は呼ばない）",
+   "false_when": "時間と分が 0 以上の整数で、分が 0〜59（全角の数字・前後の空白はそろえて受ける。空は 0）",
+   "message": "時間と分は 0 以上の整数で入れてください（分は 0〜59）",
+   "action": "時間と分を直す",
+   "undo": false,
+   "layers": [
+    "UI"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "書ける人で開いたチケットの詳細（右のパネルの属性）",
+    "steps": [
+     "実績の「直す」を押し、分に 60 を入れて「保存」を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.39"
+   ],
+   "support_code": "VAL-046"
   },
   {
    "id": "E-INV-009",
@@ -7213,6 +7274,35 @@
    "severity": "low",
    "source": [
     "D-151.8"
+   ]
+  },
+  {
+   "id": "E-LST-001",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "list"
+   },
+   "when": "チケットの一覧の続きの鍵が、形（base64url の 1〜200 字）には合うが今の状態では読めない（JSON でない・中身が合わない・古い形・別の view や並びの鍵）",
+   "false_when": "口が前の答えで渡した鍵、または鍵を付けない最初の分",
+   "message": "一覧の続きを読めませんでした。最初から読み直してください",
+   "action": "最初から読み直す（続きの鍵を付けずに開き直す）",
+   "undo": false,
+   "layers": [
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットの一覧の口",
+    "steps": [
+     "続きの鍵に壊れた文字列を入れて GET /api/v1/tickets を呼ぶ"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-151.1",
+    "D-128.157"
    ]
   },
   {

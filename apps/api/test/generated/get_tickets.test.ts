@@ -34,6 +34,11 @@ describe("GET /api/v1/tickets", () => {
     // 本物の試験：apps/api/test/features/F4/ticket-list.test.ts の「K92-API-023」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F4/ticket-list.test.ts", "utf8")).toContain("K92-API-023");
   });
+  it("test_get_tickets_conflict", () => {
+    // UNWANTED: IF 続きの鍵が形に合うのに今の状態では読めないなら、Kaname は 409 と E-LST-001 を返し、最初から読み直すよう促す
+    // 本物の試験：apps/api/test/features/F7/list-filters.test.ts の「K472-API-016」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F7/list-filters.test.ts", "utf8")).toContain("K472-API-016");
+  });
   it("test_get_tickets_rate_limited", () => {
     // UNWANTED: IF 120/min/user を超えたら、Kaname は 429 と retry_after_sec を返す
     // 本物の試験：apps/api/test/features/F4/ticket-list.test.ts の「K92-API-029」（同じ CI の G3 で流れる）

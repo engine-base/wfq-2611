@@ -354,6 +354,10 @@
     "test_get_tickets_rejected_401": "K92-API-020",
     "test_get_tickets_rejected_403": "K92-API-020",
     "test_get_tickets_rejected_422": "K92-API-023",
+    "test_get_tickets_conflict": {
+     "file": "apps/api/test/features/F7/list-filters.test.ts",
+     "mark": "K472-API-016"
+    },
     "test_get_tickets_rate_limited": "K92-API-029",
     "test_get_tickets_terms_pending": "K92-API-020",
     "test_get_tickets_session_unresolved": {

@@ -1,6 +1,8 @@
 // チケットの一覧の口（K-92）の問い合わせの確かめと、次の分の鍵（keyset のカーソル）。DB に触らない純粋な関数だけ。
 //   問い合わせ：view（mine／all・既定 mine）・q（100 文字まで）・scope_id（uuid）・limit（1〜100・既定 50）・cursor（この口が出した鍵）。
-//   ほかの絞り込みは「まだ使えない」で 422・E-VAL-018（黙って無視しない・D-128.152）。sort の列名の形は入口（op.ts）が先に確かめる
+//   絞り込みの欄は欄ごとの表（FILTERS・K-472）：kind_id・stage_id・assignee_id・done。K-473・K-474 は表に 1 行ずつ足す。
+//   表に無い欄（LIST_FIELDS のうち FILTERS に無い物＝NOT_YET）は「まだ使えない」で 422・E-VAL-018（黙って無視しない・D-128.152）。sort の列名の形は入口（op.ts）が先に確かめる
+//   確かめる順：①まだの欄（422・E-VAL-018）→ ②形の誤り（422・VALIDATION_ERROR）→ ③q の長さ（422・E-VAL-017）→ ④鍵の中身（409・E-LST-001）
 import { isUuid } from "@kaname/contracts";
 
 export const LIST_LIMIT_DEFAULT = 50;
@@ -12,6 +14,12 @@ export type View = "mine" | "all";
 /** 次の分の鍵：mine は [期限（無ければ infinity）, 更新, id]、all は [更新, id] */
 export type Cursor =
   { view: "mine"; due: string; updated: string; id: string } | { view: "all"; updated: string; id: string };
+/** 欄の値の確かめ（parse）と、where に足す 1 つの条件（sql）。tickets の別名は t。add は値を params に積んで $n を返す。where に使わない欄は sql が null */
+export interface FilterDef {
+  name: string;
+  parse(raw: string): { ok: true; value: unknown } | { ok: false; message: string };
+  sql(value: unknown, add: (v: unknown) => string): string | null;
+}
 export interface ListQuery {
   view: View;
   /** 題名の部分一致の LIKE の形（全角半角・大文字小文字をそろえ、% _ \ を逃がした物）。絞らないときは null */
@@ -21,6 +29,8 @@ export interface ListQuery {
   scopeId: string | null;
   limit: number;
   cursor: Cursor | null;
+  /** 付いている（空でない）絞り込みの欄と値（表の順） */
+  filters: readonly { def: FilterDef; value: unknown }[];
 }
 export interface Issue {
   field: string;
@@ -28,14 +38,33 @@ export interface Issue {
 }
 export type Parsed =
   | { ok: true; value: ListQuery }
-  | { ok: false; code: "VALIDATION_ERROR" | "E-VAL-017" | "E-VAL-018"; details: Issue[] };
+  | { ok: false; code: "VALIDATION_ERROR" | "E-VAL-017" | "E-VAL-018"; details: Issue[] }
+  | { ok: false; code: "E-LST-001"; details: [] };
 
-/** まだ使えない絞り込み（K-67 が作る）。付けて呼ばれたら 422・E-VAL-018 */
-export const NOT_YET = new Set([
+const uuidFilter = (name: string, column: string): FilterDef => ({
+  name,
+  parse: (raw) => (isUuid(raw) ? { ok: true, value: raw } : { ok: false, message: "uuid" }),
+  sql: (value, add) => `t.${column} = ${add(value)}::uuid`,
+});
+const DONE_STAGE =
+  "exists (select 1 from ticket_stages s where s.id = t.stage_id and s.key is not distinct from 'done')";
+/** 絞り込みの欄の表（where に使う欄）。付けた欄は全部 AND。K-473・K-474 はここに 1 行ずつ足す */
+export const FILTERS: readonly FilterDef[] = [
+  uuidFilter("kind_id", "kind_id"),
+  uuidFilter("stage_id", "stage_id"),
+  uuidFilter("assignee_id", "assignee_member_id"),
+  {
+    name: "done",
+    parse: (raw) =>
+      raw === "true" || raw === "false" ? { ok: true, value: raw === "true" } : { ok: false, message: "true か false" },
+    sql: (value) => (value ? DONE_STAGE : `not ${DONE_STAGE}`),
+  },
+];
+/** 契約が 12 欄として持つ絞り込みの名前（done は入れない） */
+export const LIST_FIELDS = [
   "kind_id",
   "stage_id",
   "assignee_id",
-  "client_id",
   "due_from",
   "due_to",
   "start_from",
@@ -45,8 +74,13 @@ export const NOT_YET = new Set([
   "parent",
   "fields",
   "sort",
-]);
-const KNOWN = new Set(["view", "q", "scope_id", "limit", "cursor"]);
+] as const;
+/** まだ使えない欄（LIST_FIELDS のうち表に無い物）。付けて呼ばれたら 422・E-VAL-018。表に行を足すと縮む */
+export const NOT_YET: ReadonlySet<string> = new Set(
+  LIST_FIELDS.filter((name) => !FILTERS.some((f) => f.name === name)),
+);
+const KNOWN = new Set(["view", "q", "scope_id", "limit", "cursor", ...FILTERS.map((f) => f.name)]);
+const CURSOR_FORM = /^[A-Za-z0-9_-]+$/;
 const DATE = /^(\d{4}-\d{2}-\d{2}|infinity)$/;
 const STAMP = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,6})?(Z|[+-]\d{2}(:\d{2})?)$/;
 const HYPHENS = /[‐‑‒–—―ー−－]/g;
@@ -68,9 +102,8 @@ export function encodeCursor(c: Cursor): string {
   const arr = c.view === "mine" ? [c.view, c.due, c.updated, c.id] : [c.view, c.updated, c.id];
   return Buffer.from(JSON.stringify(arr), "utf8").toString("base64url");
 }
-/** 壊れた物・形の違う物・別の view の鍵は null（422・欄 cursor） */
+/** 中身を読む。壊れた物・形の違う物・別の view の鍵は null（形が base64url の 1〜200 字かは入口と parseListQuery が先に見る・読めない鍵は 409・E-LST-001） */
 export function decodeCursor(s: string, view: View): Cursor | null {
-  if (s.length > CURSOR_MAX || !/^[A-Za-z0-9_-]+$/.test(s)) return null;
   let arr: unknown;
   try {
     arr = JSON.parse(Buffer.from(s, "base64url").toString("utf8"));
@@ -106,12 +139,23 @@ export function parseListQuery(raw: Record<string, string>): Parsed {
   const scopeRaw = raw["scope_id"] ?? "";
   if (scopeRaw !== "" && !isUuid(scopeRaw)) details.push({ field: "scope_id", message: "uuid" });
   const cursorRaw = raw["cursor"] ?? "";
-  const cursor = cursorRaw === "" || !view ? null : decodeCursor(cursorRaw, view);
-  if (cursorRaw !== "" && !cursor) details.push({ field: "cursor", message: "不正" });
+  if (cursorRaw !== "" && (cursorRaw.length > CURSOR_MAX || !CURSOR_FORM.test(cursorRaw)))
+    details.push({ field: "cursor", message: "不正" });
+  const filters: { def: FilterDef; value: unknown }[] = [];
+  for (const def of FILTERS) {
+    const v = raw[def.name] ?? "";
+    if (v === "") continue;
+    const r = def.parse(v);
+    if (r.ok) filters.push({ def, value: r.value });
+    else details.push({ field: def.name, message: r.message });
+  }
   if (details.length) return { ok: false, code: "VALIDATION_ERROR", details };
-  const q = normalizeQ(raw["q"] ?? "");
-  if ([...q].length > Q_MAX)
+  const qRaw = raw["q"] ?? "";
+  if ([...qRaw].length > Q_MAX)
     return { ok: false, code: "E-VAL-017", details: [{ field: "q", message: `${Q_MAX} 文字まで` }] };
+  const cursor = cursorRaw === "" ? null : decodeCursor(cursorRaw, view!);
+  if (cursorRaw !== "" && !cursor) return { ok: false, code: "E-LST-001", details: [] };
+  const q = normalizeQ(qRaw);
   return {
     ok: true,
     value: {
@@ -121,6 +165,7 @@ export function parseListQuery(raw: Record<string, string>): Parsed {
       scopeId: scopeRaw || null,
       limit,
       cursor,
+      filters,
     },
   };
 }

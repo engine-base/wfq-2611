@@ -1,0 +1,33 @@
+{
+ "errors": [
+  {
+   "id": "E-LST-001",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "list"
+   },
+   "when": "チケットの一覧の続きの鍵が、形（base64url の 1〜200 字）には合うが今の状態では読めない（JSON でない・中身が合わない・古い形・別の view や並びの鍵）",
+   "false_when": "口が前の答えで渡した鍵、または鍵を付けない最初の分",
+   "message": "一覧の続きを読めませんでした。最初から読み直してください",
+   "action": "最初から読み直す（続きの鍵を付けずに開き直す）",
+   "undo": false,
+   "layers": [
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットの一覧の口",
+    "steps": [
+     "続きの鍵に壊れた文字列を入れて GET /api/v1/tickets を呼ぶ"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-151.1",
+    "D-128.157"
+   ]
+  }
+ ]
+}

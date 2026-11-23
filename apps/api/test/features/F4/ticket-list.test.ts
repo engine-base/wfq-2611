@@ -9,6 +9,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { withTenant } from "@kaname/db/context";
+import { NOT_YET } from "../../../src/features/F4/ticket-list/query.js";
 import { ticketHooks } from "../../../src/hooks/tickets.js";
 import { makeFixture, type Fixture, type Person } from "../fixture.js";
 
@@ -29,7 +30,7 @@ type Item = {
   parent_ticket_id: string | null;
   depth: number;
 };
-type Page = { data: Item[]; meta: { next_cursor: string | null } };
+type Page = { data: Item[]; meta: { next_cursor: string | null; counts?: Record<string, number> } };
 interface World {
   tenantId: string;
   root: string;
@@ -148,11 +149,12 @@ afterAll(async () => {
 });
 
 describe("K-92 一覧の口：状態 × 見る人", () => {
-  it("K92-API-001 0 件：200・data は空・meta は next_cursor が null", async () => {
+  it("K92-API-001 0 件：200・data は空・meta は next_cursor が null（足せる鍵は counts だけ）", async () => {
     const w = await world();
     const p = await listOk(w.me);
     expect(p.data).toEqual([]);
-    expect(p.meta).toEqual({ next_cursor: null });
+    expect(p.meta.next_cursor).toBeNull();
+    expect(Object.keys(p.meta).filter((key) => key !== "next_cursor" && key !== "counts")).toEqual([]); // 足せる鍵は counts だけ（K-474・自分に関わるものの 1 回目）
   });
 
   it("K92-API-002 自分に関わるもの（既定）と すべて：担当者が他の人のチケットは mine に出ず all に出る。作った直後に読み直すと出る", async () => {
@@ -268,7 +270,7 @@ describe("K-92 一覧の口：状態 × 見る人", () => {
     expect(p.data.find((x) => x.id === done.id)?.overdue).toBe(false);
   });
 
-  it("K92-API-009 答えの形：1 件の鍵はちょうど決めた 12 個（区画の本文・作った人・消した印を返さない）・meta は next_cursor だけ（総数を返さない）", async () => {
+  it("K92-API-009 答えの形：1 件の鍵はちょうど決めた 12 個（区画の本文・作った人・消した印を返さない）・meta は next_cursor（と counts だけ・総数を返さない）", async () => {
     const w = await world();
     const parent = await make(w);
     await make(w, { parent: parent.id });
@@ -290,7 +292,8 @@ describe("K-92 一覧の口：状態 × 見る人", () => {
           "updated_at",
         ].sort(),
       );
-    expect(Object.keys(p.meta)).toEqual(["next_cursor"]);
+    expect(Object.keys(p.meta)).toContain("next_cursor");
+    expect(Object.keys(p.meta).filter((key) => key !== "next_cursor" && key !== "counts")).toEqual([]); // 総数を返さない。足せる鍵は counts だけ（K-474）
     const child = p.data.find((x) => x.parent_ticket_id === parent.id)!;
     expect(child.depth).toBe(2);
     expect(child.kind.name).toBe("タスク");
@@ -504,7 +507,7 @@ describe("K-92 一覧の口：次の分（keyset）", () => {
 });
 
 describe("K-92 一覧の口：入力・守り", () => {
-  it("K92-API-023 view・limit・cursor の受け付けない値は 422（欄ごとの理由）", async () => {
+  it("K92-API-023 view・limit・cursor の受け付けない値は 422（欄ごとの理由）。形に合うのに読めない鍵は 409・E-LST-001", async () => {
     const w = await world();
     for (let i = 0; i < 3; i += 1) await make(w);
     const p = await listOk(w.me, "view=all&limit=1");
@@ -515,39 +518,58 @@ describe("K-92 一覧の口：入力・守り", () => {
       ["limit=101", "limit"],
       ["limit=abc", "limit"],
       ["cursor=%%%", "cursor"],
-      ["cursor=eyJ4IjoxfQ", "cursor"],
-      [`view=mine&cursor=${encodeURIComponent(allCursor)}`, "cursor"],
     ] as const) {
       const r = await list(w.me, q);
       expect(r.status, q).toBe(422);
       const fields = (((await r.json()) as { details?: { field: string }[] }).details ?? []).map((d) => d.field);
       expect(fields, q).toContain(field);
     }
+    // 形に合うのに今の状態では読めない鍵（中身が合わない・別の view の鍵）は 422 でなく 409・E-LST-001・欄なし（K-472・PM 2026-11-21）
+    for (const q of ["cursor=eyJ4IjoxfQ", `view=mine&cursor=${encodeURIComponent(allCursor)}`]) {
+      const r = await list(w.me, q);
+      expect(r.status, q).toBe(409);
+      const body = (await r.json()) as { code?: string; field?: unknown; details?: unknown };
+      expect(body.code, q).toBe("E-LST-001");
+      expect(body.field, q).toBeUndefined();
+      expect(body.details, q).toBeUndefined();
+    }
   });
 
-  it("K92-API-024 まだ使えない絞り込み（kind_id・stage_id・assignee_id・overdue・fire・sort ほか）は 422・E-VAL-018（黙って無視しない）", async () => {
+  it("K92-API-024 絞り込みの 12 欄（kind_id・stage_id・assignee_id・due_from・due_to・start_from・start_to・overdue・fire・parent・fields・sort）は、口の欄の表にあるか「まだ使えない」のどちらか 1 つ：まだの欄は 422・E-VAL-018（黙って無視しない）、表にある欄は空の値で 200（指定なし）。知らない名前は 422・VALIDATION_ERROR", async () => {
     const w = await world();
-    for (const q of [
-      "kind_id=x",
-      "stage_id=x",
-      "assignee_id=x",
-      "client_id=x",
-      "due_from=2026-01-01",
-      "overdue=true",
-      "fire=1",
-      "parent=x",
-      "fields=id",
-    ]) {
-      const r = await list(w.me, q);
-      expect(r.status, q).toBe(422);
-      expect(((await r.json()) as { code?: string }).code, q).toBe("E-VAL-018");
+    const all = [
+      "kind_id",
+      "stage_id",
+      "assignee_id",
+      "due_from",
+      "due_to",
+      "start_from",
+      "start_to",
+      "overdue",
+      "fire",
+      "parent",
+      "fields",
+      "sort",
+    ];
+    for (const name of all) {
+      const r = await list(w.me, `${name}=`);
+      if (NOT_YET.has(name)) {
+        expect(r.status, `${name}（まだ）`).toBe(422);
+        expect(((await r.json()) as { code?: string }).code, name).toBe("E-VAL-018");
+      } else {
+        expect(r.status, `${name}（表にある・空は指定なし）`).toBe(200);
+      }
     }
-    // sort は入口が表の列名かを口の前に確かめる（op.ts）。tickets の列でない値は VALIDATION_ERROR・欄 sort
-    const bad = await list(w.me, "sort=due");
-    expect(bad.status).toBe(422);
-    const body = (await bad.json()) as { code?: string; details?: { field: string }[] };
+    // まだの表は 12 欄の中だけ（知らない名前を混ぜない）。K-472 が入れた 3 欄（種別・段・担当者）は表にある
+    for (const name of NOT_YET) expect(all, name).toContain(name);
+    for (const name of ["kind_id", "stage_id", "assignee_id"])
+      expect(NOT_YET.has(name), `${name} は K-472 で使えるようになった`).toBe(false);
+    // 知らない名前は受け付けない（黙って無視しない）
+    const unknown = await list(w.me, "no_such_filter=1");
+    expect(unknown.status).toBe(422);
+    const body = (await unknown.json()) as { code?: string; details?: { field: string }[] };
     expect(body.code).toBe("VALIDATION_ERROR");
-    expect((body.details ?? []).map((d) => d.field)).toContain("sort");
+    expect((body.details ?? []).map((d) => d.field)).toContain("no_such_filter");
   });
 
   it("K92-API-025 scope_id：そのグループのチケットだけ。見えないグループは 0 件・uuid でないは 422", async () => {

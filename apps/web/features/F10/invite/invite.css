@@ -1,0 +1,282 @@
+/* 招く（F10 の葉・段 9 の前に出す）の部品（切る段の下絵）。値は正本のトークン（--k-*）だけを読む。生の大きさ・色を書かない。
+   小窓・欄・札・ボタン・丸いアイコン（.k-avatar）・第 2 ナビ（me-sub.css）の形は前からの部品のまま。ここは並べ方だけ。
+   形はキャンバス WsPeople・WsInvite（代表の直し 2026-11-20：PC は本文の幅いっぱい・スマホは 1 人 1 行） */
+
+.k-inv-sub {
+  margin: 0;
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-lh-body-sm);
+}
+
+/* ---- ワークスペースの管理の頭 ---- */
+.k-inv-ws {
+  display: flex;
+  align-items: center;
+  gap: var(--k-s-md);
+  padding: var(--k-s-md) var(--k-s-lg);
+  border-bottom: var(--k-c-page-head-border);
+  background: var(--k-card);
+}
+.k-inv-ws-mark {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: var(--k-s-xl);
+  height: var(--k-s-xl);
+  border-radius: var(--k-r-md);
+  background: var(--k-primary);
+  color: var(--k-on-primary);
+  font-weight: var(--k-fw-h2);
+}
+.k-inv-ws-main {
+  display: grid;
+  min-width: 0;
+}
+.k-inv-ws-name {
+  margin: 0;
+  font-size: var(--k-text-h2);
+  font-weight: var(--k-fw-h2);
+  overflow-wrap: anywhere;
+}
+.k-inv-sub-count {
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+}
+.k-inv-sub-trigger {
+  background: var(--k-c-button-outlined-bg);
+  color: var(--k-c-button-outlined-fg);
+  border: var(--k-c-button-outlined-border);
+  font-weight: var(--k-c-button-outlined-fw);
+}
+
+/* ---- 本文：本文の幅いっぱい（自分の設定の本文の幅の上限を外す） ---- */
+.k-page.k-me-page.k-inv-page {
+  max-width: none;
+}
+.k-inv-body {
+  display: grid;
+  gap: var(--k-s-md);
+  min-width: 0;
+}
+.k-inv-group {
+  min-width: 0;
+  border: var(--k-c-card-border);
+  border-radius: var(--k-r-card);
+  background: var(--k-card);
+}
+.k-inv-group-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-s-sm);
+  padding: var(--k-s-sm) var(--k-s-md);
+  border-bottom: var(--k-c-doc-toolbar-border-bottom);
+}
+.k-inv-code {
+  display: inline-grid;
+  place-items: center;
+  min-width: var(--k-s-lg);
+  height: var(--k-s-lg);
+  padding: 0 var(--k-s-xs);
+  border-radius: var(--k-r-sm);
+  color: var(--k-card);
+  font-size: var(--k-text-label-md);
+  font-weight: var(--k-fw-h3);
+}
+.k-inv-code[data-tone="teal"] {
+  background: var(--k-d-teal);
+}
+.k-inv-code[data-tone="plum"] {
+  background: var(--k-d-plum);
+}
+.k-inv-code[data-tone="amber"] {
+  background: var(--k-d-amber);
+}
+.k-inv-code[data-tone="indigo"] {
+  background: var(--k-d-indigo);
+}
+.k-inv-group-name {
+  margin: 0;
+  font-size: var(--k-text-body-md);
+  font-weight: var(--k-fw-h3);
+}
+.k-inv-group-invite {
+  margin-left: auto;
+}
+.k-inv-rows {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+/* 1 人 1 行：丸いアイコン・名前とメール・役割・状態・操作 */
+.k-inv-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto minmax(0, calc(var(--k-s-2xl) * 2)) auto;
+  align-items: center;
+  gap: var(--k-s-md);
+  padding: var(--k-s-sm) var(--k-s-md);
+}
+.k-inv-row + .k-inv-row {
+  border-top: var(--k-c-doc-toolbar-border-bottom);
+}
+/* 丸いアイコン（外枠の自分のアイコン .k-avatar と同じ形と色・大きさは 28＝24＋4） */
+.k-inv-avatar {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: calc(var(--k-s-lg) + var(--k-s-xs));
+  height: calc(var(--k-s-lg) + var(--k-s-xs));
+  border-radius: var(--k-r-full);
+  background: var(--k-d-lavender);
+  color: var(--k-card);
+  font-size: var(--k-text-body-sm);
+}
+.k-inv-role-cell {
+  display: inline-flex;
+  min-width: 0;
+}
+.k-inv-sub-menu {
+  min-width: calc(var(--k-s-2xl) * 2);
+}
+.k-inv-avatar[data-invited] {
+  background: var(--k-neutral);
+}
+.k-inv-who {
+  display: grid;
+  min-width: 0;
+}
+.k-inv-name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--k-s-xs);
+  font-size: var(--k-text-body);
+  overflow-wrap: anywhere;
+}
+.k-inv-note {
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+}
+.k-inv-who .k-inv-sub {
+  overflow-wrap: anywhere;
+}
+.k-inv-role {
+  padding: 0 var(--k-s-sm);
+  border: 0;
+  border-radius: var(--k-r-sm);
+  background: var(--k-surface-variant);
+  color: var(--k-on-surface);
+  font: inherit;
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-lh-body);
+  white-space: nowrap;
+  cursor: not-allowed;
+}
+.k-inv-role[data-admin] {
+  background: var(--k-primary);
+  color: var(--k-on-primary);
+}
+.k-inv-state {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--k-s-xs);
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+}
+.k-inv-state:not(:empty)::before {
+  content: "";
+  width: var(--k-s-sm);
+  height: var(--k-s-sm);
+  border-radius: var(--k-r-full);
+  background: var(--k-neutral);
+}
+.k-inv-state[data-tone="ok"]::before {
+  background: var(--k-st-success);
+}
+.k-inv-state[data-tone="warn"] {
+  color: var(--k-st-on-warning-container);
+}
+.k-inv-state[data-tone="warn"]::before {
+  background: var(--k-st-warning);
+}
+
+/* スマホ：1 人 1 行（丸いアイコン・名前とメール・役割の札）。状態と操作は行の中に出さない */
+@media (max-width: 767px) {
+  .k-inv-ws {
+    padding: var(--k-s-sm) var(--k-s-md);
+  }
+  .k-inv-row {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: var(--k-s-sm);
+  }
+  .k-inv-state,
+  .k-inv-more {
+    display: none;
+  }
+  .k-inv-group-invite {
+    margin-left: 0;
+  }
+}
+
+/* ---- 小窓：メールを入れる欄と「足す」・招く人の並び・グループと役割・開くと出る段 ---- */
+.k-inv-add {
+  display: flex;
+  align-items: center;
+  gap: var(--k-s-sm);
+  min-width: 0;
+}
+.k-inv-add .k-input {
+  flex: 1;
+  min-width: 0;
+}
+.k-inv-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--k-s-xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-inv-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--k-s-xs);
+  max-width: 100%;
+  padding: 0 var(--k-s-xs) 0 var(--k-s-sm);
+  border-radius: var(--k-r-full);
+  background: var(--k-surface-variant);
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-lh-body);
+}
+.k-inv-chip-t {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.k-inv-chip-x {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--k-on-surface-variant);
+  cursor: pointer;
+}
+.k-inv-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--k-s-sm);
+}
+.k-inv-more-box {
+  min-width: 0;
+}
+.k-inv-more-sum {
+  margin-bottom: var(--k-s-sm);
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+  cursor: pointer;
+}
+.k-inv-link-btn {
+  justify-self: start;
+}
