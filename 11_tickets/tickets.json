@@ -24602,6 +24602,119 @@
    "file": "11_tickets/K-1112.md"
   },
   {
+   "id": "K-1114",
+   "title": "直し：画面の試験を全部流す回（G48）で本線のまま赤になる 3 種を直す（登録の口の回数の上限に当たる準備・組み立てた画面の置き場を読む D8・文書の高さの丸めで 0.39px 被ると数える）・PM の直し",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-56",
+   "milestone": "F6",
+   "area": "CI",
+   "assignee": "実装",
+   "due": "2026-11-23",
+   "estimate_hours": "1",
+   "estimate_basis": "実測なし・仮。形の近い直しの葉 K-1100（0.5 時間）より大きい：G48 の log の赤 39 本を 3 種に分ける 10 分・手元で本番の形の画面と口を立てて流す 20 分・準備の道具 2 ファイル 10 分・検査 3 本の置き場 5 分・試験 2 本 15 分",
+   "decisions": [
+    "D-128.123"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "画面の試験の準備の道具（apps/web/tests/_lib）と前からの試験の測り方・CI の見た目と式の検査の台本（scripts/ci）の読む置き場だけ。製品のコード・口・DB・外には触らない（届く元の頭は試験の準備の要求にだけ付ける）",
+   "tests": [
+    "scripts/ci/k1114_build_dir_skip_test.py",
+    "apps/web/tests/k/k1114-signup-ip.spec.ts"
+   ],
+   "carry": [
+    "apps/web/tests/_lib/api.ts",
+    "apps/web/tests/_lib/prep.ts",
+    "apps/web/tests/k/k138-shell.spec.ts",
+    "apps/web/tests/k/k220-bridge-shell.spec.ts",
+    "apps/web/tests/skeleton/k342-terms-then-enter.spec.ts",
+    "scripts/ci/contract_shape_test.py"
+   ],
+   "depends_on": [],
+   "acts": [],
+   "screens": [],
+   "canvas": [],
+   "canvas_none": "見た目を変えないチケット（試験の準備と CI の検査の置き場だけ）。正の絵の組は持たない",
+   "apis": [],
+   "affects": [
+    "@kaname/web"
+   ],
+   "ci_wide": [
+    "ci"
+   ],
+   "changes": [
+    "scripts/ci/design_raw_lengths.py",
+    "scripts/ci/design_gate.py",
+    "scripts/ci/class_gate.py",
+    "scripts/ci/chat_one.mjs"
+   ],
+   "flow": "CI を直す",
+   "sections": {
+    "目的": "K-1105 の CI（run 45106396961）で G48 が画面の試験を全部流し、K-1105 が触っていない画面の試験 39 本が赤だった。種類は 3 つで、どれも本線（claude/modest-lamport-77ue02 の先頭 eb836a1ac）のままで赤になる。段を本線に入れる全部の CI（画面の試験を全部流す回）で必ず赤になるので、ここで直す。\n\n| 種類 | 赤の本数 | 原因 | 分け |\n|---|---|---|---|\n| k357（K357-UI-001〜024） | 37 | 準備の `signupViaApi` が、別々の人を 1 つの届く元（IP）から続けて登録する。登録と確認の口は契約で IP ごと 1 分 10 回（`createSignup`・`verifySignup` の rateLimit）。全部を流す回では前の試験（k356 など）の登録と合わせて 1 分 10 回を超え、`sign-up 429 RATE_LIMITED` で準備が落ちる | 試験の誤り（準備が上限に当たる）。上限は本番の正しい守り |\n| K400-DS-002 | 1 | D8（生の長さ）は `apps/web` の下を全部読む。CI の web の組は画面を組み立ててから（`NEXT_DIST_DIR=.next-prod`）試験を流すので、組み立てた JS と CSS（`.next-prod`）の生の値を 4155 個数えて赤。読まない置き場（SKIP_DIRS）に `.next` はあるが `.next-prod` が無い | 検査の道具の不具合（本番の画面の不具合ではない） |\n| K138-SH-019 | 1 | チケットの詳細の幅 375 で、本文の最後の物（右の面の下の余白）の下端 840.39 ＞ 下のタブの上端 840。文書の高さ（scrollHeight）は整数に丸められ、本文の高さが端数（.39px）だと最後の 1px 未満までは送れない。字は 16px 上で終わっていて、見た目の被りは無い | 試験の誤り（測り方が 1px 未満の丸めを被りと数える） |\n\nPM の決め（作り方）：\n1. 登録の上限は変えない。試験の準備の道具が 1 人ごとに別の届く元（`x-forwarded-for`・10.x.x.x）で登録・確認・招待の受諾の口を呼ぶ（前からの道具 newcomer.ts・test-pc.ts・k336 と同じ形）。上限が残っていることはこの葉の試験 K1114-UI-002 が見る\n2. D8・D6（使われない段）・class_gate・chat_one（画面の試験から流れる会話の口の検査）・contract_shape_test の読まない置き場に `.next-prod` を足す\n3. 被りの測り方は 1px からを数える（同じ測り方の k220 も同じ類なので直す）",
+    "完了の条件": "- [ ] 下の表の行（K1114-CI-001〜003・K1114-UI-001〜002）が緑\n- [ ] G48 で赤だった K357-UI-001〜024・K400-DS-002・K138-SH-019 が緑（替えた前からの試験と、替えない k357・k400）\n- [ ] 手元の CI（このチケットの範囲）が緑",
+    "前提と制約": "分類: TOOL\n\n- 契約の rateLimit（`packages/contracts/src/registry.ts`）と口の上限の作り（`apps/api/src/contract/op.ts`）は変えない\n- 届く元の頭は試験の準備の要求にだけ付ける。口の上限を見る前からの試験（screens/login.spec.ts の sign-in の 429 など）は `api()` を頭なしで呼ぶので今のまま\n- `.next-prod` は `apps/web/package.json` の `build:test`・`start:test`（NEXT_DIST_DIR）が作る置き場。.gitignore の外だが、git に入らない組み立ての出力\n- ci_scope.py の置き場の読みは点で始まる置き場を全部飛ばすので直さない",
+    "目録で探した結果": "| 使う物 | どこ | 使い方 |\n|---|---|---|\n| 届く元を変える前からの形 | `tests/_lib/newcomer.ts`・`tests/_lib/test-pc.ts`・`tests/k/k336-invite-signed.spec.ts` | 同じく `x-forwarded-for` に 10.x の IP |\n| 準備の道具 | `tests/_lib/api.ts` の `api`・`signupPending`・`signupViaApi`・閲覧のみの人の招待の受諾、`tests/_lib/prep.ts` の招待の受諾 | `api()` に任意の 5 つ目 `ip` を足し、IP ごとの口を呼ぶ所だけが `testIp()` を渡す |\n| 読まない置き場 | `design_raw_lengths.py`・`design_gate.py`・`class_gate.py` の SKIP_DIRS | `.next-prod` を足す |\n| 探したが無かった物 | 1 人ごとの届く元を作る共通の道具 | `api.ts` に `testIp` を足す |",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| 準備の届く元 | `apps/web/tests/_lib/api.ts`：`testIp()` を足し、`api()` に `ip`（頭 `x-forwarded-for`）。登録・確認・招待の受諾で `testIp()`。`apps/web/tests/_lib/prep.ts`：招待の受諾で `testIp()` |\n| 読まない置き場 | `scripts/ci/design_raw_lengths.py`・`scripts/ci/design_gate.py`・`scripts/ci/class_gate.py` の SKIP_DIRS、`scripts/ci/chat_one.mjs` の walk、`scripts/ci/contract_shape_test.py` の外す道に `.next-prod` |\n| 準備の届く元（骨組み） | `apps/web/tests/skeleton/k342-terms-then-enter.spec.ts` の確認の口に `testIp()` |\n| 被りの測り方 | `apps/web/tests/k/k138-shell.spec.ts` の K138-SH-019・`apps/web/tests/k/k220-bridge-shell.spec.ts` の K220-UI-013 を `toBeLessThan(上端 + 1)` |",
+    "テスト仕様と確認の結果": "`scripts/ci/k1114_build_dir_skip_test.py`（作りものの木を tempfile に）と `apps/web/tests/k/k1114-signup-ip.spec.ts`（本物の口と DB・網の手前で差し替えない）\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K1114-CI-001 | 入力 | D8 の置き場の読み：`web/.next-prod` の下に生の値の .css と .js、`web/features` に .css と .tsx | 読むのは `web/features/a.css` と `web/features/a.tsx` だけ（.next-prod の 2 つは一覧に無い） |\n| K1114-CI-002 | 入力 | D6：段 display を `.next-prod` の .css だけが使う | `unused_scales` が `[\"display\"]` を返す（組み立てた出力で使ったことにしない） |\n| K1114-CI-003 | 入力 | class_gate のファイル集め：`.next-prod/server/b.tsx` と `features/a.tsx` | 返すのは `features/a.tsx` だけ |\n| K1114-UI-001 | 操作の揺れ | 準備の道具 signupViaApi で 12 人（上限 10 ＋ 2）を続けて作る | 12 人とも 201 で token と会社を持ち、会社は 12 個とも別 |\n| K1114-UI-002 | 守り | 同じ届く元から登録の口を 11 回（体は空。上限は中身の確かめより前に数えるので、時間に頼らず 60 秒の窓に収まる） | 10 回は 422、11 回目は 429・code RATE_LIMITED（上限は本番のまま残る） |\n\n前からの試験（同じ CI で流れる）：K357-UI-001〜024（替えない・準備の道具の直しで緑）・K400-DS-002（替えない）・K138-SH-019 と K220-UI-013（測り方を替えた）。\n\n### テストの型の受け（分類 TOOL）\n\n| 型 | どこで受けるか |\n|---|---|\n| 日本語の名前のファイル | 要らない: TP-TOOL-01 はこの葉に当たらない（置き場の名前の飛ばし方だけを変え、ファイルの名前の読み方は変えない） |\n| 検査が何も見ていないのに緑 | K1114-CI-001・003 が、飛ばさない側（features の .css・.tsx）を読むことも同じ行で見る（全部飛ばしても緑にならない）。K1114-CI-002 は使われない段が出ることを見る |\n| 容れ物の中と手元の違い | K1114-CI-001〜003（CI の容れ物の中で組み立てた置き場 .next-prod を作りものの木で再現）。手元の実 Chrome と組み立てた画面で K400-DS-002 が赤→緑 |",
+    "前からの試験を替えた所": "準備の道具（IP ごとの口を呼ぶ所）・読まない置き場・下のタブの被りの測り方を検索で全部出した。\n\n```search\ngit grep -n -e '\"/api/v1/auth/sign-up\",$' -e '\"/api/v1/auth/sign-up/verify\",$' -e 'api(\"/api/v1/auth/sign-up' -e 'api<[^>]*>(\"/api/v1/auth/sign-up' -e '`/api/v1/auth/invitations/${token}/accept`,$' -- apps/web/tests\n6\n```\n\n```search\ngit grep -n '\"\\.next\"\\|/\\.next/' -- 'scripts/ci/*.py' 'scripts/ci/*.mjs'\n8\n```\n\n```search\ngit grep -n 'scrollTo(0, document.documentElement.scrollHeight)' -- apps/web/tests\n3\n```\n\n- apps/web/tests/_lib/api.ts: 替える — 登録・確認・閲覧のみの人の招待の受諾で 1 人ごとの届く元\n- apps/web/tests/_lib/prep.ts: 替える — 招待の受諾で 1 人ごとの届く元\n- apps/web/tests/skeleton/k342-terms-then-enter.spec.ts: 替える — 確認の口を本物で呼ぶ（骨組みの G59。1 回だが同じ類）\n- apps/web/tests/k/k1114-signup-ip.spec.ts: 替える — この葉の試験（新しい・同じ届く元で上限を見る行）\n- 画面から登録・確認・受諾を押す前からの試験（features/F1/*・k256・k335 など）: 替えない — 網の手前の差し替え（本物の口を呼ばない）か 1 回だけ\n- scripts/ci/chat_one.mjs・scripts/ci/contract_shape_test.py: 替える — 読まない置き場に `.next-prod`（今は赤でないが同じ類）\n- scripts/ci/claude-terms.mjs: 替えない — もう `.next-prod` を飛ばす\n- scripts/ci/k214_class_gate_test.py: 替えない — `.next` の作りものの木を作るだけ（K1114-CI-003 が `.next-prod` を受ける）\n- scripts/ci/ci_scope.py: 替えない — 置き場の読みは点で始まる置き場を全部飛ばす（`.next-prod` も飛ぶ）\n- apps/web/tests/k/k138-shell.spec.ts: 替える — K138-SH-019 の被りを 1px からに（期待は弱めない：1px 以上の被りは赤のまま）\n- apps/web/tests/k/k220-bridge-shell.spec.ts: 替える — K220-UI-013 も同じ測り方（今は緑だが、本文の高さが端数になると同じく赤になる）\n- apps/web/tests/k/k251-ticket-list-mine.spec.ts: 替えない — K251-UI-030 は下端の数ではなく、物の真ん中の点に何があるか（elementFromPoint）で見る\n- apps/web/tests/k/k357-credentials-edit-check.spec.ts・k400-stage9-mock.spec.ts: 替えない — 準備の道具と検査の置き場の直しで緑（手元の実 Chrome と本番の形で組み立てた画面で確かめた）",
+    "決定ログ": "- 2026-11-23 PM の決め（作り方）：登録の口の上限は変えず、試験の準備が 1 人ごとに別の届く元を使う・組み立てた画面の置き場は検査が読まない・下のタブの被りは 1px からを数える",
+    "リスクと懸念": "- 組み立ての置き場の名前を NEXT_DIST_DIR で別の名前にしたら、検査の SKIP_DIRS にも足す（今は .next と .next-prod の 2 つ）\n- 画面の試験を全部流す回では、ほかの IP ごとの口（sign-in など）を多くの試験が続けて呼ぶと同じ上限に当たりうる。今の G48 の赤には無い",
+    "申し送り": "- K-1105 の CI の spec の組の赤「生成物が古い」は K-1105 の枝の物（この葉の範囲の外）"
+   },
+   "file": "11_tickets/K-1114.md"
+  },
+  {
+   "id": "K-1115",
+   "title": "直し：切る段から 1 本を持ち込む台本（cut_take）が、重ねた元の行のすぐ下に足すだけの自分の行を「ぶつかる」と止める（K-581 の start --cut）・PM の直し",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-56",
+   "milestone": "F6",
+   "area": "CI",
+   "assignee": "実装",
+   "due": "2026-11-23",
+   "estimate_hours": "0.5",
+   "estimate_basis": "実測なし・仮。形の近い直しの葉 K-1100（0.5 時間）と同じくらい：直しと試験は PM が作って確かめ済み（パッチ）。チケットを書く 10 分・試験の止まる側を 1 本足す 10 分・写して流す 5 分",
+   "decisions": [
+    "D-133"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "切る段の持ち込みの台本（scripts/tickets/cut_take.py）が共有の試験を 3 方で合わせる所だけ。製品のコード・口・DB・外には触らない",
+   "tests": [
+    "scripts/ci/k1115_cut_take_test.py"
+   ],
+   "depends_on": [],
+   "acts": [],
+   "screens": [],
+   "canvas": [],
+   "canvas_none": "見た目を変えないチケット（切る段の台本だけ）。正の絵の組は持たない",
+   "apis": [],
+   "affects": [],
+   "ci_wide": [
+    "ci"
+   ],
+   "changes": [
+    "scripts/tickets/cut_take.py",
+    "scripts/ci/g65.d/K-1115.txt"
+   ],
+   "flow": "CI を直す",
+   "sections": {
+    "目的": "段 5 の K-581（鎖の手前）を `flow.py start K-581 --cut c/段5` で始めると、持ち込みの台本 `scripts/tickets/cut_take.py` が共有の試験 `apps/api/test/features/contract/k144-contract.test.ts` で「本線の後からの変更とぶつかる」と止まる（followups.md の K-581 の行）。\n\n原因：台本は共有の試験を 3 方で合わせるとき、元の版を「切る段の枝と本線の分かれ目」にしている。K-581 の重ねた元 K-437 は分かれ目の後に本線へ入り、切る段の版では K-437 の行のすぐ下に K-581 の行がある。分かれ目から見ると、本線は「K-437 の行を足した」、切る段は「K-437 の行と K-581 の行を足した」になり、同じ所を別々に変えたとして git merge-file がぶつかる。中身は「本線の版に自分の行を足すだけ」で、本当のぶつかりではない。\n\nPM の決め（作り方）：\n1. 分かれ目を元にして合わせ、ぶつからなければ今のまま\n2. ぶつかったときだけ、元の版を「切る段の版から自分の印（行の末尾の `// K-xxx` と範囲）を外した物」にして合わせ直す。これで差は自分の行だけになり、本線の版にそれを足す\n3. 合わせ直すと、切る段で足した印の無い行（どのチケットの物でもない行）を本線が消したように見えて落ちることがある。そういう行があれば落とさずに止める。判定は、まだのチケットの印と範囲を外した後の切る段の版で見る（外した範囲の中身は数えない）。同じ字面の行（`});` など）を見落とさないよう、行ごとの数で比べる：切る段の版での数が、分かれ目の数と合わせた結果の数の大きい方を超える行を「落ちた」とする（空行は数えない）\n4. 2 回目の合わせもぶつかれば、今までどおり止める",
+    "完了の条件": "- [ ] 下の表の行（K1115-CT-001〜005）が緑\n- [ ] 前からの K187-CT-001〜011 が緑のまま（`python3 scripts/ci/k187_cut_take_test.py` で 11 本。このファイルは替えない）\n- [ ] チケットの範囲の CI が緑\n- [ ] 取り込んだ後、K-581 の `flow.py start K-581 --cut c/段5` が止まらない（PM が確かめる）",
+    "前提と制約": "分類: TOOL\n\n- 分かれ目を元にして合わせられるときの振る舞い（K187-CT-008・010 の本線に後から入った行を残す）は変えない\n- 合わせ直しは共有の試験（SHARED）だけ。carry: のファイル・tests: の試験の 3 方の合わせ（K187-CT-010）は今のまま\n- ticket-flow のスキル（flow.py）は変えない（台本は設定 cut.take から呼ばれる）",
+    "目録で探した結果": "| 使う物 | どこ | 使い方 |\n|---|---|---|\n| 3 方の合わせ | `cut_take.py` の `merge3` | そのまま使い、ぶつかったら元の版を替えて 2 回目を呼ぶ |\n| 印を外す | `cut_take.py` の `filter_marks`・`MARK` | 自分の番号を keep から外して、元の版を作る。落ちた行の判定で印のある行を除く |\n| 探したが無かった物 | 自分の印の行だけを本線の版に足す道具 | `merge_own_only` を足す |",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| 合わせ直し | `scripts/tickets/cut_take.py`：`merge_own_only(path, fork_body, ours, theirs, own_free)` を足す。`take` の共有の試験の合わせで、`merge3` が止めたら `merge_own_only` を呼ぶ（本線の版が無いときは merge3 がぶつからないので呼ばれない）。2 回目の `merge3` がぶつかればそのまま止まる。印を外した後の切る段の版（theirs）の印の無い行ごとに数を数え（collections.Counter）、分かれ目の数と結果の数の大きい方を超える行があれば、その行を出して止める |",
+    "テスト仕様と確認の結果": "`scripts/ci/k1115_cut_take_test.py`（作りものの git の木を tempfile に。土台の setUp・tearDown・take と部品は K-187 の試験 `scripts/ci/k187_cut_take_test.py` から借りる。K-187 の試験のファイルは持ち主が K-187 なので替えない・G53）。CI には `scripts/ci/g65.d/K-1115.txt` の 1 行で載せる\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K1115-CT-001 | 対象の状態 | 切る段の版で重ねた元 K-6 の行のすぐ下に自分 K-5 の行がある。K-6 は分かれ目の後に本線へ入った（K-581 の形） | 止まらず、共有の試験は「A・K-6 の行・K-5 の行・後ろの行」とそのとおりの中身になる（K-6 の行は 1 つだけ・本線の行は消えない） |\n| K1115-CT-002 | 失敗 | 同じ形で、切る段の版の離れた所に印の無い行 `const x = 9;` がある。本線にはその行が無い | 止める（SystemExit）。文に「印の無い行が本線に無い：const x = 9;」。共有の試験は本線の版のまま・チケットの md も置かない |\n| K1115-CT-003 | 対象の状態 | CT-001 と同じぶつかる並びに、まだ本線に入っていないチケット K-7 の範囲（`// K-7 ここから`／`const block7 = 7;`／`// K-7 ここまで`）が離れた所にある | 止まらない。共有の試験は「A・K-6 の行・K-5 の行・後ろの行」だけで、K-7 の範囲は 3 行とも無い（全部の文字で比べる） |\n| K1115-CT-004 | 失敗 | 同じぶつかる並びで、切る段の版に印の無い `});` が 2 つ（K-5 の行の下と後ろの端）、本線の版には 1 つ（K-6 の行の下）だけある | 止める（SystemExit）。文に「印の無い行が本線に無い：});」。共有の試験は本線の版のまま・チケットの md も置かない（同じ字面が結果のほかの所にあっても見落とさない） |\n| K1115-CT-005 | 失敗 | 切る段は `const s6 = 6; // K-6` のすぐ下に K-5 の行、本線は重ねた元の行を `const s6 = 66; // K-6` に直して入れた | 止める（SystemExit）。文に「ぶつかる」とファイルの名前。共有の試験は本線の版のまま・チケットの md も置かない |\n\n前からの試験（K-187 のファイル `scripts/ci/k187_cut_take_test.py`）：K187-CT-001〜011（替えない・緑のまま）。\n\n### テストの型の受け（分類 TOOL）\n\n| 型 | どこで受けるか |\n|---|---|\n| 日本語の名前のファイル | 要らない: TP-TOOL-01 はこの葉に当たらない（ファイルの名前の読み方は変えない。日本語と空白の名前は K187-CT-005 のまま） |\n| 検査が何も見ていないのに緑 | K1115-CT-002・004 は落ちた行の判定だけで止まる形（2 回目の合わせはぶつからずに通る並び）。判定を消すと、行が落ちたまま止まらずに赤になる。CT-004 は在る無しだけで見る判定（同じ字面が結果にある）でも赤になる。K1115-CT-001・003 は中身を全部の文字で比べる |\n| 容れ物の中と手元の違い | 要らない: git merge-file と Python だけで、CI の容れ物でも手元でも同じに動く（作りものの木は tempfile） |",
+    "前からの試験を替えた所": "台本を使う試験を検索で全部出した。\n\n```search\ngit grep -l 'cut_take' -- scripts apps\n6\n```\n\n- scripts/ci/k187_cut_take_test.py: 替えない — K-187 の試験（持ち主は K-187）。この葉の行 K1115-CT-001〜005 は自分の試験 scripts/ci/k1115_cut_take_test.py に置き、土台だけを import で借りる\n- scripts/ci/k1115_cut_take_test.py: 足す — この葉の試験（tests:）\n- scripts/ci/g65.d/K-1115.txt: 足す — この葉の自己試験を CI の G65 に載せる 1 行（changes:）\n- scripts/tickets/cut_take.py: 替えない — 台本そのもの（changes:）\n- scripts/ci/g65.d/_base.txt: 替えない — 自分の自己試験は scripts/ci/g65.d/K-1115.txt に 1 行足す（作り手 05_flow/build_testplan.py が CI の定義と試験計画に書く）\n- scripts/ci/k376_gate_lists_test.py: 替えない — 試験のファイルの名前を並べるだけ（名前は変えない）",
+    "決定ログ": "- 2026-11-23 PM の決め（作り方）：分かれ目を元にしてぶつかったときだけ、元の版を「切る段の版から自分の印を外した物」にして自分の行だけを足す。切る段で足した印の無い行が本線に無ければ落とさずに止める",
+    "リスクと懸念": "- 合わせ直しは、ぶつかりの中身が「自分の行」だけのときに効く。重ねた元とは別の、まだ本線に入っていないほかのチケットの行とぶつかる形は、今までどおり止まる（切る段の枝に本線を取り込んでからやり直す）\n- 重ねた元を本線に入れるときに、その行の字面を直していると（CT-005 の形）、2 回目の合わせもぶつかって止まる。K-581 の start が通るかはこれで決まる（止まれば切る段の枝に本線を取り込んで切り直す）\n- c/段10 の K-712 の混ざり（followups.md）は同じ台本の類だが、形が違えばこの直しでは止まりが残る。始めるときに PM が確かめる",
+    "申し送り": "- なし"
+   },
+   "file": "11_tickets/K-1115.md"
+  },
+  {
    "id": "K-1116",
    "title": "直し：契約 fuzz（G36）で出た前からの口の赤を直す（記憶を直す口に作る口の値域が漏れる・ログインのメールの形が部品の確かめより広い・PC の確かめに答える口の作った直後の確かめ）・PM の直し",
    "kind": "タスク",
@@ -24660,6 +24773,76 @@
     "申し送り": "- 開始の日 start_on は K-437 の後も形（`^(?:[0-9]{4}-[0-9]{2}-[0-9]{2})?$`）だけで、口は暦に無い日（\"0000-00-00\"）を 422「開始は日付で入れてください」で断る。fuzz が当てれば同じ ST202 になる。K-437 の createTicket の値域で直すのがよい（空を許すので `anyOf: [{maxLength: 0}, {format: date}]` の形）\n- 登録・再設定の口（createSignup・requestPasswordReset）の契約のメールの形 `^\\s*[^@\\s]+@[^@\\s]+\\.[^@\\s]+\\s*$` も口の受け方（normalizeEmail → EMAIL_RE）の部分集合でない（精査 R の指摘・同じ ST202 の類・今回の回では当たらなかった）。見本：\"a﹫b@example.com\"・\"a＠b@example.com\"（NFKC で @ になり @ が 2 つ・Python では \\s でも @ でもない）・\"\\ufeff@example.com\"（JS の \\s は BOM を除いてローカル部が空・Python の \\s は BOM を含まない）。前からある別の場所の問題（c）として切る\n- 契約の `\\S` の値域（空・空白だけを断る欄）は、Python（schemathesis）と JS（口の trim・\\s）で空白の字の集まりが違う。updateMemory の body なら \"\\x1c\" は Python で形の外なのに口は 200（ST201 の種）、\"\\ufeff\" は Python で形どおりなのに口は 422（ST202 の種）。同じ形の欄は次のとおり。前からある別の場所の問題（c）として、`[^ \\t\\n\\r\\f\\v]` などの両方で同じ字の集まりに直す葉を切る\n\n```search\ngit grep -n '\"pattern\": \"\\\\\\\\S\"' -- 05_flow/screen_api.py '05_flow/screen_api.d/*.py'\n19\n```\n\n- 登録の口（createSignup）は EMAIL_RE だけで受け、確かめの口（verifySignup）で部品の signUpEmail が z.email() で断る。部品が断るメール（日本語の名前など）で登録すると、確かめで落ちる。前からある別の場所の問題（c）"
    },
    "file": "11_tickets/K-1116.md"
+  },
+  {
+   "id": "K-1117",
+   "title": "直し：契約の形を口の受け方と同じ字の集まりにする（登録のメールを部品の z.email() に合わせる・\\s \\S \\d \\w を Python と JS で同じ字にする）・PM の直し",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-56",
+   "milestone": "F6",
+   "area": "CI",
+   "assignee": "実装",
+   "due": "2026-11-23",
+   "estimate_hours": "1",
+   "estimate_basis": "実測なし・仮。形の近い直しの葉 K-1116（1 時間）と同じくらい：変換の作り手と自己試験 25 分・登録の口に部品の確かめを足す 10 分・前からの試験 2 本の比べ方を変換の後にする 10 分・作り直して差分を見る 15 分",
+   "decisions": [
+    "D-128.123",
+    "D-133.7"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "契約の作り手（05_flow/build_api.py）・契約の形の元（05_flow/screen_api.py・screen_api.d/K-638.py・scripts/ci の pattern の置き場）と、登録の口の入力の確かめ（DB に書く前・メールを送る前に断るだけ）。DB の関数・外には触らない",
+   "tests": [
+    "scripts/ci/k1117_portable_contract_test.py",
+    "apps/api/test/features/F1/k1117-email-shape.test.ts",
+    "scripts/ci/contract_shape_test.py"
+   ],
+   "depends_on": [
+    "K-1116"
+   ],
+   "acts": [],
+   "screens": [],
+   "canvas": [],
+   "canvas_none": "見た目を変えないチケット（契約の作り手と口の入力の確かめだけ）。正の絵の組は持たない",
+   "apis": [],
+   "affects": [
+    "@kaname/api",
+    "@kaname/auth",
+    "@kaname/contracts"
+   ],
+   "ci_wide": [
+    "ci",
+    "shared"
+   ],
+   "changes": [
+    "packages/auth/src/signup.ts",
+    "apps/api/src/features/F1/sign-up/input.ts",
+    "apps/api/src/features/F3/credentials/patterns.ts",
+    "scripts/ci/credential_patterns.py",
+    "scripts/ci/portable_regex.py",
+    "scripts/ci/email_patterns.py",
+    "05_flow/build_api.py",
+    "05_flow/screen_api.py",
+    "05_flow/screen_api.d/K-638.py",
+    "scripts/ci/g65.d/K-1117.txt"
+   ],
+   "flow": "CI を直す",
+   "sections": {
+    "目的": "K-1116 の申し送り（前からある別の場所の問題 c）の 3 つを直す。本線の先頭 14896746c（K-1116 の枝 t/K-1116 の土台と同じ口）で 3 つとも起きることを確かめた。\n\n| 種類 | 起きること（本線で確かめた） | どちらが正か | 直し |\n|---|---|---|---|\n| 1 | 登録（createSignup）・再設定（requestPasswordReset）の契約のメールの形 `^\\s*[^@\\s]+@[^@\\s]+\\.[^@\\s]+\\s*$` に、\"a﹫b@example.com\"・\"a＠b@example.com\"・\"﻿@example.com\" が合う（Python の re で True）。口は normalizeEmail（NFKC・空白を全部除く・小文字）の後の EMAIL_RE で 3 つとも断る（﹫・＠ は NFKC で @ になり @ が 2 つ・BOM は JS の \\s なので除かれてローカル部が空）。契約 fuzz の ST202 の種 | 口の正規化が正。契約が広すぎる | 登録の契約のメールの形を、ログインの口（K-1116）と同じ「部品の z.email() の形を前後の空白 `[ \\t\\n\\r]*` で挟んだ物」にする（1 つの置き場 scripts/ci/email_patterns.py からログインと登録が引く）。再設定はこのチケットでは口を変えられない（下の「再設定を外した訳」）。BOM の分だけは種類 2 の直しで契約の外になる |\n| 2 | 契約の `\\s` `\\S`（と `\\d`）は、schemathesis（Python）と口（JS の trim・正規表現）で字の集まりが違う。updateMemory の body `\\S` に \"\\x1c\"・\"\\x85\" は Python では形の外なのに口の trim は残して 200（ST201 の種）、\"﻿\" は Python では形どおりなのに口の trim が除いて 422（ST202 の種）。`\\d` は Python では全部の国の数字（\"٣\"）に当たり、JS は 0〜9 だけ。契約の pattern のうち 38 か所がこの字を使う | 口（JS）が正 | 作り手 05_flow/build_api.py が契約（08_api/openapi.yaml）を書く前に、pattern の `\\s` `\\S` `\\d` `\\D` `\\w` `\\W` を JS と同じ字を並べた形に直す（scripts/ci/portable_regex.py の portable）。元の表（screen_api.py・screen_api.d・contract_shape.d の写し）は今の字のまま。JS が同じ pattern の字を使う預けたログインの login（patterns.ts の LOGIN_PATTERN）だけは元の字を変換の後の字にそろえる（JS での意味は同じ） |\n| 3 | 登録の口は EMAIL_RE だけで受け、確かめの口（verifySignup）で部品の signUpEmail が z.email() で断る（better-auth 1.7.15 の sign-up.mjs:151）。\"日本@例.jp\" は EMAIL_RE を通り z.email() で落ちる（tsx で確かめた）：登録の申し込みとメールはできるのに、リンクを押すと確定できない | 部品の z.email() が正 | 登録の口は、正規化の後に EMAIL_RE と部品の z.email() の両方で見て、外なら 422 E-VAL-004（欄 email）。今の断り方（番号・文言・申し込みを作らない・メールを送らない）のまま |\n\nPM の決め（作り方・頼まれた向き：部品の z.email() と口の正規化（NFKC・trim）を正にする）：\n1. 種類 1・3 は、登録の口に部品の確かめ（isLoginEmail）を足し、契約は部品の形を前後の空白で挟んだ物（口より狭く書く）\n2. 種類 2 は、作り手の出口で 1 回だけ直す（元の表を 20 か所以上書き換えない・これから足す pattern も同じに直る）。`[\\s\\S]`（どの字でも）は両方で同じなのでそのまま。直せない形（字の組の中の `\\S` など）は作り手が止める\n3. `$`（Python は末の改行の前でも当たる）と `.` の違いは、このチケットでは変えない（K-1116 の口が末の改行 1 つを受ける形で合わせている・申し送り）\n\n### 再設定を外した訳\n\n再設定の口（apps/api/src/features/F1/password-reset/index.ts）は、いま作っている K-1106（実装済み・DB の失敗を 503 にする）が同じファイルを変える。同時に作れない（start が止めた）うえ、K-1106 と K-1116 の枝は合わせるとぶつかる（08_api/phase1/01_チケット.md・start が止めた）ので重ねても始められない。\n再設定の契約だけを狭めると、口が受ける形の外の入力を 201 で受ける（fuzz の ST201 の種）ので、口と契約は同じ葉で変える。K-1106 が本線に入った後の葉に回す（申し送り）。",
+    "完了の条件": "- [ ] 下の表の行（K1117-CT-001〜007・K1117-API-001〜002）が緑\n- [ ] 作り手で作り直した生成物（08_api/openapi.yaml・packages/contracts/src・apps/api/test/generated）がそろっている\n- [ ] チケットの範囲の CI が緑（前からの試験 contract_shape_test.py・k1116・k638・k639・credentials-create の K352-API-026 も）",
+    "前提と制約": "分類: TOOL, REG\n\n- 口の振る舞いは、登録で部品が断るメールを先に 422 E-VAL-004 で断ることだけを足す。ログインの口・再設定の口・招く口・DB・入口（op.ts）は変えない\n- 元の表の字（VALUE_RANGES・INPUT_RULES・QUERY_RANGES・PATH_PATTERNS とその写し）は、登録とログインのメールのほか変えない。契約に書く時だけ直す\n- 部品の zod は packages/auth の依存の zod（better-auth が引く物と同じ 4.6.7・同じ置き場を tsx で確かめた）\n- EMAIL_RE そのものは変えない（招く口の K419-API-027 が「前の口の判定」として全 BMP の字で使う）",
+    "目録で探した結果": "| 使う物 | どこ | 使い方 |\n|---|---|---|\n| JS の trim が落とす字の並び | `scripts/ci/invite_patterns.py` の WS（K-419） | 同じ字を portable_regex.py に置く（招く口の置き場は K-419 の物なので触らない） |\n| 部品の z.email() の形を前後の空白で挟んだ物 | K-1116 の `05_flow/screen_api.d/K-638.py` の `_SIGNIN_EMAIL` | `scripts/ci/email_patterns.py` の LOGIN_EMAIL に移し、ログインと登録が引く |\n| 契約を書く所 | `05_flow/build_api.py` の `yaml.safe_dump(openapi, …)` の前 | 書く前に openapi の全部の pattern を portable で直す |\n| 部品のメールの形 | zod 4.6.7 の `z.regexes.email`（`z.email()` の既定の形と同じ字・tsx で確かめた） | isLoginEmail が z.email() の safeParse で見る |\n| 探したが無かった物 | 契約の pattern が Python と JS で同じ字の集まりかを見る検査 | この葉の試験 K1117-CT-003・004 が見る |",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| 変換の作り手 | `scripts/ci/portable_regex.py`：`portable(p)`。字の組の外の `\\s`→`[WS]`・`\\S`→`[^WS]`・`\\d`→`[0-9]`・`\\D`→`[^0-9]`・`\\w`→`[A-Za-z0-9_]`・`\\W`→`[^A-Za-z0-9_]`。字の組の中の `\\s`→WS の字・`\\d`→`0-9`・`\\w`→`A-Za-z0-9_`。`\\\\` などほかの escape はそのまま。`\\s` と `\\S` を両方持つ字の組（どの字でも）はそのまま。字の組の中の `\\S` `\\D` `\\W`・組の外の `\\b` `\\B` は ValueError（どの pattern かを出す）。2 回当てても同じ。`walk(obj)` は dict と list をたどり、鍵 pattern の文字を直した新しい物を返す（example・examples の下はたどらない） |\n| 契約を書く所 | `05_flow/build_api.py`：`yaml.safe_dump` の前に `openapi = portable_regex.walk(openapi)` |\n| メールの形の置き場 | `scripts/ci/email_patterns.py`：`LOGIN_EMAIL`（K-1116 の `_SIGNIN_EMAIL` と同じ字） |\n| 契約の元 | `05_flow/screen_api.py`：VALUE_RANGES の前で scripts/ci を読めるようにして `import email_patterns as _EP`。createSignup の email を `_EP.LOGIN_EMAIL`。d の手助けに `_EP` を渡す。`05_flow/screen_api.d/K-638.py`：`_SIGNIN_EMAIL` を消し、signInWithPassword を `_EP.LOGIN_EMAIL`（再設定の `_EMAIL` は今のまま） |\n| 部品の確かめ | `packages/auth/src/signup.ts`：`isLoginEmail(normalized)` = `EMAIL_RE.test(e) && z.email().safeParse(e).success`（packages/auth の依存の zod から） |\n| 登録の口 | `apps/api/src/features/F1/sign-up/input.ts` の parseSignup：EMAIL_RE の所を `isLoginEmail(email)` にする（外は今と同じ fail(\"E-VAL-004\", \"email\")） |\n| 預けたログインの login | `scripts/ci/credential_patterns.py` の LOGIN と `apps/api/src/features/F3/credentials/patterns.ts` の LOGIN_PATTERN を `portable(\"\\\\S\")` と同じ字にする（JS での意味は同じ。K352-API-026 が契約と字まで同じかを見る） |\n| 自己試験の置き場 | `scripts/ci/g65.d/K-1117.txt`：`python3 scripts/ci/k1117_portable_contract_test.py` |\n| 作り直し | 作り手（`python3 scripts/ci/build_registries.py && python3 scripts/tickets/regen_all.py`）で生成物を作り直す |",
+    "テスト仕様と確認の結果": "`scripts/ci/k1117_portable_contract_test.py`（CT 行・作り直した 08_api/openapi.yaml と 05_flow/screen_api.py の表を読む。JS の判定と口の受け方は node・tsx で本物の関数を流す）と `apps/api/test/features/F1/k1117-email-shape.test.ts`（API 行・本物の DB と login.harness.ts・pm-fuzz-auth.test.ts と同じ形）。\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K1117-CT-001 | 入力 | portable に `\\S`・`\\s`・`^\\s*[^@\\s]+$`・`\\d{3}`・`[12\\d]`・`\\w`・`\\W`・`\\D`・`a\\\\s`（字の \\ と s）・`[\\s\\S]*`・`\\.` と、直した後の字をもう 1 回 | `[^WS]`・`[WS]`・`^[WS]*[^@WS]+$`・`[0-9]{3}`・`[120-9]`・`[A-Za-z0-9_]`・`[^A-Za-z0-9_]`・`[^0-9]`・`a\\\\s`（変えない）・`[\\s\\S]*`（変えない）・`\\.`（変えない）。2 回目も同じ字 |\n| K1117-CT-002 | 失敗 | portable に `[^\\S]`・`[a\\D]`・`[\\W]`・`\\bx`・`\\B` | どれも ValueError で、文にその pattern の字が入る |\n| K1117-CT-003 | 入力 | 作り直した 08_api/openapi.yaml の全部の pattern（components と道・問い合わせの欄） | `\\s` `\\S` `\\d` `\\D` `\\w` `\\W` を使う pattern が 0 件（`[\\s\\S]` の字の組だけは除く）。pattern は 1 つ以上ある |\n| K1117-CT-004 | 入力 | 05_flow/screen_api.py（d を合わせた後）の VALUE_RANGES・INPUT_RULES・QUERY_RANGES・PATH_PATTERNS の中の `\\s` `\\S` `\\d` を使う pattern と、試しの字（\"\\x1c\"・\"\\x1f\"・\"\\x85\"・\"﻿\"・\"　\"・\" \"・\" \"・\"\\t\"・\"a\"・\"٣\"・\"０\"・\"5\"・\"_\"）を 1 字・前後に \"a\" を付けた 3 通り | どの元の pattern も、portable で直した字が openapi.yaml の pattern に在る。直した字の Python の re.search と、元の字の JS の `new RegExp(元).test` が、全部の試しの字で同じ（違う組が 0 件） |\n| K1117-CT-005 | 入力 | 登録（createSignup）・ログイン（signInWithPassword）のメールの契約の pattern と、部品 better-auth が引く zod の `z.email()` の正規表現の字 | 2 つとも email_patterns.LOGIN_EMAIL を持ち、それは「`^[ \\t\\n\\r]*` ＋ 部品の字（頭の ^ と末の $ を除く）＋ `[ \\t\\n\\r]*$`」と字まで同じ。2 つの口に前の形（`[^@` で始まるローカル部）は無い |\n| K1117-CT-006 | 入力 | 登録の口の入力の確かめ（本物の parseSignup）に、見本 14（\"a﹫b@example.com\"・\"a＠b@example.com\"・\"﻿@example.com\"・\"日本@例.jp\"・\"a@example.com\"・\" Foo.Bar+x@sub.example.co \\n\"・\"ａ@example.com\"・\"Ａ@Example.COM　\"・\"\\x1ca@example.com\"・\"a b@example.com\"・\"a..b@example.com\"・\"a@b.c\"・\"a'@example.com\"・\"x.y+z@example.com\"） | \"a﹫b@example.com\"・\"a＠b@example.com\"・\"﻿@example.com\" の 3 つは契約の形の外。\"日本@例.jp\" は口が 422・code E-VAL-004・欄 email で断る。\"ａ@example.com\"・\"Ａ@Example.COM　\" は口が受ける（今までどおり全角を直して受ける）。契約の形どおりなのに口が断る見本が 0 件 |\n| K1117-CT-007 | 入力 | 預けたログインの login の pattern（scripts/ci/credential_patterns.py の LOGIN・apps/api/src/features/F3/credentials/patterns.ts の LOGIN_PATTERN・openapi.yaml の CredentialCreateInput の login） | 3 つが同じ字で、portable(\"\\\\S\") と同じ（`\\S` の字は残っていない） |\n| K1117-API-001 | 入力 | 登録の口に、部品が断るメール \"日本@例.jp\"・\"k1117-ｶﾅ@example.com\"（EMAIL_RE は通る）と正しい名前・パスワード | どちらも 422・code E-VAL-004・欄 email。申し込み（kaname_auth.pending_signup）はそのメールで 0 行・メールは 1 通も増えない |\n| K1117-API-002 | 失敗 | 登録の口に \"a﹫b@example.com\"・\"﻿@example.com\"（契約の外になった形） | どちらも 422・code E-VAL-004・欄 email（今までどおり断る。fuzz の「形の外」で 2xx にならない）。メールは 1 通も増えない |\n\n### テストの型の受け（分類 TOOL・REG）\n\n登録の口は、断る形（部品が断るメール）を 1 つ足すだけ。申し込みを作る前・パスワードを見る前に返るので、確定・リンク・パスワード・同意・上限の型は前のまま（K-51・K-52 の試験が受ける）。\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-TOOL-01 日本語の名前のファイル | 要らない: ファイルの名前を読まない（決まった道だけ） |\n| TP-TOOL-02 検査が何も見ていないのに緑 | K1117-CT-003（本線の版で 38 件を出して赤・pattern が 0 件なら赤）・K1117-CT-004（元の字のまま契約に書くと \"\\x1c\"・\"\\ufeff\"・\"٣\" で違いが出て赤・直した字が openapi に無くても赤） |\n| TP-TOOL-03 容れ物の中と手元の違い | 要らない: Python と node・tsx（node_modules の部品）だけで、CI の容れ物でも手元でも同じに動く |\n| TP-REG-01 登録が確定する時点 | 要らない: 確定の流れ（verifySignup）は変えない。部品が断るメールは申し込みを作らないので確定まで行かない（K1117-API-001 が 0 行を見る） |\n| TP-REG-02 リンクの期限切れ | 要らない: リンクの扱いは変えない |\n| TP-REG-03 確定の後に同じリンク | 要らない: リンクの扱いは変えない |\n| TP-REG-04 送り直しの後の前のリンク | 要らない: 送り直しは変えない |\n| TP-REG-05 別の端末でリンク | 要らない: リンクの扱いは変えない |\n| TP-REG-06 ログイン中に登録の画面 | 要らない: 画面とセッションの扱いは変えない |\n| TP-REG-07 登録済みのメール | 要らない: 登録済みの確かめ（409 E-CONF-001）は形の確かめの後で変えない。部品が断るメールで登録済みの人はいない（部品が作らない） |\n| TP-REG-08 大文字小文字・前後の空白・全角 | K1117-CT-006（全角・大文字・前後の全角の空白は今までどおり受ける・形の外の全角の @ は断る） |\n| TP-REG-09 漏れたパスワード | 要らない: パスワードの照合は形の確かめの後で変えない |\n| TP-REG-10 パスワードの長さの境目 | 要らない: パスワードの確かめは変えない |\n| TP-REG-11 短い時間に何度も | 要らない: 回数の上限は入口の前で変えない |\n| TP-REG-12 同時に 2 回・2 回押し | 要らない: 断る形を足すだけで、申し込みを作る前に返る |\n| TP-REG-13 同意した規約の版 | 要らない: 同意の記録は形の確かめの後で変えない |\n| TP-REG-14 平文で残らない | 要らない: 断るときは何も書かない（K1117-API-001・002 が申し込み 0 行・メール 0 通を見る）。ログの書き方は変えない |",
+    "依存の理由": "- K-1116: 要る — 同じファイル（05_flow/screen_api.d/K-638.py のログインのメールの形・scripts/ci/k1116_fuzz_contract_test.py）を、K-1116 の版の上で変える",
+    "外に影響する手順": "なし（口は DB に書く前・メールを送る前に断るだけ。作り手は生成物を書くだけ）",
+    "前からの試験を替えた所": "契約の pattern の字を比べる前からの試験と、登録・再設定のメールの形を見る前からの試験を検索で出した。\n\n```search\ngit grep -l -e '\"pattern\"' -e \"\\['pattern'\\]\" -e 'createSignup' -e 'requestPasswordReset' -e 'LOGIN_PATTERN' -- 'scripts/ci/*_test.py' 'scripts/ci/contract_shape.d/K-638.py' 'apps/api/test/features/**/*.ts' | grep -v k1117\n11\n```\n\n- scripts/ci/contract_shape_test.py: 替える — K144-SHAPE-022・023・028 が元の表の字と契約の字を「==」で比べる。比べる前に元の字に portable を当てる（表の写しの字は変えない）。createSignup の email の写しを `_EP.LOGIN_EMAIL` にし、`email_patterns` を読む\n- scripts/ci/k1116_fuzz_contract_test.py: 替える — K1116-CT-001 の body の `\\S` を portable(\"\\\\S\") と比べる。K1116-CT-002（`_leaks`）は元の表の値域と決まりに walk を当ててから契約と比べる（当てないと `\\S` の値域の漏れが等しくならず見えない・精査の指摘）。K1116-CT-005（登録・再設定は前の形のまま）は、登録はこのチケットが LOGIN_EMAIL にし、再設定は前の形に portable を当てた字になったので、その 2 つを見る\n- scripts/ci/contract_shape.d/K-638.py: 替えない — 再設定の写しは元の字のまま（比べる側が portable を当てる）\n- scripts/ci/k638_contract_test.py: 替えない — 形の判定（fits）で見る。見本（a@b.co・\" A@B.CO \"・x.y+z@example.com と形の外の 7 つ）は新しい形でも同じに分かれる\n- scripts/ci/k172_ci_shape_test.py: 替えない — CI の記録の置き場の名前の pattern（junit-*）で、契約の pattern ではない\n- apps/api/test/features/F3/credentials-create.test.ts: 替えない — K352-API-026 は契約の login と LOGIN_PATTERN の字を比べる。両方をそろえる（実施事項）ので同じに通る\n- apps/api/test/features/F10/invite-create.test.ts: 替えない — 招く口の pattern は `\\s` を使わない（WS を並べた字）。portable で変わらない。K419-API-027 は EMAIL_RE を使い、EMAIL_RE は変えない\n- apps/api/test/features/F1/sign-up.test.ts: 替えない — K51-API-011 の断る見本・K51-API-012 の全角と空白の見本はどれも同じ答え（ASCII の正しいメールは z.email() を通る）\n- apps/api/test/features/F1/password-forgot.test.ts: 替えない — 再設定の口は変えない\n- apps/api/test/features/F1/password-reset.test.ts: 替えない — 再設定の口は変えない\n- apps/api/test/features/contract/k144-contract.test.ts: 替えない — RANGE_CASES に登録のメールは無い。ほかの値は直した形でも同じに分かれる（ASCII と全角の空白・改行）\n- 検索に出ない物も読んだ：scripts/ci/k639_contract_test.py（形の判定・ASCII の見本で同じに分かれる）・apps/api/test/features/F1/pm-fuzz-auth.test.ts（ログインと再設定の見本は z.email() を通る）・apps/api/test/generated/*（作り手の生成物・changes_ignore・作り直しでそろう）。どれも替えない",
+    "決定ログ": "- 2026-11-23 PM の決め（作り方）：直す向きは部品の z.email() と口の正規化（NFKC・trim）を正にする。種類 1・3 は登録の口に部品の確かめを足して契約を部品の形にする。種類 2 は作り手の出口で 1 回だけ直す。再設定は K-1106 の後の葉",
+    "リスクと懸念": "- 契約のメールの形は口より狭い（全角の字・制御の字は口が直して受けるが契約の外）。fuzz の「形の外」の見本が正しいメールに直る字の並びになるのはまれ。なれば登録が受けて ST201 になる（K-1116 のログインと同じ書き方）\n- 変換は字の組を数えて直す。直せない形は作り手が止まるので、黙って違う形を書かない\n- 画面の登録・再設定の形（apps/web の EMAIL_RE）は前のまま広い。部品が断るメールは口が 422 E-VAL-004 で返し、画面はその文を出す",
+    "申し送り": "- 再設定の口（requestPasswordReset）：口に isLoginEmail を足し、契約のメールの形を `_EP.LOGIN_EMAIL` にする（K-638.py の `_EMAIL` と contract_shape.d/K-638.py の写し・k1116 の CT-005）。\"a﹫b@example.com\"・\"a＠b@example.com\" はそれまで契約どおりで口が断る（ST202 の種）。K-1106 が本線に入った後の PM の直しの葉（前からある別の場所の問題 c）\n- `$` は Python（schemathesis）では末の改行 1 つの前でも当たり、JS では当たらない。`.` は JS が \\r・ ・  にも当たらない。どちらもこのチケットでは変えない（K-1116 は記憶を直す口が末の改行 1 つを受けて合わせた）。前からある別の場所の問題（c）\n- 招く口（createInvitations）も、部品が断るメール（\"日本@例.jp\" など）を招けてしまう。受ける時に部品で落ちるかは確かめていない。前からある別の場所の問題（c）"
+   },
+   "file": "11_tickets/K-1117.md"
   },
   {
    "id": "K-1120",

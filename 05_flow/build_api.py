@@ -305,6 +305,8 @@ ts.append(""); ts.append("export const ENDPOINTS = " + json.dumps([{"id": e["id"
 os.makedirs(OUT, exist_ok=True)
 meta = {"version": "v3.1", "created_at": TODAY, "frozen_at": TODAY, "base_url": BASE, "_doc": "05_flow/build_api.py が機械生成。手で直さない。凍結後の変更は決定（ADR）＋影響解析", "source": ["D-043.2", "D-051.1", "D-051.2", "D-053.1"]}
 json.dump({"meta": meta, "endpoints": endpoints, "acts_without_endpoint": acts_without, "deferred_screens": deferred_screens}, open(f"{OUT}/endpoints.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+import portable_regex as _pr  # noqa: E402
+openapi = _pr.walk(openapi)   # pattern の \s \S \d \w を JS（口）と同じ字を並べた形にして書く（schemathesis は Python で読む・K-1117）
 yaml.safe_dump(openapi, open(f"{OUT}/openapi.yaml", "w", encoding="utf-8"), allow_unicode=True, sort_keys=False, width=200)
 open(f"{OUT}/types.ts", "w", encoding="utf-8").write("\n".join(ts) + "\n")
 json.dump({"meta": {"project": "Kaname", "created_at": TODAY, "skill_version": "v3.1", "total_endpoints": len(endpoints)}, "context": {"api_style": "REST（独立 API 層・Hono・OpenAPI が契約）", "auth_method": "セッション（Better Auth・トークンベース・sessions 表で失効）", "versioning": "url（/api/v1）", "contract_test_framework": "OpenAPI-driven（schemathesis 系）＋ 型生成同期 check（未確定：段階 1 凍結時に確認）"},
