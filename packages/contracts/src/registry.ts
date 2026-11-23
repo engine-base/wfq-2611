@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:101726a0aed7027f
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml＋endpoints.json）。手で直さない。openapi:e66ff42fce609d54
 export type EndpointKind = "list" | "get" | "create" | "update" | "delete";
 export interface EndpointDef {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
@@ -16138,7 +16138,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "kind": "delete",
     "input": null,
     "success": 200,
-    "output": "Tickets",
+    "output": "TicketDeleted",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -16147,7 +16147,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "key": "user"
     },
     "uuidParams": [
-      "id"
+      "id",
+      "parent_id"
     ],
     "chokePoints": [
       "C2"
@@ -16157,6 +16158,8 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       403,
       404,
       422,
+      409,
+      503,
       429,
       403,
       403,
@@ -17220,9 +17223,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "operationId": "createTicketMessage",
     "table": "ticket_messages",
     "kind": "create",
-    "input": "TicketMessagesInput",
+    "input": "TicketMessageInput",
     "success": 201,
-    "output": "TicketMessages",
+    "output": "TimelineItem",
     "outputList": false,
     "generic": false,
     "auth": "member",
@@ -17243,6 +17246,9 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       404,
       409,
       422,
+      404,
+      503,
+      503,
       413,
       429,
       403,
@@ -17256,7 +17262,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "tickets"
     ],
     "perm": {
-      "word": "write",
+      "word": "read",
       "target": null,
       "ability": null,
       "scope": "workspace",
@@ -17265,7 +17271,7 @@ export const ENDPOINTS: readonly EndpointDef[] = [
       "stepUp": null,
       "row": {
         "table": "tickets",
-        "sql": "app.ticket_writable(id)"
+        "sql": "true"
       }
     },
     "termsOpen": false,
@@ -19656,4 +19662,4 @@ export const ENDPOINTS: readonly EndpointDef[] = [
     "ignoresScope": false
   }
 ];
-export const OPENAPI_HASH = "101726a0aed7027f";
+export const OPENAPI_HASH = "e66ff42fce609d54";
