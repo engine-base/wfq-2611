@@ -19,6 +19,7 @@ import {
   items,
   logSec,
   openDetail,
+  type DecMock,
 } from "./decisions-mock";
 import { idOf, item as listItem, mockList, ok, open as openList } from "./list-mock";
 import { SUZU_W, TAKA_W, meta, post as postItem, system, type TimelineItem } from "./thread-mock";
@@ -44,6 +45,47 @@ const detailShown = async (page: Page) => {
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
   await expect(page.locator("#sec-purpose")).toBeVisible();
 };
+
+const FORBIDDEN =
+  "この画面を見る権限がありません。見る必要があれば、マネージャーに頼めます。頼んだことは相手に知らせ、記録に残ります"; // E-PAGE-002
+const GONE = "見つかりませんでした。消されたか、見る権限が無いかもしれません"; // E-PAGE-001
+/** やり取りの口を差し替える（鈴木の書き込み 1 件）。決定にした後は元の書き込みに decided が付く（口の葉と同じ） */
+async function talkApi(page: Page, d: DecMock): Promise<void> {
+  let tl: TimelineItem[] = [
+    system(TAKA_W, "2026-10-30 17:44", "高本 がチケットを作った"),
+    postItem(SUZU_W, "2026-11-01 10:20", "10/19 の追加対応は先方の都合で無償にした件、反映が要るかもしれません。", {
+      id: MSG_ID,
+    }),
+  ];
+  d.afterWrite = (x) => {
+    const src = x.posts.at(-1)?.["source_message_id"];
+    tl = tl.map((it) => (it.id === src && it.message ? { ...it, message: { ...it.message, decided: true } } : it));
+  };
+  await page.route(new RegExp(`/api/v1/tickets/${TICKET}/timeline/seen$`), (route: Route) =>
+    route.fulfill({
+      status: 201,
+      contentType: "application/json",
+      body: JSON.stringify({ data: { ticket_id: TICKET, seen_at: new Date().toISOString() } }),
+    }),
+  );
+  await page.route(new RegExp(`/api/v1/tickets/${TICKET}/timeline(\\?|$)`), (route: Route) =>
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ data: tl, meta: meta({ post_count: 1 }) }),
+    }),
+  );
+}
+/** やり取りのタブを開き、鈴木の書き込みを返す */
+async function openTalk(page: Page) {
+  await panel(page)
+    .getByRole("navigation", { name: "パネルのタブ" })
+    .getByRole("button", { name: /^やり取り/ })
+    .click();
+  const suzu = panel(page).getByRole("article", { name: /^鈴木 一郎 / });
+  await expect(suzu).toBeVisible();
+  return suzu;
+}
 
 test("K1119-UI-001 区画の行が無い・決定 4 件：見出し「決定ログ（2）」の区画が 1 つ・本文の区画の最後・行 4 つ（生きている → 改められた → 取り消した）・作るときの字の行は無い・「＋ 決定を足す」1 つ・決定の一覧の口は 1 回", async ({
   page,
@@ -131,29 +173,7 @@ test("K1119-UI-004 区画の行が無い・決定 0 件：書き込みを「決�
   page,
 }) => {
   const d = await decisionsApi(page, { intro: "none", list: [] });
-  const body = "10/19 の追加対応は先方の都合で無償にした件、反映が要るかもしれません。";
-  let tl: TimelineItem[] = [
-    system(TAKA_W, "2026-10-30 17:44", "高本 がチケットを作った"),
-    postItem(SUZU_W, "2026-11-01 10:20", body, { id: MSG_ID }),
-  ];
-  d.afterWrite = (x) => {
-    const src = x.posts.at(-1)?.["source_message_id"];
-    tl = tl.map((it) => (it.id === src && it.message ? { ...it, message: { ...it.message, decided: true } } : it));
-  };
-  await page.route(new RegExp(`/api/v1/tickets/${TICKET}/timeline/seen$`), (route: Route) =>
-    route.fulfill({
-      status: 201,
-      contentType: "application/json",
-      body: JSON.stringify({ data: { ticket_id: TICKET, seen_at: new Date().toISOString() } }),
-    }),
-  );
-  await page.route(new RegExp(`/api/v1/tickets/${TICKET}/timeline(\\?|$)`), (route: Route) =>
-    route.fulfill({
-      status: 200,
-      contentType: "application/json",
-      body: JSON.stringify({ data: tl, meta: meta({ post_count: 1 }) }),
-    }),
-  );
+  await talkApi(page, d);
   // 詳細の口（getTicket）を呼んだ回数
   let detailReads = 0;
   page.on("request", (r) => {
@@ -161,12 +181,7 @@ test("K1119-UI-004 区画の行が無い・決定 0 件：書き込みを「決�
   });
   await openDetail(page);
   await detailShown(page);
-  await panel(page)
-    .getByRole("navigation", { name: "パネルのタブ" })
-    .getByRole("button", { name: /^やり取り/ })
-    .click();
-  const suzu = panel(page).getByRole("article", { name: /^鈴木 一郎 / });
-  await expect(suzu).toBeVisible();
+  const suzu = await openTalk(page);
   await expect(heading(page)).toHaveCount(0);
   const before = detailReads;
   expect(before).toBeGreaterThan(0);
@@ -284,3 +299,42 @@ test("K1119-UI-009 区画の行が在る（作るときの字あり）：決定 
   await expect(page.getByText(EMPTY)).toHaveCount(1);
   await expect(addBtns(page)).toHaveCount(1);
 });
+
+for (const [name, fail, message] of [
+  ["403", { status: 403, body: { error: "forbidden", code: "FORBIDDEN" } }, FORBIDDEN],
+  ["404", { status: 404, body: { error: "not_found", code: "NOT_FOUND" } }, GONE],
+] as const) {
+  test(`K1119-UI-010 区画の行が無い・決定 0 件で書き込みの「決定にする」が ${name} で断られる：小窓は閉じ、決定ログの区画が現れて頭の知らせに正本の文（決定の行は 0）。「＋ 決定を足す」を押すと知らせは消え、小窓は開いたまま`, async ({
+    page,
+  }) => {
+    const d = await decisionsApi(page, { intro: "none", list: [] });
+    await talkApi(page, d);
+    await openDetail(page);
+    await detailShown(page);
+    const suzu = await openTalk(page);
+    await expect(heading(page)).toHaveCount(0);
+    await suzu.getByRole("button", { name: "決定にする" }).click();
+    await fromDialog(page)
+      .getByRole("textbox", { name: /決めたこと/ })
+      .fill("10/19 の追加対応は無償");
+    d.failWrite.push(fail);
+    await fromDialog(page).getByRole("button", { name: "決定にする" }).click();
+    await expect(fromDialog(page)).toHaveCount(0);
+    expect(d.posts).toHaveLength(1);
+    // 断られたことが見える：区画が現れ、頭の知らせに文
+    await expect(heading(page)).toHaveText("決定ログ");
+    await expect(logSec(page).locator('[role="alert"]')).toHaveText(message);
+    await expect(items(page)).toHaveCount(0);
+    await expect(suzu).not.toContainText("✓ 決定にした");
+    // 知らせを消す道：「＋ 決定を足す」を押すと知らせは消え、小窓は開いたまま（区画ごと消えて小窓が閉じない）
+    await addBtns(page).click();
+    await expect(addDialog(page)).toBeVisible();
+    await expect(page.locator(".k-detail-doc [role='alert']")).toHaveCount(0);
+    await addDialog(page)
+      .getByRole("textbox", { name: /決めたこと/ })
+      .fill("追加対応は無償");
+    await addDialog(page).getByRole("button", { name: "決定を足す" }).click();
+    await expect(addDialog(page)).toHaveCount(0);
+    await expect(heading(page)).toHaveText("決定ログ（1）");
+  });
+}
