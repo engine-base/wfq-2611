@@ -141,7 +141,7 @@ test("K941-DS-001 デザインの検査 G37（D1〜D7）が緑：features の色
 });
 
 test("K941-DS-002 デザインの検査 G72（D8 生の長さ）で、F12 の ops・shared と mock/f12-ops に台帳に無い生の値が 0 件", () => {
-  let out = "";
+  let out: string;
   try {
     out = execFileSync(
       "python3",
@@ -181,6 +181,7 @@ test("K941-UI-001 索引 /dev/mock/f12-ops に 20 件が並び、どの状態も
   for (const id of IDS) await openState(page, DIR, id, 1440);
 });
 
+// 行 ID：K941-UI-002・K941-UI-003・K941-UI-004
 for (const [n, w] of [
   ["002", 375],
   ["003", 768],
