@@ -12,6 +12,7 @@ export function DecisionsSection({
   label,
   intro,
   onSource,
+  onlyWhenAny = false,
 }: {
   ticketId: string;
   myName: string;
@@ -19,6 +20,8 @@ export function DecisionsSection({
   intro: string | undefined;
   /** 「元：やり取り … →」を押した（元の書き込みの id） */
   onSource?: (messageId: string) => void;
+  /** 区画の行が無いチケット（K-1119）：決定が 1 件も無く、頭の知らせも足す小窓も無い間は何も描かない */
+  onlyWhenAny?: boolean;
 }) {
   const read = useDecisions(ticketId);
   // 決定にした・改めた・取り消した後は、決定の一覧とやり取りを 1 回ずつ読み直す
@@ -28,6 +31,7 @@ export function DecisionsSection({
   const back = useCallback(() => void requestAnimationFrame(() => addRef.current?.focus()), []);
   const add = useAddDecision(ticketId, myName, reload, back);
   const rv = useReviseCancel(ticketId, read.rows, reload);
+  if (onlyWhenAny && !(read.rows.length > 0) && !add.sectionNotice && !add.open) return null;
   return (
     <>
       <DecisionLog

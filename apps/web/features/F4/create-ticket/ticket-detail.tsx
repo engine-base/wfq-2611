@@ -59,6 +59,8 @@ interface Detail {
 
 /** 外枠と同じ問い合わせ（同じ鍵・1 画面で 1 回・読み直さない）。外枠が読んでいれば口を 2 回呼ばない（G-16） */
 const ONCE = { retry: false, staleTime: Infinity, refetchOnWindowFocus: false, refetchOnReconnect: false } as const;
+/** 区画の行（鍵 decisions）が無いチケットに置く決定ログの区画（K-1119）。版 0＝行が無い。F6 の入れ物が、決定が在るときだけ描く（D-150.41） */
+const NO_DECISIONS_ROW: Detail["sections"][number] = { key: "decisions", label: "決定ログ", body: null, version: 0 };
 
 /** キャンバスどおりの新しい外枠に載せる（D-143.1）。上の帯のいまの場所は チケット › 番号（番号は読めてから） */
 export function TicketDetail({ id }: { id: string }) {
@@ -292,6 +294,11 @@ function DetailView({
                     </section>
                   </F6.SectionSlot>
                 ))}
+                {d.sections.some((s) => s.key === NO_DECISIONS_ROW.key) ? null : (
+                  <F6.SectionSlot ticket={st} section={NO_DECISIONS_ROW}>
+                    {null}
+                  </F6.SectionSlot>
+                )}
               </div>
             </article>
             <section className="k-detail-links" aria-label="子チケット・つながり">
