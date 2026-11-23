@@ -379,8 +379,8 @@ API 366（作った 92・後のフェーズの行為だけ 20）・前の道す�
 | `takeBridgeJob` | POST /api/v1/bridge/jobs/take | 作成・実行（bridge）— AI に任せる | F5 | 作った | K-62 |
 | `listMirrorTargets` | GET /api/v1/bridge/mirror-targets | 取得（bridge）— 自分の AI に指示する・相談する（会話・添付・許可・成 | F5 | 契約だけ（501） | K-61 |
 | `getMyClone` | GET /api/v1/clones/me | 取得（clones）— 自分の AI に指示する・相談する（会話・添付・許可・成 | F5 | 作った | K-753 |
-| `listCloneActivity` | GET /api/v1/clones/me/activity | 取得（clones）— 分身がやったことを見る → チケットへ戻る | F5 | 契約だけ（501） | K-61 |
-| `getCloneGrowth` | GET /api/v1/clones/me/growth | 取得（clones）— 分身がやったことを見る → チケットへ戻る | F5 | 契約だけ（501） | K-61 |
+| `listCloneActivity` | GET /api/v1/clones/me/activity | 取得（clones）— 分身がやったことを見る → チケットへ戻る | F5 | 契約だけ（501） | K-61,K-754 |
+| `getCloneGrowth` | GET /api/v1/clones/me/growth | 取得（clones）— 分身がやったことを見る → チケットへ戻る | F5 | 契約だけ（501） | K-61,K-754 |
 | `getCloneNow` | GET /api/v1/clones/me/now | 取得（clones）— 分身がやったことを見る → チケットへ戻る | F5 | 作った | K-753 |
 | `listConversationMessages` | GET /api/v1/conversations/:id/messages | 取得（conversations）— 自分の AI に指示する・相談する（会話・添付・許可・成 | F5 | 契約だけ（501） | K-61 |
 | `stopConversation` | POST /api/v1/conversations/:id/stop | 作成・実行（conversations）— 自分の AI に指示する・相談する（会話・添付・許可・成 | F5 | 契約だけ（501） | K-61 |
