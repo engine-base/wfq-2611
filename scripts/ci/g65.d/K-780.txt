@@ -1,0 +1,1 @@
+python3 scripts/ci/k780_decision_log_test.py

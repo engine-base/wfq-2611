@@ -7192,6 +7192,9 @@ components:
           type: string
           format: date-time
           nullable: true
+        restored_from:
+          type: integer
+          nullable: true
         updated_by:
           type: string
           format: uuid
@@ -10421,6 +10424,31 @@ components:
           pattern: ^(?:[1-9]\d{3}-(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|[1-9]\d{3}-(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|[1-9]\d{3}-02-(?:0[1-9]|1\d|2[0-8])|(?:[1-9]\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d{1,6})?(?:Z|[+-](?:0\d|1[0-5])(?::?[0-5]\d)?)$
       additionalProperties: false
       x-operation: markTicketTimelineSeen
+    TicketMessageInput:
+      type: object
+      properties:
+        body:
+          type: string
+          pattern: \S
+        mention_member_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+        notify_member_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+        quote_of_id:
+          type: string
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      x-operation: createTicketMessage
+      required:
+      - body
+      x-required-by: hooks
     TicketUpdateInput:
       type: object
       properties:
@@ -10554,6 +10582,1439 @@ components:
       - scope_id
       - role_key
       x-required-by: hooks
+    TicketBodyInput:
+      type: object
+      properties:
+        version:
+          type: integer
+          minimum: 0
+          maximum: 2147483647
+        doc:
+          type: object
+          required:
+          - type
+          - content
+          additionalProperties: false
+          properties:
+            type:
+              type: string
+              enum:
+              - doc
+            content:
+              type: array
+              items:
+                type: object
+                required:
+                - type
+                additionalProperties: false
+                properties:
+                  type:
+                    type: string
+                    enum:
+                    - paragraph
+                    - heading
+                    - bulletList
+                    - orderedList
+                    - horizontalRule
+                    - taskList
+                    - table
+                    - blockquote
+                    - codeBlock
+                    - image
+                    - listItem
+                    - taskItem
+                    - tableRow
+                    - tableHeader
+                    - tableCell
+                    - text
+                    - hardBreak
+                  attrs:
+                    type: object
+                    additionalProperties: false
+                    properties:
+                      level:
+                        type: integer
+                        enum:
+                        - 2
+                        - 3
+                        - 4
+                      ghost:
+                        type: boolean
+                      textAlign:
+                        type: string
+                        enum:
+                        - left
+                        - center
+                        - right
+                        - justify
+                      start:
+                        type: integer
+                        minimum: 1
+                        maximum: 9999
+                      colspan:
+                        type: integer
+                        minimum: 1
+                        maximum: 50
+                      rowspan:
+                        type: integer
+                        minimum: 1
+                        maximum: 50
+                      colwidth:
+                        type: array
+                        items:
+                          type: integer
+                          minimum: 1
+                          maximum: 2000
+                      checked:
+                        type: boolean
+                      caption:
+                        type: string
+                      attachment_id:
+                        type: string
+                        format: uuid
+                        nullable: true
+                  text:
+                    type: string
+                    minLength: 1
+                  marks:
+                    type: array
+                    items:
+                      type: object
+                      required:
+                      - type
+                      additionalProperties: false
+                      properties:
+                        type:
+                          type: string
+                          enum:
+                          - bold
+                          - italic
+                          - underline
+                          - strike
+                          - code
+                          - superscript
+                          - subscript
+                          - highlight
+                          - color
+                          - link
+                        attrs:
+                          type: object
+                          additionalProperties: false
+                          properties:
+                            color:
+                              type: string
+                              anyOf:
+                              - enum:
+                                - red
+                                - teal
+                                - amber
+                              - pattern: ^#[0-9a-f]{6}$
+                            href:
+                              type: string
+                              pattern: ^(?:https?://|mailto:)
+                              maxLength: 2048
+                  content:
+                    type: array
+                    items:
+                      type: object
+                      required:
+                      - type
+                      additionalProperties: false
+                      properties:
+                        type:
+                          type: string
+                          enum:
+                          - paragraph
+                          - heading
+                          - bulletList
+                          - orderedList
+                          - horizontalRule
+                          - taskList
+                          - table
+                          - blockquote
+                          - codeBlock
+                          - image
+                          - listItem
+                          - taskItem
+                          - tableRow
+                          - tableHeader
+                          - tableCell
+                          - text
+                          - hardBreak
+                        attrs:
+                          type: object
+                          additionalProperties: false
+                          properties:
+                            level:
+                              type: integer
+                              enum:
+                              - 2
+                              - 3
+                              - 4
+                            ghost:
+                              type: boolean
+                            textAlign:
+                              type: string
+                              enum:
+                              - left
+                              - center
+                              - right
+                              - justify
+                            start:
+                              type: integer
+                              minimum: 1
+                              maximum: 9999
+                            colspan:
+                              type: integer
+                              minimum: 1
+                              maximum: 50
+                            rowspan:
+                              type: integer
+                              minimum: 1
+                              maximum: 50
+                            colwidth:
+                              type: array
+                              items:
+                                type: integer
+                                minimum: 1
+                                maximum: 2000
+                            checked:
+                              type: boolean
+                            caption:
+                              type: string
+                            attachment_id:
+                              type: string
+                              format: uuid
+                              nullable: true
+                        text:
+                          type: string
+                          minLength: 1
+                        marks:
+                          type: array
+                          items:
+                            type: object
+                            required:
+                            - type
+                            additionalProperties: false
+                            properties:
+                              type:
+                                type: string
+                                enum:
+                                - bold
+                                - italic
+                                - underline
+                                - strike
+                                - code
+                                - superscript
+                                - subscript
+                                - highlight
+                                - color
+                                - link
+                              attrs:
+                                type: object
+                                additionalProperties: false
+                                properties:
+                                  color:
+                                    type: string
+                                    anyOf:
+                                    - enum:
+                                      - red
+                                      - teal
+                                      - amber
+                                    - pattern: ^#[0-9a-f]{6}$
+                                  href:
+                                    type: string
+                                    pattern: ^(?:https?://|mailto:)
+                                    maxLength: 2048
+                        content:
+                          type: array
+                          items:
+                            type: object
+                            required:
+                            - type
+                            additionalProperties: false
+                            properties:
+                              type:
+                                type: string
+                                enum:
+                                - paragraph
+                                - heading
+                                - bulletList
+                                - orderedList
+                                - horizontalRule
+                                - taskList
+                                - table
+                                - blockquote
+                                - codeBlock
+                                - image
+                                - listItem
+                                - taskItem
+                                - tableRow
+                                - tableHeader
+                                - tableCell
+                                - text
+                                - hardBreak
+                              attrs:
+                                type: object
+                                additionalProperties: false
+                                properties:
+                                  level:
+                                    type: integer
+                                    enum:
+                                    - 2
+                                    - 3
+                                    - 4
+                                  ghost:
+                                    type: boolean
+                                  textAlign:
+                                    type: string
+                                    enum:
+                                    - left
+                                    - center
+                                    - right
+                                    - justify
+                                  start:
+                                    type: integer
+                                    minimum: 1
+                                    maximum: 9999
+                                  colspan:
+                                    type: integer
+                                    minimum: 1
+                                    maximum: 50
+                                  rowspan:
+                                    type: integer
+                                    minimum: 1
+                                    maximum: 50
+                                  colwidth:
+                                    type: array
+                                    items:
+                                      type: integer
+                                      minimum: 1
+                                      maximum: 2000
+                                  checked:
+                                    type: boolean
+                                  caption:
+                                    type: string
+                                  attachment_id:
+                                    type: string
+                                    format: uuid
+                                    nullable: true
+                              text:
+                                type: string
+                                minLength: 1
+                              marks:
+                                type: array
+                                items:
+                                  type: object
+                                  required:
+                                  - type
+                                  additionalProperties: false
+                                  properties:
+                                    type:
+                                      type: string
+                                      enum:
+                                      - bold
+                                      - italic
+                                      - underline
+                                      - strike
+                                      - code
+                                      - superscript
+                                      - subscript
+                                      - highlight
+                                      - color
+                                      - link
+                                    attrs:
+                                      type: object
+                                      additionalProperties: false
+                                      properties:
+                                        color:
+                                          type: string
+                                          anyOf:
+                                          - enum:
+                                            - red
+                                            - teal
+                                            - amber
+                                          - pattern: ^#[0-9a-f]{6}$
+                                        href:
+                                          type: string
+                                          pattern: ^(?:https?://|mailto:)
+                                          maxLength: 2048
+                              content:
+                                type: array
+                                items:
+                                  type: object
+                                  required:
+                                  - type
+                                  additionalProperties: false
+                                  properties:
+                                    type:
+                                      type: string
+                                      enum:
+                                      - paragraph
+                                      - heading
+                                      - bulletList
+                                      - orderedList
+                                      - horizontalRule
+                                      - taskList
+                                      - table
+                                      - blockquote
+                                      - codeBlock
+                                      - image
+                                      - listItem
+                                      - taskItem
+                                      - tableRow
+                                      - tableHeader
+                                      - tableCell
+                                      - text
+                                      - hardBreak
+                                    attrs:
+                                      type: object
+                                      additionalProperties: false
+                                      properties:
+                                        level:
+                                          type: integer
+                                          enum:
+                                          - 2
+                                          - 3
+                                          - 4
+                                        ghost:
+                                          type: boolean
+                                        textAlign:
+                                          type: string
+                                          enum:
+                                          - left
+                                          - center
+                                          - right
+                                          - justify
+                                        start:
+                                          type: integer
+                                          minimum: 1
+                                          maximum: 9999
+                                        colspan:
+                                          type: integer
+                                          minimum: 1
+                                          maximum: 50
+                                        rowspan:
+                                          type: integer
+                                          minimum: 1
+                                          maximum: 50
+                                        colwidth:
+                                          type: array
+                                          items:
+                                            type: integer
+                                            minimum: 1
+                                            maximum: 2000
+                                        checked:
+                                          type: boolean
+                                        caption:
+                                          type: string
+                                        attachment_id:
+                                          type: string
+                                          format: uuid
+                                          nullable: true
+                                    text:
+                                      type: string
+                                      minLength: 1
+                                    marks:
+                                      type: array
+                                      items:
+                                        type: object
+                                        required:
+                                        - type
+                                        additionalProperties: false
+                                        properties:
+                                          type:
+                                            type: string
+                                            enum:
+                                            - bold
+                                            - italic
+                                            - underline
+                                            - strike
+                                            - code
+                                            - superscript
+                                            - subscript
+                                            - highlight
+                                            - color
+                                            - link
+                                          attrs:
+                                            type: object
+                                            additionalProperties: false
+                                            properties:
+                                              color:
+                                                type: string
+                                                anyOf:
+                                                - enum:
+                                                  - red
+                                                  - teal
+                                                  - amber
+                                                - pattern: ^#[0-9a-f]{6}$
+                                              href:
+                                                type: string
+                                                pattern: ^(?:https?://|mailto:)
+                                                maxLength: 2048
+                                    content:
+                                      type: array
+                                      items:
+                                        type: object
+                                        required:
+                                        - type
+                                        additionalProperties: false
+                                        properties:
+                                          type:
+                                            type: string
+                                            enum:
+                                            - paragraph
+                                            - heading
+                                            - bulletList
+                                            - orderedList
+                                            - horizontalRule
+                                            - taskList
+                                            - table
+                                            - blockquote
+                                            - codeBlock
+                                            - image
+                                            - listItem
+                                            - taskItem
+                                            - tableRow
+                                            - tableHeader
+                                            - tableCell
+                                            - text
+                                            - hardBreak
+                                          attrs:
+                                            type: object
+                                            additionalProperties: false
+                                            properties:
+                                              level:
+                                                type: integer
+                                                enum:
+                                                - 2
+                                                - 3
+                                                - 4
+                                              ghost:
+                                                type: boolean
+                                              textAlign:
+                                                type: string
+                                                enum:
+                                                - left
+                                                - center
+                                                - right
+                                                - justify
+                                              start:
+                                                type: integer
+                                                minimum: 1
+                                                maximum: 9999
+                                              colspan:
+                                                type: integer
+                                                minimum: 1
+                                                maximum: 50
+                                              rowspan:
+                                                type: integer
+                                                minimum: 1
+                                                maximum: 50
+                                              colwidth:
+                                                type: array
+                                                items:
+                                                  type: integer
+                                                  minimum: 1
+                                                  maximum: 2000
+                                              checked:
+                                                type: boolean
+                                              caption:
+                                                type: string
+                                              attachment_id:
+                                                type: string
+                                                format: uuid
+                                                nullable: true
+                                          text:
+                                            type: string
+                                            minLength: 1
+                                          marks:
+                                            type: array
+                                            items:
+                                              type: object
+                                              required:
+                                              - type
+                                              additionalProperties: false
+                                              properties:
+                                                type:
+                                                  type: string
+                                                  enum:
+                                                  - bold
+                                                  - italic
+                                                  - underline
+                                                  - strike
+                                                  - code
+                                                  - superscript
+                                                  - subscript
+                                                  - highlight
+                                                  - color
+                                                  - link
+                                                attrs:
+                                                  type: object
+                                                  additionalProperties: false
+                                                  properties:
+                                                    color:
+                                                      type: string
+                                                      anyOf:
+                                                      - enum:
+                                                        - red
+                                                        - teal
+                                                        - amber
+                                                      - pattern: ^#[0-9a-f]{6}$
+                                                    href:
+                                                      type: string
+                                                      pattern: ^(?:https?://|mailto:)
+                                                      maxLength: 2048
+                                          content:
+                                            type: array
+                                            items:
+                                              type: object
+                                              required:
+                                              - type
+                                              additionalProperties: false
+                                              properties:
+                                                type:
+                                                  type: string
+                                                  enum:
+                                                  - paragraph
+                                                  - heading
+                                                  - bulletList
+                                                  - orderedList
+                                                  - horizontalRule
+                                                  - taskList
+                                                  - table
+                                                  - blockquote
+                                                  - codeBlock
+                                                  - image
+                                                  - listItem
+                                                  - taskItem
+                                                  - tableRow
+                                                  - tableHeader
+                                                  - tableCell
+                                                  - text
+                                                  - hardBreak
+                                                attrs:
+                                                  type: object
+                                                  additionalProperties: false
+                                                  properties:
+                                                    level:
+                                                      type: integer
+                                                      enum:
+                                                      - 2
+                                                      - 3
+                                                      - 4
+                                                    ghost:
+                                                      type: boolean
+                                                    textAlign:
+                                                      type: string
+                                                      enum:
+                                                      - left
+                                                      - center
+                                                      - right
+                                                      - justify
+                                                    start:
+                                                      type: integer
+                                                      minimum: 1
+                                                      maximum: 9999
+                                                    colspan:
+                                                      type: integer
+                                                      minimum: 1
+                                                      maximum: 50
+                                                    rowspan:
+                                                      type: integer
+                                                      minimum: 1
+                                                      maximum: 50
+                                                    colwidth:
+                                                      type: array
+                                                      items:
+                                                        type: integer
+                                                        minimum: 1
+                                                        maximum: 2000
+                                                    checked:
+                                                      type: boolean
+                                                    caption:
+                                                      type: string
+                                                    attachment_id:
+                                                      type: string
+                                                      format: uuid
+                                                      nullable: true
+                                                text:
+                                                  type: string
+                                                  minLength: 1
+                                                marks:
+                                                  type: array
+                                                  items:
+                                                    type: object
+                                                    required:
+                                                    - type
+                                                    additionalProperties: false
+                                                    properties:
+                                                      type:
+                                                        type: string
+                                                        enum:
+                                                        - bold
+                                                        - italic
+                                                        - underline
+                                                        - strike
+                                                        - code
+                                                        - superscript
+                                                        - subscript
+                                                        - highlight
+                                                        - color
+                                                        - link
+                                                      attrs:
+                                                        type: object
+                                                        additionalProperties: false
+                                                        properties:
+                                                          color:
+                                                            type: string
+                                                            anyOf:
+                                                            - enum:
+                                                              - red
+                                                              - teal
+                                                              - amber
+                                                            - pattern: ^#[0-9a-f]{6}$
+                                                          href:
+                                                            type: string
+                                                            pattern: ^(?:https?://|mailto:)
+                                                            maxLength: 2048
+                                                content:
+                                                  type: array
+                                                  items:
+                                                    type: object
+                                                    required:
+                                                    - type
+                                                    additionalProperties: false
+                                                    properties:
+                                                      type:
+                                                        type: string
+                                                        enum:
+                                                        - paragraph
+                                                        - heading
+                                                        - bulletList
+                                                        - orderedList
+                                                        - horizontalRule
+                                                        - taskList
+                                                        - table
+                                                        - blockquote
+                                                        - codeBlock
+                                                        - image
+                                                        - listItem
+                                                        - taskItem
+                                                        - tableRow
+                                                        - tableHeader
+                                                        - tableCell
+                                                        - text
+                                                        - hardBreak
+                                                      attrs:
+                                                        type: object
+                                                        additionalProperties: false
+                                                        properties:
+                                                          level:
+                                                            type: integer
+                                                            enum:
+                                                            - 2
+                                                            - 3
+                                                            - 4
+                                                          ghost:
+                                                            type: boolean
+                                                          textAlign:
+                                                            type: string
+                                                            enum:
+                                                            - left
+                                                            - center
+                                                            - right
+                                                            - justify
+                                                          start:
+                                                            type: integer
+                                                            minimum: 1
+                                                            maximum: 9999
+                                                          colspan:
+                                                            type: integer
+                                                            minimum: 1
+                                                            maximum: 50
+                                                          rowspan:
+                                                            type: integer
+                                                            minimum: 1
+                                                            maximum: 50
+                                                          colwidth:
+                                                            type: array
+                                                            items:
+                                                              type: integer
+                                                              minimum: 1
+                                                              maximum: 2000
+                                                          checked:
+                                                            type: boolean
+                                                          caption:
+                                                            type: string
+                                                          attachment_id:
+                                                            type: string
+                                                            format: uuid
+                                                            nullable: true
+                                                      text:
+                                                        type: string
+                                                        minLength: 1
+                                                      marks:
+                                                        type: array
+                                                        items:
+                                                          type: object
+                                                          required:
+                                                          - type
+                                                          additionalProperties: false
+                                                          properties:
+                                                            type:
+                                                              type: string
+                                                              enum:
+                                                              - bold
+                                                              - italic
+                                                              - underline
+                                                              - strike
+                                                              - code
+                                                              - superscript
+                                                              - subscript
+                                                              - highlight
+                                                              - color
+                                                              - link
+                                                            attrs:
+                                                              type: object
+                                                              additionalProperties: false
+                                                              properties:
+                                                                color:
+                                                                  type: string
+                                                                  anyOf:
+                                                                  - enum:
+                                                                    - red
+                                                                    - teal
+                                                                    - amber
+                                                                  - pattern: ^#[0-9a-f]{6}$
+                                                                href:
+                                                                  type: string
+                                                                  pattern: ^(?:https?://|mailto:)
+                                                                  maxLength: 2048
+                                                      content:
+                                                        type: array
+                                                        items:
+                                                          type: object
+                                                          required:
+                                                          - type
+                                                          additionalProperties: false
+                                                          properties:
+                                                            type:
+                                                              type: string
+                                                              enum:
+                                                              - paragraph
+                                                              - heading
+                                                              - bulletList
+                                                              - orderedList
+                                                              - horizontalRule
+                                                              - taskList
+                                                              - table
+                                                              - blockquote
+                                                              - codeBlock
+                                                              - image
+                                                              - listItem
+                                                              - taskItem
+                                                              - tableRow
+                                                              - tableHeader
+                                                              - tableCell
+                                                              - text
+                                                              - hardBreak
+                                                            attrs:
+                                                              type: object
+                                                              additionalProperties: false
+                                                              properties:
+                                                                level:
+                                                                  type: integer
+                                                                  enum:
+                                                                  - 2
+                                                                  - 3
+                                                                  - 4
+                                                                ghost:
+                                                                  type: boolean
+                                                                textAlign:
+                                                                  type: string
+                                                                  enum:
+                                                                  - left
+                                                                  - center
+                                                                  - right
+                                                                  - justify
+                                                                start:
+                                                                  type: integer
+                                                                  minimum: 1
+                                                                  maximum: 9999
+                                                                colspan:
+                                                                  type: integer
+                                                                  minimum: 1
+                                                                  maximum: 50
+                                                                rowspan:
+                                                                  type: integer
+                                                                  minimum: 1
+                                                                  maximum: 50
+                                                                colwidth:
+                                                                  type: array
+                                                                  items:
+                                                                    type: integer
+                                                                    minimum: 1
+                                                                    maximum: 2000
+                                                                checked:
+                                                                  type: boolean
+                                                                caption:
+                                                                  type: string
+                                                                attachment_id:
+                                                                  type: string
+                                                                  format: uuid
+                                                                  nullable: true
+                                                            text:
+                                                              type: string
+                                                              minLength: 1
+                                                            marks:
+                                                              type: array
+                                                              items:
+                                                                type: object
+                                                                required:
+                                                                - type
+                                                                additionalProperties: false
+                                                                properties:
+                                                                  type:
+                                                                    type: string
+                                                                    enum:
+                                                                    - bold
+                                                                    - italic
+                                                                    - underline
+                                                                    - strike
+                                                                    - code
+                                                                    - superscript
+                                                                    - subscript
+                                                                    - highlight
+                                                                    - color
+                                                                    - link
+                                                                  attrs:
+                                                                    type: object
+                                                                    additionalProperties: false
+                                                                    properties:
+                                                                      color:
+                                                                        type: string
+                                                                        anyOf:
+                                                                        - enum:
+                                                                          - red
+                                                                          - teal
+                                                                          - amber
+                                                                        - pattern: ^#[0-9a-f]{6}$
+                                                                      href:
+                                                                        type: string
+                                                                        pattern: ^(?:https?://|mailto:)
+                                                                        maxLength: 2048
+                                                            content:
+                                                              type: array
+                                                              items:
+                                                                type: object
+                                                                required:
+                                                                - type
+                                                                additionalProperties: false
+                                                                properties:
+                                                                  type:
+                                                                    type: string
+                                                                    enum:
+                                                                    - paragraph
+                                                                    - heading
+                                                                    - bulletList
+                                                                    - orderedList
+                                                                    - horizontalRule
+                                                                    - taskList
+                                                                    - table
+                                                                    - blockquote
+                                                                    - codeBlock
+                                                                    - image
+                                                                    - listItem
+                                                                    - taskItem
+                                                                    - tableRow
+                                                                    - tableHeader
+                                                                    - tableCell
+                                                                    - text
+                                                                    - hardBreak
+                                                                  attrs:
+                                                                    type: object
+                                                                    additionalProperties: false
+                                                                    properties:
+                                                                      level:
+                                                                        type: integer
+                                                                        enum:
+                                                                        - 2
+                                                                        - 3
+                                                                        - 4
+                                                                      ghost:
+                                                                        type: boolean
+                                                                      textAlign:
+                                                                        type: string
+                                                                        enum:
+                                                                        - left
+                                                                        - center
+                                                                        - right
+                                                                        - justify
+                                                                      start:
+                                                                        type: integer
+                                                                        minimum: 1
+                                                                        maximum: 9999
+                                                                      colspan:
+                                                                        type: integer
+                                                                        minimum: 1
+                                                                        maximum: 50
+                                                                      rowspan:
+                                                                        type: integer
+                                                                        minimum: 1
+                                                                        maximum: 50
+                                                                      colwidth:
+                                                                        type: array
+                                                                        items:
+                                                                          type: integer
+                                                                          minimum: 1
+                                                                          maximum: 2000
+                                                                      checked:
+                                                                        type: boolean
+                                                                      caption:
+                                                                        type: string
+                                                                      attachment_id:
+                                                                        type: string
+                                                                        format: uuid
+                                                                        nullable: true
+                                                                  text:
+                                                                    type: string
+                                                                    minLength: 1
+                                                                  marks:
+                                                                    type: array
+                                                                    items:
+                                                                      type: object
+                                                                      required:
+                                                                      - type
+                                                                      additionalProperties: false
+                                                                      properties:
+                                                                        type:
+                                                                          type: string
+                                                                          enum:
+                                                                          - bold
+                                                                          - italic
+                                                                          - underline
+                                                                          - strike
+                                                                          - code
+                                                                          - superscript
+                                                                          - subscript
+                                                                          - highlight
+                                                                          - color
+                                                                          - link
+                                                                        attrs:
+                                                                          type: object
+                                                                          additionalProperties: false
+                                                                          properties:
+                                                                            color:
+                                                                              type: string
+                                                                              anyOf:
+                                                                              - enum:
+                                                                                - red
+                                                                                - teal
+                                                                                - amber
+                                                                              - pattern: ^#[0-9a-f]{6}$
+                                                                            href:
+                                                                              type: string
+                                                                              pattern: ^(?:https?://|mailto:)
+                                                                              maxLength: 2048
+                                                                  content:
+                                                                    type: array
+                                                                    items:
+                                                                      type: object
+                                                                      required:
+                                                                      - type
+                                                                      additionalProperties: false
+                                                                      properties:
+                                                                        type:
+                                                                          type: string
+                                                                          enum:
+                                                                          - paragraph
+                                                                          - heading
+                                                                          - bulletList
+                                                                          - orderedList
+                                                                          - horizontalRule
+                                                                          - taskList
+                                                                          - table
+                                                                          - blockquote
+                                                                          - codeBlock
+                                                                          - image
+                                                                          - listItem
+                                                                          - taskItem
+                                                                          - tableRow
+                                                                          - tableHeader
+                                                                          - tableCell
+                                                                          - text
+                                                                          - hardBreak
+                                                                        attrs:
+                                                                          type: object
+                                                                          additionalProperties: false
+                                                                          properties:
+                                                                            level:
+                                                                              type: integer
+                                                                              enum:
+                                                                              - 2
+                                                                              - 3
+                                                                              - 4
+                                                                            ghost:
+                                                                              type: boolean
+                                                                            textAlign:
+                                                                              type: string
+                                                                              enum:
+                                                                              - left
+                                                                              - center
+                                                                              - right
+                                                                              - justify
+                                                                            start:
+                                                                              type: integer
+                                                                              minimum: 1
+                                                                              maximum: 9999
+                                                                            colspan:
+                                                                              type: integer
+                                                                              minimum: 1
+                                                                              maximum: 50
+                                                                            rowspan:
+                                                                              type: integer
+                                                                              minimum: 1
+                                                                              maximum: 50
+                                                                            colwidth:
+                                                                              type: array
+                                                                              items:
+                                                                                type: integer
+                                                                                minimum: 1
+                                                                                maximum: 2000
+                                                                            checked:
+                                                                              type: boolean
+                                                                            caption:
+                                                                              type: string
+                                                                            attachment_id:
+                                                                              type: string
+                                                                              format: uuid
+                                                                              nullable: true
+                                                                        text:
+                                                                          type: string
+                                                                          minLength: 1
+                                                                        marks:
+                                                                          type: array
+                                                                          items:
+                                                                            type: object
+                                                                            required:
+                                                                            - type
+                                                                            additionalProperties: false
+                                                                            properties:
+                                                                              type:
+                                                                                type: string
+                                                                                enum:
+                                                                                - bold
+                                                                                - italic
+                                                                                - underline
+                                                                                - strike
+                                                                                - code
+                                                                                - superscript
+                                                                                - subscript
+                                                                                - highlight
+                                                                                - color
+                                                                                - link
+                                                                              attrs:
+                                                                                type: object
+                                                                                additionalProperties: false
+                                                                                properties:
+                                                                                  color:
+                                                                                    type: string
+                                                                                    anyOf:
+                                                                                    - enum:
+                                                                                      - red
+                                                                                      - teal
+                                                                                      - amber
+                                                                                    - pattern: ^#[0-9a-f]{6}$
+                                                                                  href:
+                                                                                    type: string
+                                                                                    pattern: ^(?:https?://|mailto:)
+                                                                                    maxLength: 2048
+                                                                        content:
+                                                                          type: array
+                                                                          items:
+                                                                            type: object
+                                                                            required:
+                                                                            - type
+                                                                            additionalProperties: false
+                                                                            properties:
+                                                                              type:
+                                                                                type: string
+                                                                                enum:
+                                                                                - paragraph
+                                                                                - heading
+                                                                                - bulletList
+                                                                                - orderedList
+                                                                                - horizontalRule
+                                                                                - taskList
+                                                                                - table
+                                                                                - blockquote
+                                                                                - codeBlock
+                                                                                - image
+                                                                                - listItem
+                                                                                - taskItem
+                                                                                - tableRow
+                                                                                - tableHeader
+                                                                                - tableCell
+                                                                                - text
+                                                                                - hardBreak
+                                                                              attrs:
+                                                                                type: object
+                                                                                additionalProperties: false
+                                                                                properties:
+                                                                                  level:
+                                                                                    type: integer
+                                                                                    enum:
+                                                                                    - 2
+                                                                                    - 3
+                                                                                    - 4
+                                                                                  ghost:
+                                                                                    type: boolean
+                                                                                  textAlign:
+                                                                                    type: string
+                                                                                    enum:
+                                                                                    - left
+                                                                                    - center
+                                                                                    - right
+                                                                                    - justify
+                                                                                  start:
+                                                                                    type: integer
+                                                                                    minimum: 1
+                                                                                    maximum: 9999
+                                                                                  colspan:
+                                                                                    type: integer
+                                                                                    minimum: 1
+                                                                                    maximum: 50
+                                                                                  rowspan:
+                                                                                    type: integer
+                                                                                    minimum: 1
+                                                                                    maximum: 50
+                                                                                  colwidth:
+                                                                                    type: array
+                                                                                    items:
+                                                                                      type: integer
+                                                                                      minimum: 1
+                                                                                      maximum: 2000
+                                                                                  checked:
+                                                                                    type: boolean
+                                                                                  caption:
+                                                                                    type: string
+                                                                                  attachment_id:
+                                                                                    type: string
+                                                                                    format: uuid
+                                                                                    nullable: true
+                                                                              text:
+                                                                                type: string
+                                                                                minLength: 1
+                                                                              marks:
+                                                                                type: array
+                                                                                items:
+                                                                                  type: object
+                                                                                  required:
+                                                                                  - type
+                                                                                  additionalProperties: false
+                                                                                  properties:
+                                                                                    type:
+                                                                                      type: string
+                                                                                      enum:
+                                                                                      - bold
+                                                                                      - italic
+                                                                                      - underline
+                                                                                      - strike
+                                                                                      - code
+                                                                                      - superscript
+                                                                                      - subscript
+                                                                                      - highlight
+                                                                                      - color
+                                                                                      - link
+                                                                                    attrs:
+                                                                                      type: object
+                                                                                      additionalProperties: false
+                                                                                      properties:
+                                                                                        color:
+                                                                                          type: string
+                                                                                          anyOf:
+                                                                                          - enum:
+                                                                                            - red
+                                                                                            - teal
+                                                                                            - amber
+                                                                                          - pattern: ^#[0-9a-f]{6}$
+                                                                                        href:
+                                                                                          type: string
+                                                                                          pattern: ^(?:https?://|mailto:)
+                                                                                          maxLength: 2048
+                                                                              content:
+                                                                                type: array
+                                                                                items:
+                                                                                  type: object
+                                                                                  required:
+                                                                                  - type
+                                                                                  additionalProperties: false
+                                                                                  properties:
+                                                                                    type:
+                                                                                      type: string
+                                                                                      enum:
+                                                                                      - paragraph
+                                                                                      - heading
+                                                                                      - bulletList
+                                                                                      - orderedList
+                                                                                      - horizontalRule
+                                                                                      - taskList
+                                                                                      - table
+                                                                                      - blockquote
+                                                                                      - codeBlock
+                                                                                      - image
+                                                                                      - listItem
+                                                                                      - taskItem
+                                                                                      - tableRow
+                                                                                      - tableHeader
+                                                                                      - tableCell
+                                                                                      - text
+                                                                                      - hardBreak
+                                                                                    attrs:
+                                                                                      type: object
+                                                                                      additionalProperties: false
+                                                                                      properties:
+                                                                                        level:
+                                                                                          type: integer
+                                                                                          enum:
+                                                                                          - 2
+                                                                                          - 3
+                                                                                          - 4
+                                                                                        ghost:
+                                                                                          type: boolean
+                                                                                        textAlign:
+                                                                                          type: string
+                                                                                          enum:
+                                                                                          - left
+                                                                                          - center
+                                                                                          - right
+                                                                                          - justify
+                                                                                        start:
+                                                                                          type: integer
+                                                                                          minimum: 1
+                                                                                          maximum: 9999
+                                                                                        colspan:
+                                                                                          type: integer
+                                                                                          minimum: 1
+                                                                                          maximum: 50
+                                                                                        rowspan:
+                                                                                          type: integer
+                                                                                          minimum: 1
+                                                                                          maximum: 50
+                                                                                        colwidth:
+                                                                                          type: array
+                                                                                          items:
+                                                                                            type: integer
+                                                                                            minimum: 1
+                                                                                            maximum: 2000
+                                                                                        checked:
+                                                                                          type: boolean
+                                                                                        caption:
+                                                                                          type: string
+                                                                                        attachment_id:
+                                                                                          type: string
+                                                                                          format: uuid
+                                                                                          nullable: true
+                                                                                    text:
+                                                                                      type: string
+                                                                                      minLength: 1
+                                                                                    marks:
+                                                                                      type: array
+                                                                                      items:
+                                                                                        type: object
+                                                                                        required:
+                                                                                        - type
+                                                                                        additionalProperties: false
+                                                                                        properties:
+                                                                                          type:
+                                                                                            type: string
+                                                                                            enum:
+                                                                                            - bold
+                                                                                            - italic
+                                                                                            - underline
+                                                                                            - strike
+                                                                                            - code
+                                                                                            - superscript
+                                                                                            - subscript
+                                                                                            - highlight
+                                                                                            - color
+                                                                                            - link
+                                                                                          attrs:
+                                                                                            type: object
+                                                                                            additionalProperties: false
+                                                                                            properties:
+                                                                                              color:
+                                                                                                type: string
+                                                                                                anyOf:
+                                                                                                - enum:
+                                                                                                  - red
+                                                                                                  - teal
+                                                                                                  - amber
+                                                                                                - pattern: ^#[0-9a-f]{6}$
+                                                                                              href:
+                                                                                                type: string
+                                                                                                pattern: ^(?:https?://|mailto:)
+                                                                                                maxLength: 2048
+                                                                                    content:
+                                                                                      type: array
+                                                                                      items:
+                                                                                        type: object
+                                                                                        required:
+                                                                                        - type
+                                                                                        additionalProperties: false
+                                                                                        properties:
+                                                                                          type:
+                                                                                            type: string
+                                                                                            enum:
+                                                                                            - text
+                                                                                            - hardBreak
+                                                                                          text:
+                                                                                            type: string
+                                                                                            minLength: 1
+                                                                                          marks:
+                                                                                            type: array
+                                                                                            items:
+                                                                                              type: object
+                                                                                              required:
+                                                                                              - type
+                                                                                              additionalProperties: false
+                                                                                              properties:
+                                                                                                type:
+                                                                                                  type: string
+                                                                                                  enum:
+                                                                                                  - bold
+                                                                                                  - italic
+                                                                                                  - underline
+                                                                                                  - strike
+                                                                                                  - code
+                                                                                                  - superscript
+                                                                                                  - subscript
+                                                                                                  - highlight
+                                                                                                  - color
+                                                                                                  - link
+                                                                                                attrs:
+                                                                                                  type: object
+                                                                                                  additionalProperties: false
+                                                                                                  properties:
+                                                                                                    color:
+                                                                                                      type: string
+                                                                                                      anyOf:
+                                                                                                      - enum:
+                                                                                                        - red
+                                                                                                        - teal
+                                                                                                        - amber
+                                                                                                      - pattern: ^#[0-9a-f]{6}$
+                                                                                                    href:
+                                                                                                      type: string
+                                                                                                      pattern: ^(?:https?://|mailto:)
+                                                                                                      maxLength: 2048
+      additionalProperties: false
+      x-operation: updateTicketBody
+      required:
+      - version
+      - doc
+      x-required-by: hooks
     TestSpecCreateInput:
       type: object
       properties:
@@ -10583,6 +12044,72 @@ components:
       - other_ticket_id
       - kind
       x-required-by: hooks
+    SavedViewInput:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          pattern: ^\s*[^\s\u0000-\u001f\u007f-\u009f](?:[^\u0000-\u001f\u007f-\u009f]{0,58}[^\s\u0000-\u001f\u007f-\u009f])?\s*$
+        share:
+          type: string
+          enum:
+          - self
+          - group
+        scope_id:
+          type: string
+          format: uuid
+          nullable: true
+        filters:
+          type: object
+          maxProperties: 8
+          propertyNames:
+            pattern: ^[A-Za-z0-9_]{1,40}$
+          additionalProperties:
+            anyOf:
+            - type: string
+              maxLength: 500
+            - type: number
+            - type: boolean
+            - type: object
+              maxProperties: 32
+              propertyNames:
+                pattern: ^[A-Za-z0-9_]{1,40}$
+              additionalProperties:
+                anyOf:
+                - type: string
+                  maxLength: 500
+                - type: number
+                - type: boolean
+        columns:
+          type: array
+          items:
+            type: string
+            maxLength: 40
+          maxItems: 50
+        density:
+          type: string
+          enum:
+          - normal
+          - compact
+      additionalProperties: false
+      x-operation: createSavedView
+      required:
+      - name
+      x-required-by: hooks
+      anyOf:
+      - not:
+          required:
+          - share
+      - properties:
+          share:
+            enum:
+            - self
+      - required:
+        - scope_id
+        properties:
+          scope_id:
+            type: string
     ScopeOverview:
       type: object
       properties:
@@ -10683,7 +12210,7 @@ components:
         deleted:
           type: object
           nullable: true
-      x-operation: listTicketTimeline
+      x-operation: createTicketMessage
     TestSpecLint:
       type: object
       properties:
@@ -12450,6 +13977,16 @@ components:
           items:
             type: object
       x-operation: createInvitations
+    BodySaved:
+      type: object
+      properties:
+        version:
+          type: integer
+        changed:
+          type: boolean
+        edited_at:
+          type: string
+      x-operation: updateTicketBody
     TestSpecItem:
       type: object
       properties:
@@ -12492,6 +14029,57 @@ components:
           type: string
           format: uuid
       x-operation: deleteTicketLink
+    SavedView:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        share:
+          type: string
+        scope_id:
+          type: string
+          format: uuid
+          nullable: true
+        filters:
+          type: object
+        columns:
+          type: array
+          items:
+            type: string
+        density:
+          type: string
+        member_id:
+          type: string
+          format: uuid
+        member_name:
+          type: string
+        mine:
+          type: boolean
+        can_edit:
+          type: boolean
+        created_at:
+          type: string
+        updated_at:
+          type: string
+      x-operation: createSavedView
+    TicketDeleted:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        deleted_count:
+          type: integer
+        withdrawn_approvals:
+          type: integer
+        stopped_runs:
+          type: integer
+        restorable_until:
+          type: string
+      x-operation: deleteTicket
     TicketField:
       type: object
       properties:
@@ -38533,7 +40121,7 @@ paths:
   /api/v1/saved_views:
     get:
       operationId: listSavedViews
-      summary: 取得（saved_views）— 見え方を切り替える（一覧と詳細・カレンダー・ガント）
+      summary: 取得（saved_views）— 保存した検索条件を名前の順に開く（自分の物と、見えるグループの全員向けの物）
       tags:
       - saved_views
       x-acts:
@@ -38560,6 +40148,9 @@ paths:
         allowEmptyValue: true
         schema:
           type: string
+          enum:
+          - self
+          - group
       - name: cursor
         in: query
         allowEmptyValue: true
@@ -38573,26 +40164,6 @@ paths:
           type: integer
           minimum: 1
           maximum: 200
-      - name: sort
-        in: query
-        allowEmptyValue: true
-        schema:
-          type: string
-          enum:
-          - columns
-          - created_at
-          - created_by
-          - deleted_at
-          - density
-          - filters
-          - id
-          - member_id
-          - name
-          - scope_id
-          - share
-          - tenant_id
-          - updated_at
-          - updated_by
       responses:
         '200':
           description: 成功
@@ -38604,7 +40175,7 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/SavedViews'
+                      $ref: '#/components/schemas/SavedView'
                   meta:
                     type: object
         '401':
@@ -38625,14 +40196,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '429':
-          description: RATE_LIMITED
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
+        '429':
+          description: RATE_LIMITED
           content:
             application/json:
               schema:
@@ -38657,7 +40228,7 @@ paths:
       - D-125.49
       - D-125.64
       x-permission: self
-      x-permission-scope: グループの全員に見せるのはそのグループの人
+      x-permission-scope: グループの全員に見せるのは、そのグループが見える人（見えないグループは 404）
       x-step-up: false
       security:
       - session: []
@@ -38666,7 +40237,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SavedViewsInput'
+              $ref: '#/components/schemas/SavedViewInput'
       responses:
         '201':
           description: 成功
@@ -38676,7 +40247,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/SavedViews'
+                    $ref: '#/components/schemas/SavedView'
                   meta:
                     type: object
         '401':
@@ -38692,13 +40263,27 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '409':
-          description: CONFLICT
+          description: E-VWS-005／E-VWS-006
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: VALIDATION_ERROR
+          description: VALIDATION_ERROR／E-VWS-001（契約に書けない値の決まり：条件（filters）の欄の名前の決まり（英数字と _ の 40 字まで））
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          x-unexpressible-422:
+          - 条件（filters）の欄の名前の決まり（英数字と _ の 40 字まで）
+        '404':
+          description: E-VWS-004
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -38711,12 +40296,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '429':
           description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -40986,7 +42565,7 @@ paths:
   /api/v1/tickets:
     get:
       operationId: listTickets
-      summary: 取得（tickets）— チケットの一覧を見る（自分に関わるもの・すべて・グループ・題名か番号・担当者・段・種別・完了で絞る・期限切れの印）
+      summary: 取得（tickets）— チケットの一覧を見る（自分に関わるもの・すべて・グループ・題名か番号・担当者・段・種別・取引先・完了・期限と開始の範囲・期限切れ・炎・親・期限なし・AI に任せている・自分が承認で絞る・並べる・見せる欄を足す・期限切れの印）
       tags:
       - tickets
       x-acts:
@@ -41061,6 +42640,85 @@ paths:
           enum:
           - 'true'
           - 'false'
+      - name: due
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          enum:
+          - none
+      - name: delegated
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          enum:
+          - 'true'
+          - 'false'
+      - name: approving
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          enum:
+          - 'true'
+          - 'false'
+      - name: due_from
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          format: date
+          pattern: ^(?!0000-)[0-9]{4}-[0-9]{2}-[0-9]{2}$
+      - name: due_to
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          format: date
+          pattern: ^(?!0000-)[0-9]{4}-[0-9]{2}-[0-9]{2}$
+      - name: start_from
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          format: date
+          pattern: ^(?!0000-)[0-9]{4}-[0-9]{2}-[0-9]{2}$
+      - name: start_to
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          format: date
+          pattern: ^(?!0000-)[0-9]{4}-[0-9]{2}-[0-9]{2}$
+      - name: overdue
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          enum:
+          - 'true'
+          - 'false'
+      - name: fire
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          enum:
+          - 'true'
+          - 'false'
+      - name: parent
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          pattern: ^(?:none|any|[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+      - name: fields
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          pattern: ^(?:start_on|priority|estimate_minutes|actual_minutes|scope)(?:,(?:start_on|priority|estimate_minutes|actual_minutes|scope))*$
       - name: cursor
         in: query
         allowEmptyValue: true
@@ -41074,6 +42732,16 @@ paths:
           type: integer
           minimum: 1
           maximum: 100
+      - name: sort
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          enum:
+          - due_on
+          - start_on
+          - updated_at
+          - created_at
       responses:
         '200':
           description: 成功
@@ -41430,7 +43098,7 @@ paths:
       - D-125.167
       - D-125.62
       x-permission: assignee
-      x-permission-scope: 担当者・作成者・マネージャー（子の扱いを選ぶ）
+      x-permission-scope: 作った人か、そのグループで tickets の edit を持つ人（D-125.62）。子・孫の扱い（children）を選ぶ
       x-step-up: false
       security:
       - session: []
@@ -41441,6 +43109,28 @@ paths:
         schema:
           type: string
           format: uuid
+      - name: children
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          enum:
+          - ''
+          - move
+          - cascade
+          - detach
+      - name: parent_id
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          format: uuid
+      - name: reason
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          maxLength: 400
       responses:
         '200':
           description: 成功
@@ -41450,7 +43140,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Tickets'
+                    $ref: '#/components/schemas/TicketDeleted'
                   meta:
                     type: object
         '401':
@@ -41460,7 +43150,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          description: E-DEL-001／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -41477,14 +43167,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '429':
-          description: RATE_LIMITED
+        '409':
+          description: E-DEL-010
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '503':
           description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
           content:
             application/json:
               schema:
@@ -42161,6 +43857,100 @@ paths:
                 $ref: '#/components/schemas/Error'
         '503':
           description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v1/tickets/{id}/body:
+    patch:
+      operationId: updateTicketBody
+      summary: 更新（tickets）— チケットの中身（区画）を書く・直す
+      tags:
+      - ticket_sections
+      x-acts:
+      - A101
+      x-screens:
+      - tickets
+      x-choke-points:
+      - C2
+      x-source:
+      - D-125.167
+      - D-125.27
+      - D-125.58
+      x-permission: write
+      x-permission-scope: そのグループの人
+      x-step-up: false
+      security:
+      - session: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TicketBodyInput'
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/BodySaved'
+                  meta:
+                    type: object
+        '401':
+          description: UNAUTHENTICATED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: VALIDATION_ERROR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: E-SEC-004／E-SEC-005
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: PAYLOAD_TOO_LARGE
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
           content:
             application/json:
               schema:
@@ -43372,8 +45162,8 @@ paths:
       - D-125.131
       - D-125.167
       - D-125.29
-      x-permission: write
-      x-permission-scope: そのグループの人（閲覧のみは書けない）
+      x-permission: read
+      x-permission-scope: そのチケットを見られる人（閲覧のみの人も書ける。段や決定は変えられない・⑧）
       x-step-up: false
       security:
       - session: []
@@ -43389,7 +45179,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TicketMessagesInput'
+              $ref: '#/components/schemas/TicketMessageInput'
       responses:
         '201':
           description: 成功
@@ -43399,7 +45189,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/TicketMessages'
+                    $ref: '#/components/schemas/TimelineItem'
                   meta:
                     type: object
         '401':
@@ -43415,7 +45205,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: NOT_FOUND
+          description: E-PAGE-001／NOT_FOUND
           content:
             application/json:
               schema:
@@ -43427,7 +45217,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: VALIDATION_ERROR
+          description: E-VAL-027
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -43440,12 +45236,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '429':
           description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -43781,99 +45571,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '502':
           description: EXTERNAL_FAILED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /api/v1/tickets/{id}/sections/{key}:
-    patch:
-      operationId: updateTicketSection
-      summary: 更新（tickets）— チケットの中身（区画）を書く・直す
-      tags:
-      - ticket_sections
-      x-acts:
-      - A101
-      x-screens:
-      - tickets
-      x-choke-points:
-      - C2
-      x-source:
-      - D-125.167
-      - D-125.27
-      - D-125.58
-      x-permission: write
-      x-permission-scope: そのグループの人
-      x-step-up: false
-      security:
-      - session: []
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
-      - name: key
-        in: path
-        required: true
-        schema:
-          type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/TicketSectionsInput'
-      responses:
-        '200':
-          description: 成功
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/TicketSections'
-                  meta:
-                    type: object
-        '401':
-          description: UNAUTHENTICATED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '403':
-          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '404':
-          description: NOT_FOUND
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '422':
-          description: VALIDATION_ERROR
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '413':
-          description: PAYLOAD_TOO_LARGE
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '429':
-          description: RATE_LIMITED
           content:
             application/json:
               schema:
@@ -44563,6 +46260,7 @@ paths:
           - edited_by
           - edited_by_clone
           - id
+          - restored_from
           - section_id
           - tenant_id
           - ticket_id

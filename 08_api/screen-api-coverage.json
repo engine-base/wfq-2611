@@ -2380,7 +2380,7 @@
     },
     {
      "role": "action",
-     "endpoint": "PATCH /api/v1/tickets/:id/sections/:key",
+     "endpoint": "PATCH /api/v1/tickets/:id/body",
      "act": "A101"
     },
     {

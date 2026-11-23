@@ -27,16 +27,8 @@ export const DOC_TOOLS = [
   "リンク",
 ] as const;
 
-/** まだ使えない操作（押せない形で出す・D-145.9）の名前。題名の行・本文の道具の帯・パネルのタブ・子チケットのカード */
-export const DETAIL_INERT = [
-  "複製",
-  "ほかの操作",
-  ...DOC_TOOLS,
-  "版と差分",
-  "やり取り",
-  "子を足す",
-  "つながりを足す",
-] as const;
+/** まだ使えない操作（押せない形で出す・D-145.9）の名前。題名の行・本文の道具の帯・子チケットのカード（パネルのタブ「やり取り」は K-392 で押せる形になった） */
+export const DETAIL_INERT = ["複製", "ほかの操作", ...DOC_TOOLS, "版と差分", "子を足す", "つながりを足す"] as const;
 
 const asRow = (role: string, name: string): SpecRow => ({
   id: "K226-UI-025",
@@ -53,6 +45,7 @@ export function detailRows(sectionLabels: string[], me = "高本"): SpecRow[] {
     ...DETAIL_INERT,
     `${me}のAI と話す`,
     "属性",
+    "やり取り", // K-392：パネルのタブ「やり取り」は押せる（読んでいない数が 0 のときの名前）
     `${me}のAI`,
     "期限を変える",
     "パネルを閉じる",

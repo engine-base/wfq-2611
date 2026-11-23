@@ -38161,9 +38161,9 @@
      "act": "A101",
      "role": "action",
      "method": "PATCH",
-     "path_draft": "/api/tickets/:id/sections/:key",
+     "path_draft": "/api/tickets/:id/body",
      "table": "ticket_sections",
-     "operation_id": "updateTicketSection",
+     "operation_id": "updateTicketBody",
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-107",
@@ -40149,9 +40149,9 @@
      "act": "A101",
      "role": "action",
      "method": "PATCH",
-     "path_draft": "/api/tickets/:id/sections/:key",
+     "path_draft": "/api/tickets/:id/body",
      "table": "ticket_sections",
-     "operation_id": "updateTicketSection",
+     "operation_id": "updateTicketBody",
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-107",

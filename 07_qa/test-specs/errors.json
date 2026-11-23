@@ -6638,6 +6638,38 @@
    "severity": "high"
   },
   {
+   "id": "E-VAL-027",
+   "class": "validation",
+   "where": {
+    "screen": "tickets",
+    "state": "talk"
+   },
+   "when": "やり取りに書くとき・直すときに、本文が空・空白だけ（全角の空白・改行も）",
+   "false_when": "1 文字以上の字を書いた",
+   "message": "書き込む文を書いてください",
+   "action": "文を書いてから送る",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットの詳細のやり取りを開く",
+    "steps": [
+     "書く欄に空白だけを入れて送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.45",
+    "D-130.1"
+   ],
+   "support_code": "VAL-027"
+  },
+  {
    "id": "E-CONF-030",
    "class": "conflict",
    "where": {
@@ -7062,6 +7094,62 @@
    ]
   },
   {
+   "id": "E-SEC-004",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "今の版と送った版が違う（先に別の人が直した・同じ版を持った 2 つの画面が同時に書き終えた後の方）",
+   "false_when": "送った版が今の版と同じ",
+   "message": "先に直されました。読み直してから、もう一度直してください",
+   "action": "読み直してもう一度",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットの詳細を開く",
+    "steps": [
+     "2 つの画面で同じ本文を直し、先に 1 つ目の画面で書き終えてから、2 つ目の画面でも書き終える"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-150.13"
+   ]
+  },
+  {
+   "id": "E-SEC-005",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "完了したチケットの本文を直そうとした",
+   "false_when": "完了していないチケット",
+   "message": "このチケットは完了しています。完了したチケットの本文は変えられません",
+   "action": "新しいチケットで書く",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットの詳細を開く",
+    "steps": [
+     "完了したチケットの本文を直して書き終える"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-150.30"
+   ]
+  },
+  {
    "id": "E-SPEC-001",
    "class": "conflict",
    "where": {
@@ -7274,6 +7362,246 @@
    ]
   },
   {
+   "id": "E-VWS-001",
+   "class": "validation",
+   "where": {
+    "screen": "tickets",
+    "state": "save"
+   },
+   "when": "名前が空か、空白だけ（全角の空白も）。前後の空白を落とした後に 1 文字も残らない",
+   "false_when": "前後の空白を落とした後に 1 文字以上の見える字が残る",
+   "message": "名前を入れてください",
+   "action": "名前を入れる",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットの一覧で絞った条件を「保存した条件」に保存する小窓を開く",
+    "steps": [
+     "名前の欄を空のまま（か空白だけで）保存する"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.83",
+    "D-151.9"
+   ]
+  },
+  {
+   "id": "E-VWS-002",
+   "class": "validation",
+   "where": {
+    "screen": "tickets",
+    "state": "save"
+   },
+   "when": "名前が 61 文字以上（全角半角にそろえ、前後の空白を落とした後の文字の数）",
+   "false_when": "60 文字まで（全角 60 文字も通る）",
+   "message": "名前は 60 文字までにしてください",
+   "action": "名前を短くする",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットの一覧で絞った条件を「保存した条件」に保存する小窓を開く",
+    "steps": [
+     "名前の欄に 61 文字を入れて保存する"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.83",
+    "D-151.9"
+   ]
+  },
+  {
+   "id": "E-VWS-003",
+   "class": "validation",
+   "where": {
+    "screen": "tickets",
+    "state": "save"
+   },
+   "when": "「グループの全員」に見せる指定なのに、見せるグループ（scope_id）が無いか null",
+   "false_when": "グループの全員に見せるときに見せるグループが付いている。自分だけの保存は見せるグループが無くてよい",
+   "message": "グループの全員に見せるときは、見せるグループを選んでください",
+   "action": "見せるグループを選ぶ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットの一覧で絞った条件を「保存した条件」に保存する小窓を開く",
+    "steps": [
+     "「グループの全員」を選び、見せるグループを選ばずに保存する"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.83",
+    "D-151.9"
+   ]
+  },
+  {
+   "id": "E-VWS-004",
+   "class": "not_found",
+   "where": {
+    "screen": "tickets",
+    "state": "save"
+   },
+   "when": "見せるグループ（scope_id）が無い・別の会社のグループ・消したグループ・自分に見えないグループ（在るかを教えない）",
+   "false_when": "自分に見えるグループ（席のグループと、その下のグループ）",
+   "message": "見せるグループが見つかりませんでした。消されたか、見る権限が無いかもしれません",
+   "action": "見せるグループを選び直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットの一覧で絞った条件を「保存した条件」に保存する小窓を開く",
+    "steps": [
+     "保存の小窓を開いたまま、見せるグループの権限が外れる（か消される）",
+     "そのまま保存する"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-128.83",
+    "D-151.9"
+   ]
+  },
+  {
+   "id": "E-VWS-005",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "save"
+   },
+   "when": "同じ人の消していない保存した条件に、同じ名前（大文字小文字・全角半角の違いも同じ）がもうある",
+   "false_when": "同じ名前が無い・ほかの人の条件・消した条件",
+   "message": "同じ名前の保存した条件が、もうあります。別の名前にしてください",
+   "action": "別の名前にする",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットの一覧で絞った条件を「保存した条件」に保存する小窓を開く",
+    "steps": [
+     "すでに保存した条件と同じ名前（大文字小文字だけ違っても同じ）で保存する"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.83",
+    "D-151.9"
+   ]
+  },
+  {
+   "id": "E-VWS-006",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets",
+    "state": "save"
+   },
+   "when": "同じ人が作った消していない保存した条件が 50 件ある（51 件目）",
+   "false_when": "49 件まで。消した条件・ほかの人の条件は数えない",
+   "message": "保存できる条件は 50 件までです。いらないものを消してから保存してください",
+   "action": "いらない条件を消す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットの一覧で絞った条件を「保存した条件」に保存する小窓を開く",
+    "steps": [
+     "保存した条件を 50 件にして、51 件目を保存する"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.83",
+    "D-151.9"
+   ]
+  },
+  {
+   "id": "E-VWS-007",
+   "class": "validation",
+   "where": {
+    "screen": "tickets",
+    "state": "save"
+   },
+   "when": "条件（filters）が入れ物でない・欄が 9 個以上・欄の名前が決まりの外・値が決まりの外（配列・null・501 字以上・入れ物の入れ物・33 欄以上）、列（columns）が文字の並びでない・51 個以上・1 つが 41 文字以上",
+   "false_when": "条件は欄 8 個までの小さな入れ物、列は 50 個までの文字の並び",
+   "message": "条件の形が正しくありません。条件・列の並び・大きさを確かめてください",
+   "action": "条件を作り直す",
+   "undo": false,
+   "layers": [
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットの一覧で絞った条件を「保存した条件」に保存する小窓を開く",
+    "steps": [
+     "画面を通さずに口を直に呼び、条件に配列を入れて保存する"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.83",
+    "D-151.9"
+   ]
+  },
+  {
+   "id": "E-VWS-008",
+   "class": "validation",
+   "where": {
+    "screen": "tickets",
+    "state": "save"
+   },
+   "when": "名前の途中に制御文字（改行・タブ・BEL ほか。C0・DEL・C1）がある",
+   "false_when": "見える字と普通の空白だけ",
+   "message": "名前に改行などの制御文字は使えません",
+   "action": "名前を打ち直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットの一覧で絞った条件を「保存した条件」に保存する小窓を開く",
+    "steps": [
+     "名前に改行を貼り付けて保存する"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.83",
+    "D-151.9"
+   ]
+  },
+  {
    "id": "E-DEL-001",
    "class": "permission",
    "where": {
@@ -7300,6 +7628,156 @@
    "source": [
     "D-125.62",
     "D-151.16"
+   ]
+  },
+  {
+   "id": "E-DEL-010",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "子・孫がいるチケットを、扱いを選ばずに消した（確かめた後に子が足された場合も）",
+   "false_when": "子・孫がいない、または扱い（別の親へ移す・一緒に消す・親を外して残す）を選んだ",
+   "message": "このチケットには子・孫がいます。別の親へ移す・一緒に消す・親を外して残す、のどれかを選んでください",
+   "action": "扱いを選ぶ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "子のチケットがあるチケットの詳細を開く",
+    "steps": [
+     "「…」から「消す」を選ぶ",
+     "扱いを選ばずに消す（確かめの後で別の人が子を足した状態）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.62",
+    "D-151.14"
+   ]
+  },
+  {
+   "id": "E-DEL-011",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "子の移し先に、消すチケット自身かその子・孫を選んだ",
+   "false_when": "移し先がそれ以外のチケット",
+   "message": "子の移し先に、消すチケット自身やその子・孫は選べません",
+   "action": "別の親を選ぶ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "子・孫のあるチケットの詳細を開く",
+    "steps": [
+     "「…」から「消す」を選ぶ",
+     "「別の親へ移す」で移し先に自分の子を選ぶ"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.51",
+    "D-125.62"
+   ]
+  },
+  {
+   "id": "E-DEL-012",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "子を移し先に移すと、親子が 3 段を超える",
+   "false_when": "移した後も親子が 3 段までに収まる",
+   "message": "その親に移すと、親子が 3 段を超えます",
+   "action": "浅い親を選ぶ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "孫のいる子を持つチケットの詳細を開く",
+    "steps": [
+     "「…」から「消す」を選ぶ",
+     "「別の親へ移す」で 2 段目のチケットを移し先に選ぶ"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.51",
+    "D-125.62"
+   ]
+  },
+  {
+   "id": "E-DEL-013",
+   "class": "permission",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "一緒に消す子・孫に、自分が消せない物がある（別のグループで編集の権限が無く、作った人でもない）",
+   "false_when": "一緒に消す子・孫が全部、作った人か編集の権限のある物",
+   "message": "一緒に消す子・孫に、あなたが消せないチケットがあります",
+   "action": "別の扱いを選ぶか、そのグループの人に頼む",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "別のグループの子を持つチケットの詳細を開く",
+    "steps": [
+     "「…」から「消す」を選ぶ",
+     "「一緒に消す」を選ぶ"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.62",
+    "D-151.16"
+   ]
+  },
+  {
+   "id": "E-DEL-014",
+   "class": "not_found",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "子の移し先のチケットが見つからない（無い・消えている・見えない・別の会社・移し先を指していない）",
+   "false_when": "移し先が見える・消えていないチケット",
+   "message": "子の移し先のチケットが見つかりませんでした",
+   "action": "親を選び直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "子のチケットがあるチケットの詳細を開く",
+    "steps": [
+     "「…」から「消す」を選ぶ",
+     "「別の親へ移す」で移し先を選ばずに（または見えない物を指して）消す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.62",
+    "D-129.43"
    ]
   },
   {
