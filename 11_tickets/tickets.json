@@ -22795,8 +22795,7 @@
     "@kaname/db"
    ],
    "ci_wide": [
-    "db",
-    "shared"
+    "db"
    ],
    "changes": [
     "packages/db/migrations/20261125011800_knowledge_folder_write.sql",

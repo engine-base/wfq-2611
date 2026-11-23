@@ -5,6 +5,10 @@
 import type { K144Leaf } from "./_base.js";
 
 export const leaf: K144Leaf = {
+  setup: async (f) => {
+    // フォルダを作る・直す・消す口（updateKnowledgeFolder・deleteKnowledgeFolder）は、葉の hooks のファイルの register（K-326）を葉ごとの 1 行が自分の分だけ足す。最初の要求の前に 1 回だけ読む（足さないと口が無く 501）// K-678
+    (await import("../../F3/leaf-hooks.js")).leafHooks(f, ["f9-knowledge-folders"]); // K-678
+  },
   UUID_PARAM_CASES: [
     ["K144-API-103", "updateKnowledgeFolder", "path", "id"], // K-678
     ["K144-API-104", "deleteKnowledgeFolder", "path", "id"], // K-678
