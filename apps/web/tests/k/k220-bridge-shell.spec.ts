@@ -135,7 +135,7 @@ test("K220-UI-002 上の帯のいまの場所：「自分の設定 › PC と使
   await expect(page).toHaveURL(/\/setup\/bridge$/);
 });
 
-test("K220-UI-003 第 2 ナビ：見出し アカウント・分身・ワークスペースごと。項目は プロフィール・ログインと安全・PC と使った量・預けたログイン情報・知らせ の順で、PC と使った量 が今いる項目（aria-current=page・白い地・600）", async ({
+test("K220-UI-003 第 2 ナビ：見出し アカウント・分身・ワークスペースごと。項目は プロフィール・ログインと安全・PC と使った量・預けたログイン情報・お知らせ の順で、PC と使った量 が今いる項目（aria-current=page・白い地・600）", async ({
   page,
 }) => {
   await mockApi(page, { devices: [{ state: "live" }] });
@@ -145,7 +145,7 @@ test("K220-UI-003 第 2 ナビ：見出し アカウント・分身・ワーク�
   for (const h of ["アカウント", "分身", "ワークスペースごと"])
     await expect(sub.getByText(h, { exact: true })).toBeVisible();
   const names = (await sub.locator(".k-me-sub-t").allInnerTexts()).map((x) => x.trim());
-  expect(names).toEqual(["プロフィール", "ログインと安全", "PC と使った量", "預けたログイン情報", "知らせ"]);
+  expect(names).toEqual(["プロフィール", "ログインと安全", "PC と使った量", "預けたログイン情報", "お知らせ"]);
   expect(await sub.evaluate((e) => getComputedStyle(e).backgroundColor)).toBe("rgb(237, 240, 244)");
   expect(await sub.evaluate((e) => getComputedStyle(e).borderRightColor)).toBe("rgb(221, 226, 233)");
   const head = sub.locator(".k-me-sub-h").first();
@@ -175,12 +175,12 @@ test("K220-UI-004 第 2 ナビの作った画面：ログインと安全は /mfa
   await expect(page).toHaveURL(/\/mfa-setup$/);
 });
 
-test("K220-UI-005 第 2 ナビのまだ無い画面（プロフィール・知らせ）：出すが押せない（aria-disabled・href なし・薄さ 0.55）。押しても Enter でも移らず、Tab で止まらない", async ({
+test("K220-UI-005 第 2 ナビのまだ無い画面（プロフィール・お知らせ）：出すが押せない（aria-disabled・href なし・薄さ 0.55）。押しても Enter でも移らず、Tab で止まらない", async ({
   page,
 }) => {
   await mockApi(page, { devices: [{ state: "live" }] });
   await open(page);
-  for (const name of ["プロフィール", "知らせ"]) {
+  for (const name of ["プロフィール", "お知らせ"]) {
     const it = subItem(page, name);
     await expect(it, name).toHaveAttribute("aria-disabled", "true");
     expect(await it.getAttribute("href"), name).toBeNull();
@@ -204,12 +204,12 @@ test("K220-UI-006 預けたログイン情報の件数：本当の数を返す�
   expect(t).not.toMatch(/\d/);
 });
 
-test("K220-UI-007 第 2 ナビの注：「アカウントは 1 人 1 つ。預けたログイン情報と知らせはワークスペースごと」は 11px で一番下", async ({
+test("K220-UI-007 第 2 ナビの注：「アカウントは 1 人 1 つ。預けたログイン情報とお知らせはワークスペースごと」は 11px で一番下", async ({
   page,
 }) => {
   await mockApi(page, { devices: [{ state: "live" }] });
   await open(page);
-  const note = page.locator(SUB).getByText("アカウントは 1 人 1 つ。預けたログイン情報と知らせはワークスペースごと");
+  const note = page.locator(SUB).getByText("アカウントは 1 人 1 つ。預けたログイン情報とお知らせはワークスペースごと");
   expect(await note.evaluate((e) => getComputedStyle(e).fontSize)).toBe("11px");
   const last = await rect(page, `${SUB} a >> nth=-1`);
   expect((await note.boundingBox())!.y).toBeGreaterThan(last.y);
