@@ -34,3 +34,9 @@ checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403",
 [[operations]]
 include-operation-id = "setMyPassword"
 checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403", "404", "409", "422", "429", "5xx"]
+
+# K-475：保存した検索条件を作る口の条件（filters）の欄の名前（英数字と _ の 40 字まで）は、OpenAPI 3.0.3 に書く場所が無い（x-unexpressible-422）。
+#   形どおりの入力（変な字の欄の名前）を 422 で断るのを受け付けとして数えない（ST202 にしない）
+[[operations]]
+include-operation-id = "createSavedView"
+checks.positive_data_acceptance.expected-statuses = ["2xx", "3xx", "401", "403", "404", "409", "422", "429", "5xx"]

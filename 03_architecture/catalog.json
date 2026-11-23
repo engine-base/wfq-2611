@@ -6,13 +6,13 @@
  ],
  "counts": {
   "api": 370,
-  "api_built": 83,
+  "api_built": 87,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
   "db": 148,
   "ui": 19,
   "packages": 13,
-  "errors": 233,
+  "errors": 247,
   "stack": 56,
   "env": 41
  },
@@ -4397,7 +4397,7 @@
    "op": "listSavedViews",
    "method": "GET",
    "path": "/api/v1/saved_views",
-   "what": "取得（saved_views）— 見え方を切り替える（一覧と詳細・カレンダー・ガント）",
+   "what": "取得（saved_views）— 保存した検索条件を名前の順に開く（自分の物と、見えるグループの全員向けの物）",
    "flows": [
     "F7"
    ],
@@ -4405,9 +4405,10 @@
    "tables": [
     "saved_views"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-67"
+    "K-67",
+    "K-475"
    ]
   },
   {
@@ -4422,9 +4423,10 @@
    "tables": [
     "saved_views"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-67"
+    "K-67",
+    "K-475"
    ]
   },
   {
@@ -4539,6 +4541,7 @@
    ],
    "status": "作った",
    "owner_tickets": [
+    "K-67",
     "K-468"
    ]
   },
@@ -4864,7 +4867,7 @@
    "op": "listTickets",
    "method": "GET",
    "path": "/api/v1/tickets",
-   "what": "取得（tickets）— チケットの一覧を見る（自分に関わるもの・すべて・グループ・題名か番号・担当者・段・種別・完了で絞る・期限切れの印）",
+   "what": "取得（tickets）— チケットの一覧を見る（自分に関わるもの・すべて・グループ・題名か番号・担当者・段・種別・取引先・完了・期限と開始の範囲・期限切れ・炎・親・期限なし・AI に任せている・自分が承認で絞る・並べる・見せる欄を足す・期限",
    "flows": [
     "F4",
     "F7"
@@ -4944,9 +4947,10 @@
    "tables": [
     "tickets"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-67"
+    "K-67",
+    "K-488"
    ]
   },
   {
@@ -5288,9 +5292,9 @@
    "tables": [
     "ticket_messages"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-66"
+    "K-385"
    ]
   },
   {
