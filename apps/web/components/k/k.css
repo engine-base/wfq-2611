@@ -306,6 +306,9 @@ textarea.k-input {
   width: 1em;
   color: var(--k-primary);
 }
+.k-select-check::before {
+  content: "✓" / "";
+}
 
 /* ---- 表 ---- */
 .k-table-wrap {

@@ -82,25 +82,3 @@
   font-size: var(--k-text-body-sm);
   opacity: var(--k-c-button-disabled-opacity);
 }
-.k-dec-scope {
-  display: grid;
-  gap: var(--k-s-xs);
-  margin: 0;
-  padding: 0;
-  border: 0;
-}
-.k-dec-scope legend {
-  padding: 0;
-  margin-bottom: var(--k-s-xs);
-  color: var(--k-on-surface-variant);
-  font-size: var(--k-text-body-sm);
-}
-.k-dec-scope label {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--k-s-xs);
-}
-.k-dec-scope label[aria-disabled="true"] {
-  opacity: var(--k-c-button-disabled-opacity);
-  cursor: not-allowed;
-}

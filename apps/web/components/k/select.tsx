@@ -57,8 +57,9 @@ export function Select({
             <S.Popup className="k-select-popup k-select-field">
               {options.map((o) => (
                 <S.Item key={o.value} value={o.value} disabled={o.disabled} className="k-select-item">
-                  <S.ItemIndicator className="k-select-check" keepMounted={false}>
-                    ✓
+                  {/* 選んだ印は字に入れない（選択肢の字・読み上げの名前に「✓」を混ぜない）。印は .k-select-check::before が描く */}
+                  <S.ItemIndicator className="k-select-check" keepMounted={false} aria-hidden="true">
+                    <span />
                   </S.ItemIndicator>
                   <S.ItemText>{o.label}</S.ItemText>
                 </S.Item>

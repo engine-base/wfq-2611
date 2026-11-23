@@ -66,7 +66,6 @@ s = modal(BASE, mhead("決定にする", icon("決", "#186F69", 30), "書き込�
   + mbody('<div style="border-left: 3px solid #DDE2E9; padding: 6px 10px; background: #F7F8FA; border-radius: 0 6px 6px 0; font-size: 12px"><b style="font-weight: 500">鈴木 一郎</b> <span style="color: %s">11/01 10:20</span><div>10/19 の追加対応は先方の都合で無償にした件、請求から外すか？ → 外してください。先方とは電話で合意済みです</div></div>' % MUTED
   + '<div>' + lab("決めたこと", "（分身が一文にまとめた案）") + '<textarea style="width: 100%; box-sizing: border-box; min-height: 56px; border: 1px solid #22345C; box-shadow: 0 0 0 2px #DCE4F2; border-radius: 8px; padding: 8px 10px; font-family: inherit; font-size: 13px">10/19 の追加対応は無償。11月分の請求から外す</textarea></div>'
   + '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px"><div>' + lab("決めた人") + field("鈴木 一郎（先方と合意）") + '</div><div>' + lab("理由") + field("先方の都合による作業のため") + '</div></div>'
-  + '<div>' + lab("どこまで効かせる") + '<div style="display: flex; gap: 6px; flex-wrap: wrap">' + chip("このチケットだけ", True) + chip("セイコー様のこれから（取引先のルールにする）") + '</div></div>'
   + '<div style="display: flex; gap: 8px; align-items: center; background: #FFF8EE; border-radius: 8px; padding: 8px 10px; font-size: 12px">' + icon("!", "#B45309", 22) + '<span>本文の「請求の内訳」と食い違う（追加対応 2 回）。決定にしたあと、分身が本文を直す案を出す</span></div>')
   + mfoot(btn("やめる", "", "TicketDetail.dc.html"), btn("決定にする", "p", "StAiPanel.dc.html")), 600, "決定にする")
 save("TdDecision.dc.html", "決定にする", s)
