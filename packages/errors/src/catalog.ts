@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。259 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。263 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -3975,6 +3975,63 @@ export const CATALOG: Record<string, CatalogEntry> = {
       "state": "decisions"
     }
   },
+  "E-CONF-031": {
+    "id": "E-CONF-031",
+    "cls": "conflict",
+    "message": "この決定は、いま別の人が改めました。読み直してから、もう一度お試しください",
+    "action": "読み直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "CONF-031",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "decisions"
+    }
+  },
+  "E-CONF-033": {
+    "id": "E-CONF-033",
+    "cls": "conflict",
+    "message": "この決定は、いま別の人が取り消しました。読み直してから、もう一度お試しください",
+    "action": "読み直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "CONF-033",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "decisions"
+    }
+  },
+  "E-VAL-045": {
+    "id": "E-VAL-045",
+    "cls": "validation",
+    "message": "取り消す理由を書いてください",
+    "action": "取り消す理由を書く",
+    "undo": false,
+    "severity": "low",
+    "support_code": "VAL-045",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "decisions"
+    }
+  },
   "E-VAL-046": {
     "id": "E-VAL-046",
     "cls": "validation",
@@ -4238,6 +4295,23 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "where": {
       "screen": "tickets",
       "state": "links"
+    }
+  },
+  "E-NTF-001": {
+    "id": "E-NTF-001",
+    "cls": "conflict",
+    "message": "お知らせの続きを読めませんでした。最初から読み直してください",
+    "action": "最初から読み直す（続きの鍵を付けずに開き直す）",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-NTF-001",
+    "must_not": false,
+    "layers": [
+      "API"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "notifications"
     }
   },
   "E-SRC-001": {
