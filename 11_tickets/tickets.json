@@ -2618,11 +2618,9 @@
     "bulkApprove",
     "dryRunTicket",
     "editApproval",
-    "getCloneGrowth",
     "getFileForBridge",
     "getTicketAgentSession",
     "listApprovalHistory",
-    "listCloneActivity",
     "listConversationMessages",
     "listMirrorTargets",
     "mirrorConversationEntries",
@@ -2639,8 +2637,6 @@
     "apps/api/test/generated/get_approvals_history.test.ts",
     "apps/api/test/generated/get_bridge_files_ref.test.ts",
     "apps/api/test/generated/get_bridge_mirror_targets.test.ts",
-    "apps/api/test/generated/get_clones_me_activity.test.ts",
-    "apps/api/test/generated/get_clones_me_growth.test.ts",
     "apps/api/test/generated/get_conversations_id_messages.test.ts",
     "apps/api/test/generated/get_conversations_id_stream.test.ts",
     "apps/api/test/generated/get_tickets_id_agent_session.test.ts",
@@ -23696,7 +23692,9 @@
     "C2"
    ],
    "tests": [
-    "apps/api/test/features/F5/clone-room-activity.test.ts"
+    "apps/api/test/features/F5/clone-room-activity.test.ts",
+    "apps/api/test/generated/get_clones_me_activity.test.ts",
+    "apps/api/test/generated/get_clones_me_growth.test.ts"
    ],
    "carry": [],
    "depends_on": [

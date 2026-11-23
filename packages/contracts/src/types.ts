@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:2ea8a39dc6b603ec
+// 生成物（scripts/ci/contract.mjs gen ← 08_api/types.ts ← openapi.yaml）。手で直さない。openapi:4b7f8f376064871a
 export type ApiResponse<T> = { data: T; meta?: { cursor?: string; limit?: number; total?: number } };
 export type ApiError = { error: string; code?: string; message?: string; details?: Array<{ field: string; message: string }>; retry_after_sec?: number };
 
@@ -356,9 +356,9 @@ export type ApprovalQueueItem = { kind?: string; id?: string; ticket_id?: string
 export type ApprovalDetail = { approval?: Record<string, unknown>; ticket?: Record<string, unknown>; operation?: Record<string, unknown>; message_text?: string; artifact_version?: Record<string, unknown>; checks?: string[]; check_summary?: string; cautions?: string[]; irreversible?: boolean; can_decide?: boolean; chain?: string[] };
 export type BulkApprovalPreview = { eligible?: string[]; excluded?: string[] };
 export type CloneNow = { pc?: Record<string, unknown>; current?: Record<string, unknown> | null; next?: string[]; waiting_approvals?: number; stopped?: number };
-export type CloneGrowth = { delegated?: number; passed_without_edit_rate?: number; saved_hours?: number; trend?: string[]; often_fixed?: string[] };
+export type CloneGrowth = { assigned?: number; pass_rate?: number | null; pass_rate_last_week?: number | null; work_seconds?: number };
 export type KnowsCounts = { rules?: number; work_types?: number; memories?: number; candidates?: number };
-export type ActivityItem = { kind?: string; at?: string; title?: string; ticket_id?: string | null; used?: string[]; result?: string };
+export type CloneActivity = { id?: string; at?: string; kind?: string; ticket_id?: string; ticket_number?: string; title?: string; result?: string; detail?: Record<string, unknown> };
 export type SignupCreated = { email?: string; sent?: boolean; mail_error?: string | null; mail_error_kind?: string | null; expires_at?: string; signup_token?: string };
 export type SignupResent = { email?: string | null; sent?: boolean; mail_error?: string | null; mail_error_kind?: string | null; pending?: boolean; registered?: boolean; expired?: boolean };
 export type SignupStatus = { state?: string; email?: string | null; expires_at?: string | null };

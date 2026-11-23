@@ -2128,7 +2128,6 @@
     "onboard-draft",
     "onboard-golive",
     "clone-chat",
-    "ai-activity",
     "company-model",
     "export",
     "account",
@@ -2148,7 +2147,6 @@
     "onboard-draft",
     "onboard-golive",
     "clone-chat",
-    "ai-activity",
     "company-model",
     "export",
     "account",
@@ -2168,7 +2166,6 @@
     "onboard-draft",
     "onboard-golive",
     "clone-chat",
-    "ai-activity",
     "company-model",
     "export",
     "account",
@@ -2188,7 +2185,6 @@
     "onboard-draft",
     "onboard-golive",
     "clone-chat",
-    "ai-activity",
     "company-model",
     "export",
     "account",
@@ -2208,7 +2204,6 @@
     "onboard-draft",
     "onboard-golive",
     "clone-chat",
-    "ai-activity",
     "company-model",
     "export",
     "account",
@@ -2228,7 +2223,6 @@
     "onboard-draft",
     "onboard-golive",
     "clone-chat",
-    "ai-activity",
     "company-model",
     "export",
     "account",
@@ -2248,7 +2242,6 @@
     "onboard-draft",
     "onboard-golive",
     "clone-chat",
-    "ai-activity",
     "company-model",
     "export",
     "account",
@@ -2268,7 +2261,6 @@
     "onboard-draft",
     "onboard-golive",
     "clone-chat",
-    "ai-activity",
     "company-model",
     "export",
     "account",
@@ -2288,7 +2280,6 @@
     "onboard-draft",
     "onboard-golive",
     "clone-chat",
-    "ai-activity",
     "company-model",
     "export",
     "account",
@@ -2308,7 +2299,6 @@
     "onboard-draft",
     "onboard-golive",
     "clone-chat",
-    "ai-activity",
     "company-model",
     "export",
     "account",
@@ -2328,7 +2318,6 @@
     "onboard-draft",
     "onboard-golive",
     "clone-chat",
-    "ai-activity",
     "company-model",
     "export",
     "account",
@@ -10835,6 +10824,7 @@
    "field": "ticket_id",
    "consumed_by_screens": [
     "approvals",
+    "ai-activity",
     "tickets"
    ],
    "internal": false,
@@ -10845,6 +10835,7 @@
    "field": "check_kind",
    "consumed_by_screens": [
     "approvals",
+    "ai-activity",
     "tickets"
    ],
    "internal": false,
@@ -10855,6 +10846,7 @@
    "field": "title",
    "consumed_by_screens": [
     "approvals",
+    "ai-activity",
     "tickets"
    ],
    "internal": false,
@@ -10865,6 +10857,7 @@
    "field": "judge_type",
    "consumed_by_screens": [
     "approvals",
+    "ai-activity",
     "tickets"
    ],
    "internal": false,
@@ -10875,6 +10868,7 @@
    "field": "params",
    "consumed_by_screens": [
     "approvals",
+    "ai-activity",
     "tickets"
    ],
    "internal": false,
@@ -10892,6 +10886,7 @@
    "field": "off_reason",
    "consumed_by_screens": [
     "approvals",
+    "ai-activity",
     "tickets"
    ],
    "internal": false,
@@ -10902,6 +10897,7 @@
    "field": "checked_at",
    "consumed_by_screens": [
     "approvals",
+    "ai-activity",
     "tickets"
    ],
    "internal": false,
@@ -10912,6 +10908,7 @@
    "field": "checked_by_member_id",
    "consumed_by_screens": [
     "approvals",
+    "ai-activity",
     "tickets"
    ],
    "internal": false,
@@ -10922,6 +10919,7 @@
    "field": "checked_by_ai",
    "consumed_by_screens": [
     "approvals",
+    "ai-activity",
     "tickets"
    ],
    "internal": false,
@@ -10932,6 +10930,7 @@
    "field": "source",
    "consumed_by_screens": [
     "approvals",
+    "ai-activity",
     "tickets"
    ],
    "internal": false,
@@ -10942,6 +10941,7 @@
    "field": "source_ref_id",
    "consumed_by_screens": [
     "approvals",
+    "ai-activity",
     "tickets"
    ],
    "internal": false,
@@ -12910,7 +12910,6 @@
     "today",
     "clone-thread",
     "clone-chat",
-    "ai-activity",
     "import"
    ],
    "internal": false,
@@ -12925,7 +12924,6 @@
     "today",
     "clone-thread",
     "clone-chat",
-    "ai-activity",
     "import"
    ],
    "internal": false,
@@ -12940,7 +12938,6 @@
     "today",
     "clone-thread",
     "clone-chat",
-    "ai-activity",
     "import"
    ],
    "internal": false,
@@ -12955,7 +12952,6 @@
     "today",
     "clone-thread",
     "clone-chat",
-    "ai-activity",
     "import"
    ],
    "internal": false,
@@ -12970,7 +12966,6 @@
     "today",
     "clone-thread",
     "clone-chat",
-    "ai-activity",
     "import"
    ],
    "internal": false,
@@ -12985,7 +12980,6 @@
     "today",
     "clone-thread",
     "clone-chat",
-    "ai-activity",
     "import"
    ],
    "internal": false,
@@ -13000,7 +12994,6 @@
     "today",
     "clone-thread",
     "clone-chat",
-    "ai-activity",
     "import"
    ],
    "internal": false,
@@ -13015,7 +13008,6 @@
     "today",
     "clone-thread",
     "clone-chat",
-    "ai-activity",
     "import"
    ],
    "internal": false,
@@ -13030,7 +13022,6 @@
     "today",
     "clone-thread",
     "clone-chat",
-    "ai-activity",
     "import"
    ],
    "internal": false,
@@ -13045,7 +13036,6 @@
     "today",
     "clone-thread",
     "clone-chat",
-    "ai-activity",
     "import"
    ],
    "internal": false,
@@ -13060,7 +13050,6 @@
     "today",
     "clone-thread",
     "clone-chat",
-    "ai-activity",
     "import"
    ],
    "internal": false,

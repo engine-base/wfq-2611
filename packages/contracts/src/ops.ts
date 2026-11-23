@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:2ea8a39dc6b603ec
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:4b7f8f376064871a
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -83,7 +83,7 @@ export interface Ops {
   listClientLinkCandidates: { params: never; query: { "name"?: string | number; "domain"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.ClientLinkCandidate[] };
   getMyClone: { params: never; query: never; body: never; data: T.MyClone };
   updateMyClone: { params: never; query: never; body: T.ClonesInput; data: T.Clones };
-  listCloneActivity: { params: never; query: { "kind"?: string | number; "from"?: string | number; "to"?: string | number; "cursor"?: string | number; "limit"?: string | number; "sort"?: string | number }; body: never; data: T.ActivityItem[] };
+  listCloneActivity: { params: never; query: { "kind"?: string | number; "from"?: string | number; "to"?: string | number; "cursor"?: string | number; "limit"?: string | number }; body: never; data: T.CloneActivity[] };
   getCloneGrowth: { params: never; query: never; body: never; data: T.CloneGrowth };
   countKnows: { params: never; query: never; body: never; data: T.KnowsCounts };
   getCloneNow: { params: never; query: never; body: never; data: T.CloneNow };

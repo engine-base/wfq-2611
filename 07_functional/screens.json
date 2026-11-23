@@ -13036,6 +13036,7 @@
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-039",
+      "E-039",
       "E-038",
       "E-108"
      ],
@@ -13063,8 +13064,10 @@
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-039",
-      "E-028",
-      "E-139"
+      "E-039",
+      "E-038",
+      "E-108",
+      "E-116"
      ],
      "choke_points": [],
      "source": [
@@ -13554,6 +13557,7 @@
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-039",
+      "E-039",
       "E-038",
       "E-108"
      ],
@@ -13581,8 +13585,10 @@
      "auth": "session（会社・層・権限）",
      "related_entities": [
       "E-039",
-      "E-028",
-      "E-139"
+      "E-039",
+      "E-038",
+      "E-108",
+      "E-116"
      ],
      "choke_points": [],
      "source": [
@@ -14048,8 +14054,7 @@
     "E-038",
     "E-061",
     "E-108",
-    "E-028",
-    "E-139"
+    "E-116"
    ],
    "mock_path": "06_mockup/v1/v1-ai-activity.html",
    "route": "/ai-staff/activity",

@@ -877,8 +877,7 @@
     "E-038 approvals",
     "E-061 sessions",
     "E-108 ticket_section_versions",
-    "E-028 memories",
-    "E-139 learning_candidates"
+    "E-116 test_specs"
    ],
    "related_apis": [
     "GET /api/clones/me/now",
@@ -12275,7 +12274,6 @@
     "onboard-draft",
     "onboard-golive",
     "clone-chat",
-    "ai-activity",
     "company-model",
     "export",
     "account",
@@ -12295,7 +12293,6 @@
     "F-012",
     "F-013",
     "F-017",
-    "F-023",
     "F-024"
    ]
   },
@@ -13994,6 +13991,7 @@
    "entity_name": "test_specs",
    "used_by_screens": [
     "approvals",
+    "ai-activity",
     "tickets"
    ],
    "used_by_features": [
@@ -14421,18 +14419,15 @@
     "today",
     "clone-thread",
     "clone-chat",
-    "ai-activity",
     "import"
    ],
    "used_by_features": [
     "F-001",
     "F-004",
-    "F-005",
     "F-006",
     "F-010",
     "F-013",
     "F-017",
-    "F-023",
     "F-024"
    ]
   },
@@ -14843,7 +14838,6 @@
     "E-136",
     "E-137",
     "E-138",
-    "E-139",
     "E-140",
     "E-144",
     "E-145",
@@ -15786,7 +15780,6 @@
     "E-001",
     "E-002",
     "E-004",
-    "E-028",
     "E-037",
     "E-038",
     "E-039",
@@ -15831,7 +15824,6 @@
     "E-136",
     "E-137",
     "E-138",
-    "E-139",
     "E-142",
     "E-144",
     "E-145",

@@ -14054,9 +14054,10 @@
     "ai-activity"
    ],
    "related_entities": [
-    "E-028",
+    "E-038",
     "E-039",
-    "E-139"
+    "E-108",
+    "E-116"
    ],
    "choke_points": [],
    "source": [
@@ -14082,12 +14083,14 @@
    },
    "rate_limit": "120/min/user",
    "access_control_policies": [
-    "memories_self_read",
-    "memories_ops_read_with_grant",
+    "approvals_read",
+    "approvals_ops_read_with_grant",
     "action_runs_tenant_read",
     "action_runs_ops_read_with_grant",
-    "learning_candidates_read",
-    "learning_candidates_ops_read_with_grant"
+    "ticket_section_versions_ticket_read",
+    "ticket_section_versions_ops_read_with_grant",
+    "test_specs_ticket_read",
+    "test_specs_ops_read_with_grant"
    ],
    "outputs_4xx": [
     {
@@ -14174,7 +14177,7 @@
    "list_ignores_scope": false,
    "outward_side_effects": [],
    "side_effect_ordering": null,
-   "description": "取得（clones）— 分身がやったことを見る → チケットへ戻る",
+   "description": "取得（action_runs）— 自分の分身が終えた実行を新しい順に読む（札・期間で絞る・期間の数つき）",
    "implementation_path": "apps/api/src/routes/action_runs.ts::listCloneActivity",
    "permission": {
     "who": "self",
@@ -14187,15 +14190,16 @@
     "path": [],
     "body": null,
     "query": [
-     "scope_id",
+     "kind",
+     "from",
+     "to",
      "cursor",
-     "limit",
-     "sort"
+     "limit"
     ]
    },
    "outputs_2xx": {
     "status": 200,
-    "body": "{ data: ActionRuns[], meta?: { cursor, limit, total } }"
+    "body": "{ data: ActionRuns[], meta: { limit, cursor, summary } }"
    },
    "id": "EP-081",
    "feature_id": "F-023"

@@ -12378,20 +12378,16 @@ components:
     CloneGrowth:
       type: object
       properties:
-        delegated:
+        assigned:
           type: integer
-        passed_without_edit_rate:
-          type: number
-        saved_hours:
-          type: number
-        trend:
-          type: array
-          items:
-            type: object
-        often_fixed:
-          type: array
-          items:
-            type: object
+        pass_rate:
+          type: integer
+          nullable: true
+        pass_rate_last_week:
+          type: integer
+          nullable: true
+        work_seconds:
+          type: integer
       x-operation: getCloneGrowth
     KnowsCounts:
       type: object
@@ -12405,24 +12401,27 @@ components:
         candidates:
           type: integer
       x-operation: countKnows
-    ActivityItem:
+    CloneActivity:
       type: object
       properties:
-        kind:
+        id:
           type: string
+          format: uuid
         at:
           type: string
-        title:
+        kind:
           type: string
         ticket_id:
           type: string
-          nullable: true
-        used:
-          type: array
-          items:
-            type: object
+          format: uuid
+        ticket_number:
+          type: string
+        title:
+          type: string
         result:
           type: string
+        detail:
+          type: object
       x-operation: listCloneActivity
     SignupCreated:
       type: object
@@ -22144,7 +22143,7 @@ paths:
   /api/v1/clones/me/activity:
     get:
       operationId: listCloneActivity
-      summary: 取得（clones）— 分身がやったことを見る → チケットへ戻る
+      summary: 取得（action_runs）— 自分の分身が終えた実行を新しい順に読む（札・期間で絞る・期間の数つき）
       tags:
       - action_runs
       x-acts:
@@ -22174,22 +22173,28 @@ paths:
         allowEmptyValue: true
         schema:
           type: string
+          enum:
+          - ran
+          - made
+          - stopped
       - name: from
         in: query
         allowEmptyValue: true
         schema:
           type: string
+          format: date
       - name: to
         in: query
         allowEmptyValue: true
         schema:
           type: string
+          format: date
       - name: cursor
         in: query
         allowEmptyValue: true
         schema:
           type: string
-          pattern: ^[0-9]{1,9}$
+          pattern: ^[A-Za-z0-9_-]{1,200}$
       - name: limit
         in: query
         allowEmptyValue: true
@@ -22197,40 +22202,6 @@ paths:
           type: integer
           minimum: 1
           maximum: 200
-      - name: sort
-        in: query
-        allowEmptyValue: true
-        schema:
-          type: string
-          enum:
-          - action_kind_id
-          - ai_employee_id
-          - approval_id
-          - bridge_job_id
-          - choke_point_id
-          - cost
-          - created_at
-          - created_by
-          - deleted_at
-          - duty_id
-          - error_summary
-          - finished_at
-          - id
-          - mode_id
-          - phase
-          - procedure_id
-          - scope_id
-          - service_id
-          - started_at
-          - status_id
-          - taken_over_at
-          - task_id
-          - tenant_id
-          - ticket_id
-          - tokens_in
-          - tokens_out
-          - updated_at
-          - updated_by
       responses:
         '200':
           description: 成功
@@ -22242,9 +22213,12 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/ActivityItem'
+                      $ref: '#/components/schemas/CloneActivity'
                   meta:
                     type: object
+                    properties:
+                      summary:
+                        type: object
         '401':
           description: UNAUTHENTICATED
           content:

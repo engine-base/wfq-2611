@@ -1,0 +1,29 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/hooks/clone-room.ts",
+    "apps/api/src/features/F5/clone-room/**",
+    "packages/db/migrations/20261125023400_clone_room_activity.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F5/clone-room-activity.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F5/clone-room-activity.test.ts",
+    "apps/api/test/features/F5/clone-room.harness.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts",
+    "apps/api/test/features/F1/terms.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_clones_me_activity.test.ts",
+    "apps/api/test/generated/get_clones_me_growth.test.ts"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "apps/api/test/features/F5/clone-room-activity.test.ts": "契約の断片 05_flow/screen_api.d/K-754.py・screen_api.py と hooks のファイルを readFileSync で読む（K754-API-024）"
+ }
+}

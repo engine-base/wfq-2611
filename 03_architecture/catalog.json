@@ -1333,7 +1333,7 @@
    "op": "listCloneActivity",
    "method": "GET",
    "path": "/api/v1/clones/me/activity",
-   "what": "取得（clones）— 分身がやったことを見る → チケットへ戻る",
+   "what": "取得（action_runs）— 自分の分身が終えた実行を新しい順に読む（札・期間で絞る・期間の数つき）",
    "flows": [
     "F5"
    ],
@@ -1343,7 +1343,6 @@
    ],
    "status": "契約だけ（501）",
    "owner_tickets": [
-    "K-61",
     "K-754"
    ]
   },
@@ -1361,7 +1360,6 @@
    ],
    "status": "契約だけ（501）",
    "owner_tickets": [
-    "K-61",
     "K-754"
    ]
   },

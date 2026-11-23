@@ -2145,6 +2145,48 @@
     "test_get_clones_me_now_rejected_422": "入力を受けない GET",
     "test_get_clones_me_now_rate_limited": "上限は全部の口で同じ 1 か所の入口（op.ts・契約の rate_limit）が数える。この口は上限の振る舞いを自分で持たない（読むだけの口）"
    }
+  },
+  "listCloneActivity": {
+   "file": "apps/api/test/features/F5/clone-room-activity.test.ts",
+   "reason": "やったことは実行・承認・成果物の版の組み合わせで result が決まる。生成の試験の種では承認と版を作れない（K-754）",
+   "covers": {
+    "test_get_clones_me_activity_ok": "K754-API-001",
+    "test_get_clones_me_activity_rejected_401": "K754-API-018",
+    "test_get_clones_me_activity_rejected_403": "K754-API-018",
+    "test_get_clones_me_activity_rejected_422": "K754-API-019",
+    "test_get_clones_me_activity_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_get_clones_me_activity_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_get_clones_me_activity_rate_limited": "上限は全部の口で同じ 1 か所の入口（op.ts・契約の rate_limit）が数える。この口は上限の振る舞いを自分で持たない（読むだけの口）"
+   }
+  },
+  "getCloneGrowth": {
+   "file": "apps/api/test/features/F5/clone-room-activity.test.ts",
+   "reason": "育ち具合は今週の実行と承認の日付で数が変わる。生成の試験の種では日付を動かせない（K-754）",
+   "covers": {
+    "test_get_clones_me_growth_ok": "K754-API-020",
+    "test_get_clones_me_growth_rejected_401": "K754-API-018",
+    "test_get_clones_me_growth_rejected_403": "K754-API-018",
+    "test_get_clones_me_growth_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_get_clones_me_growth_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_get_clones_me_growth_rejected_422": "入力を受けない GET",
+    "test_get_clones_me_growth_rate_limited": "上限は全部の口で同じ 1 か所の入口（op.ts・契約の rate_limit）が数える。この口は上限の振る舞いを自分で持たない（読むだけの口）"
+   }
   }
  }
 }

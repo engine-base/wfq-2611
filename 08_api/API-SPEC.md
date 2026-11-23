@@ -93,7 +93,7 @@
 | EP-078 | GET | `/api/v1/clients/link-candidates` | 取得（clients）— 取引先を作り、担当者を招待する | A121 | 1 | member |  | 401 403 422 429 403 403 503 |
 | EP-079 | GET | `/api/v1/clones/me` | 取得（clones）— 自分の AI に指示する・相談する（会話・添付・ | A20 | 1 | member | C4 | 401 403 422 429 502 403 403 503 |
 | EP-080 | PATCH | `/api/v1/clones/me` | 更新（clones）— 自分のAIの許可に答える・許可のモードを選ぶ | A91 | 1 | member | C2 C5 | 401 403 422 413 429 502 403 403 503 |
-| EP-081 | GET | `/api/v1/clones/me/activity` | 取得（clones）— 分身がやったことを見る → チケットへ戻る | A53 | 1 | member |  | 401 403 422 429 403 403 503 |
+| EP-081 | GET | `/api/v1/clones/me/activity` | 取得（action_runs）— 自分の分身が終えた実行を新しい順に読む | A53 | 1 | member |  | 401 403 422 429 403 403 503 |
 | EP-082 | GET | `/api/v1/clones/me/growth` | 取得（clones）— 分身がやったことを見る → チケットへ戻る | A53 | 1 | member |  | 401 403 422 429 403 403 503 |
 | EP-083 | GET | `/api/v1/clones/me/knows/counts` | 取得（clones）— 自分の AI に教える（覚えて） | A30 | 1 | member |  | 401 403 422 429 403 403 503 |
 | EP-084 | GET | `/api/v1/clones/me/now` | 取得（clones）— 分身がやったことを見る → チケットへ戻る | A53 | 1 | member |  | 401 403 422 429 403 403 503 |
