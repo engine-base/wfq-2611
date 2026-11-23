@@ -149,7 +149,10 @@ describe("K-1106 500 の残り", () => {
     expect(statusLines).toHaveLength(2);
     for (const s of statusLines) {
       const next = lines.slice(s.i, s.i + 4).join("\n");
-      expect(allowed.some((a) => a.test(next)), next).toBe(true);
+      expect(
+        allowed.some((a) => a.test(next)),
+        next,
+      ).toBe(true);
     }
   });
 });
