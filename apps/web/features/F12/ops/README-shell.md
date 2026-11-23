@@ -1,6 +1,7 @@
 # 運営の外枠 OpsShell（領域 ops が作った・領域 ops2 が import する）
 
 外枠ができた。`import { OpsShell } from "@/features/F12/ops/ops-shell"`（"use client"）。利用者の `Shell` は使わない。
+本体は外枠の名前（k-shell・k-nav・k-bar）を使うので `components/k/ops-shell.tsx` に置き、この入口が運営だけの見た目 `ops-shell.css`（k-op-）を読み込んで出す（本文の CSS に外枠の名前を書かない・class_gate）。
 
 ```tsx
 <OpsShell
