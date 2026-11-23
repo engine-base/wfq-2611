@@ -483,7 +483,7 @@ describe("K-678 フォルダ", () => {
     const a = await created(w.boss, { shelf: "company", name: "壊す前" });
     await h.ready();
     const fix = await breakWrites("knowledge_folders", w.co.tenantId);
-    let logs = "";
+    let logs: string;
     try {
       logs = await h.captureLogs(async () => {
         const c = await make(w.boss, { shelf: "company", name: "秘密の新しい名前" });
