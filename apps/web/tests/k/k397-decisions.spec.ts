@@ -497,10 +497,11 @@ test("K397-UI-021 口の数：開いたとき決定の一覧 1 回・人の一�
   expect(d.memberReads).toBe(1);
 });
 
-test("K397-UI-022 種別に決定ログの区画が無い：決定の一覧は詳細と同時に先読みで 1 回読むが区画は描かず「＋ 決定を足す」は 0 個。一覧の右に開く詳細：決定の一覧の口を呼ばず、区画の字のまま", async ({
+test("K397-UI-022 種別に決定ログの区画が無い（決定も 0 件）：決定の一覧は詳細と同時に先読みで 1 回読むが区画は描かず「＋ 決定を足す」は 0 個。一覧の右に開く詳細：決定の一覧の口を呼ばず、区画の字のまま", async ({
   page,
 }) => {
-  const d = await decisionsApi(page, { intro: "none" });
+  // 決定が 1 件以上あれば区画の行が無くても区画を出す（K-1119・D-150.41）。ここは決定も 0 件のとき
+  const d = await decisionsApi(page, { intro: "none", list: [] });
   await openDetail(page);
   await expect(page.locator("#sec-purpose")).toBeVisible();
   await expect(page.locator("#sec-decisions")).toHaveCount(0);
