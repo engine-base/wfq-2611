@@ -1991,7 +1991,9 @@
     "knowledge_folders"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-678"
+   ]
   },
   {
    "op": "updateKnowledgeFolder",
@@ -2006,7 +2008,9 @@
     "knowledge_folders"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-678"
+   ]
   },
   {
    "op": "deleteKnowledgeFolder",
@@ -2021,7 +2025,9 @@
     "knowledge_folders"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-678"
+   ]
   },
   {
    "op": "getKnowledgeHome",
