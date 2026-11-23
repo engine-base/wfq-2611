@@ -39,7 +39,7 @@ const realDate = (s: string): boolean =>
   !Number.isNaN(Date.parse(`${s}T00:00:00Z`)) &&
   new Date(`${s}T00:00:00Z`).toISOString().startsWith(s);
 const dayMs = (s: string): number => Date.parse(`${s}T00:00:00Z`);
-const dayOf = (ms: number): string => new Date(ms).toISOString().slice(0, 10);
+const dayOf = (ms: number): string => new Date(ms).toISOString().split("T")[0]!;
 const todayJst = (): string => dayOf(Date.now() + JST_MS);
 
 export const encodeCursor = (k: ActivityKey): string => Buffer.from(`${k.at}|${k.id}`, "utf8").toString("base64url");
