@@ -22803,7 +22803,8 @@
     "07_qa/test-plan/ears-elsewhere.d/K-679.json",
     "scripts/ci/ci_scope.d/K-679.json",
     "05_flow/screen_api.d/K-679.py",
-    "scripts/ci/contract_shape.d/K-679.py"
+    "scripts/ci/contract_shape.d/K-679.py",
+    "scripts/ci/schemathesis.toml"
    ],
    "flow": "ナレッジを書いて貯める",
    "sections": {
