@@ -113,7 +113,7 @@ SPEC_GATES = [
     {"id": 51, "name": "利用者の流れと DB の表の目録（行為はどれも 1 つの流れ・表はどれも目録に・凍結の表をコードが使わない・D-128.126・D-128.127）", "script": "python3 scripts/ci/flow_db_gate.py --selftest && python3 scripts/ci/flow_db_gate.py", "job": "spec", "blocking": True},
     {"id": 48, "name": "新しい画面の実ブラウザの試験と、押した証拠（本番の形で組み立てた画面の上・行 ID の試験が全部の行で通る・記録なし・K-36。今の回の報告から結果の記録を作り、結果が空の行は今の回の報告で確かめる・K-143）", "script": "BASE_URL=http://127.0.0.1:3124 python3 scripts/ci/web_run.py g48", "env": "          CI_FULL: ${{ needs.static.outputs.full }}\n          CI_WEB_SPECS: ${{ needs.static.outputs.web_g48 }}\n          CI_WEB_OTHER: ${{ needs.static.outputs.web_g59 }}\n          CI_WEB_TASKS: ${{ needs.static.outputs.web_tasks }}\n          CI_WEB_GATES: ${{ needs.static.outputs.web_gates }}\n", "job": "web", "blocking": True},
     {"id": 59, "name": "中間テスト（いくつかのチケットを合わせた一続きの操作・本物のブラウザと本物の口と DB・試験用の受け箱・K-54 から）", "script": "PLAYWRIGHT_JUNIT_OUTPUT_NAME=\"$GITHUB_WORKSPACE/junit/web-skeleton.xml\" BASE_URL=http://127.0.0.1:3124 python3 scripts/ci/web_run.py g59", "env": "          CI_FULL: ${{ needs.static.outputs.full }}\n          CI_WEB_SPECS: ${{ needs.static.outputs.web_g59 }}\n          CI_WEB_OTHER: ${{ needs.static.outputs.web_g48 }}\n          CI_WEB_GATES: ${{ needs.static.outputs.web_gates }}\n", "job": "web", "blocking": True},
-    {"id": 70, "name": "キャンバスとの見た目の突き合わせ（入れた組・幅ごと・値の読み方を data: の頁で確かめる・K-238）", "script": "PLAYWRIGHT_JUNIT_OUTPUT_NAME=\"$GITHUB_WORKSPACE/junit/web-fidelity.xml\" BASE_URL=http://127.0.0.1:3124 python3 scripts/ci/web_run.py gate 70", "env": "          CI_FULL: ${{ needs.static.outputs.full }}\n          CI_WEB_GATES: ${{ needs.static.outputs.web_gates }}\n          CI_WEB_SPECS: ${{ needs.static.outputs.web_g48 }}\n          CI_WEB_OTHER: ${{ needs.static.outputs.web_g59 }}\n", "job": "web", "blocking": True},    {"id": 73, "name": "Bridge の輪が Chrome を動かす通しの画面の試験（組み立てた Bridge・頭なしの Chrome・的のログイン画面・K-379）", "script": "PLAYWRIGHT_JUNIT_OUTPUT_NAME=\"$GITHUB_WORKSPACE/junit/web-bridge.xml\" BASE_URL=http://127.0.0.1:3124 python3 scripts/ci/web_run.py gate 73", "env": "          CI_FULL: ${{ needs.static.outputs.full }}\n          CI_WEB_GATES: ${{ needs.static.outputs.web_gates }}\n          CI_WEB_SPECS: ${{ needs.static.outputs.web_g48 }}\n          CI_WEB_OTHER: ${{ needs.static.outputs.web_g59 }}\n", "job": "web", "blocking": True},
+    {"id": 70, "name": "キャンバスとの見た目の突き合わせ（入れた組・幅ごと・値の読み方を data: の頁で確かめる・K-238）", "script": "PLAYWRIGHT_JUNIT_OUTPUT_NAME=\"$GITHUB_WORKSPACE/junit/web-fidelity.xml\" BASE_URL=http://127.0.0.1:3124 python3 scripts/ci/web_run.py gate 70", "env": "          CI_FULL: ${{ needs.static.outputs.full }}\n          CI_WEB_GATES: ${{ needs.static.outputs.web_gates }}\n          CI_WEB_GATE_GROUPS: ${{ needs.static.outputs.web_gate_groups }}\n          CI_WEB_SPECS: ${{ needs.static.outputs.web_g48 }}\n          CI_WEB_OTHER: ${{ needs.static.outputs.web_g59 }}\n", "job": "web", "blocking": True},    {"id": 73, "name": "Bridge の輪が Chrome を動かす通しの画面の試験（組み立てた Bridge・頭なしの Chrome・的のログイン画面・K-379）", "script": "PLAYWRIGHT_JUNIT_OUTPUT_NAME=\"$GITHUB_WORKSPACE/junit/web-bridge.xml\" BASE_URL=http://127.0.0.1:3124 python3 scripts/ci/web_run.py gate 73", "env": "          CI_FULL: ${{ needs.static.outputs.full }}\n          CI_WEB_GATES: ${{ needs.static.outputs.web_gates }}\n          CI_WEB_SPECS: ${{ needs.static.outputs.web_g48 }}\n          CI_WEB_OTHER: ${{ needs.static.outputs.web_g59 }}\n", "job": "web", "blocking": True},
 ]
 SPEC_GATES.append({"id": 53, "name": "試験はどれも 1 つのチケットに属する（単体の試験・実ブラウザの試験・口ごとの権限の試験の持ち主・D-128.140）", "script": "python3 scripts/ci/test_owner_gate.py --selftest && python3 scripts/ci/test_owner_gate.py", "job": "spec", "blocking": True})
 SPEC_GATES.append({"id": 54, "name": "決定のトレース（決定ログの決めたことが導出物から逆引きできる・T1〜T12。手で流していたのを CI に入れた・D-128.147）", "script": "cp 01_hearing/要件一覧.md $RUNNER_TEMP/req.md && python3 scripts/ci/trace_gate.py --index && cmp $RUNNER_TEMP/req.md 01_hearing/要件一覧.md && python3 scripts/ci/trace_gate.py", "job": "spec", "blocking": True})
@@ -173,16 +173,18 @@ UNIT_MERGE = ('[ -n "$CI_UNIT_SHARDS" ] || { echo "★ FAIL static の出力が�
               f'n=$(ls {UNIT_DIR}/blob-*-"$CI_UNIT_SHARDS".json 2>/dev/null | wc -l)\n'
               '[ "$n" -eq "$CI_UNIT_SHARDS" ] || { echo "★ FAIL 分けた単体の試験の結果が $CI_UNIT_SHARDS つのうち $n つしか無い"; exit 1; }\n'
               f"python3 scripts/ci/ci_scope.py run-merge && python3 scripts/ci/ci_scope.py check-count --report {UNIT_DIR}/merged.json\n")
+# static の G0 だけが入力 web を受ける（defer の回に G70 だけを選ぶ・K-1105）。spec の組の範囲の段（SPEC_SCOPE_STEP）には足さない（K258-CI-004）
 SCOPE_STEP = ('      - name: "G0 チケットの CI の範囲（変えたファイル → 依存の地図 → 流す組と試験・K-107）"\n        id: scope\n'
               "        env:\n          CI_SCOPE_INPUT: ${{ inputs.scope || 'full' }}\n          CI_BASE_INPUT: ${{ inputs.base }}\n          CI_TICKET_INPUT: ${{ inputs.ticket }}\n"
-              '        run: python3 scripts/ci/ci_scope.py --base "$CI_BASE_INPUT" --head HEAD --scope "$CI_SCOPE_INPUT" --ticket "$CI_TICKET_INPUT" --github-output "$GITHUB_OUTPUT"\n')
+              "          CI_WEB_INPUT: ${{ inputs.web }}\n"
+              '        run: python3 scripts/ci/ci_scope.py --base "$CI_BASE_INPUT" --head HEAD --scope "$CI_SCOPE_INPUT" --ticket "$CI_TICKET_INPUT" --web "$CI_WEB_INPUT" --github-output "$GITHUB_OUTPUT"\n')
 # spec の段が自分で出す本線との分かれ目（static を待たないため。入力は static の G0 と同じ・値は env で渡す・K-143）
 SPEC_SCOPE_STEP = ('      - name: "本線との分かれ目を出す（spec の段が自分で・static を待たない・G61 が読む・K-143）"\n        id: scope\n'
                    "        env:\n          CI_SCOPE_INPUT: ${{ inputs.scope || 'full' }}\n          CI_BASE_INPUT: ${{ inputs.base }}\n          CI_TICKET_INPUT: ${{ inputs.ticket }}\n"
                    '        run: python3 scripts/ci/ci_scope.py --base "$CI_BASE_INPUT" --head HEAD --scope "$CI_SCOPE_INPUT" --ticket "$CI_TICKET_INPUT" --github-output "$GITHUB_OUTPUT"\n')
 SCOPE_OUTPUTS = "    outputs:\n" + "".join(f"      {k}: ${{{{ steps.scope.outputs.{k} }}}}\n" for k in
                                          ("full", "unit", "database", "web", "unit_shards", "unit_files", "migration_files", "coverage_args", "base", "gates", "py_tests",
-                                          "web_g48", "web_g59", "web_gates", "web_tasks"))
+                                          "web_g48", "web_g59", "web_gates", "web_tasks", "web_gate_groups", "web_on_defer"))
 SQUAWK_STEP = ('      - name: "G58 migration の lint（Squawk・変えた・足した migration だけ・K-107）"\n        if: ${{ !cancelled() }}\n'
                f"        env:\n          CI_MIGRATION_FILES: ${{{{ {SO}.migration_files }}}}\n          CI_BASE: ${{{{ {SO}.base }}}}\n"
                "        run: python3 scripts/ci/ci_scope.py run-squawk\n")
@@ -356,7 +358,8 @@ jobs:
     needs: [static]
     # 入力 web=defer の回は組ごと流さない（チケットの CI で画面の試験を後回しにし、取り込んだ後に ci.py web が web=run で流す・K-258）。
     #   入力が空の回（push・入力を渡さない回）は今までどおり流れる
-    if: ${{{{ !cancelled() && {SO}.web == 'true' && inputs.web != 'defer' }}}}
+    #   K-1105：defer の回でも、突き合わせ（G70）に当たる部品を変えたら（範囲の台本の web_on_defer）組を起こす。流すのは G70 だけ（範囲の台本が G48・G59・G73 の一覧を空にする）
+    if: ${{{{ !cancelled() && {SO}.web == 'true' && (inputs.web != 'defer' || {SO}.web_on_defer == 'true') }}}}
     # 本物の口と DB を使う画面の試験（K-53 の K53-UI-023・024・D-128.172）のために、Postgres と API をこの組の中で立てる。
     #   ほかの画面の試験は今までどおり口を網の手前で差し替える（page.route）ので、どちらの道も同じ組で流れる
     # 組ごとに使い捨ての Linux の VM で走る。画面と口の番号（3011・3124・3191）は VM の中だけなので、回をまたいで同時に走ってよい（K-258）

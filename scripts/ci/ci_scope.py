@@ -48,6 +48,7 @@ sys.path.insert(0, os.path.join(ROOT, "scripts", "tickets"))
 from ticket_commit_gate import TICKET  # noqa: E402  目録の物（同じものを 2 つ作らない）
 from ticket_order_gate import _not_impl, generated_outputs, generator_scripts, is_doc_only  # noqa: E402  _not_impl：実装に数えないコミットの決まりは取り込む順の検査の物をそのまま使う（2 つ持たない・K-192）
 from build_index import parse as parse_ticket  # noqa: E402
+import fidelity_parts  # noqa: E402
 import web_select  # noqa: E402  web の組で流す試験を選ぶ（K-177）
 
 MAX_SHARDS = 6
@@ -689,8 +690,14 @@ def gate_cfg(repo: str, cfg: dict) -> dict:
         groups = []   # 形の誤りは G69 の設定の検査が赤にする
     if not any(isinstance(g, dict) and g.get("enrolled") is True for g in groups):
         return cfg
-    return {**cfg, "gates": {k: ({**v, "always": True} if v.get("always_when_enrolled") is True else v)
-                             for k, v in (cfg.get("gates") or {}).items()}}
+    gates = {k: ({**v, "always": True} if v.get("always_when_enrolled") is True else v) for k, v in (cfg.get("gates") or {}).items()}
+    if any(isinstance(v.get("parts"), dict) for v in gates.values()):
+        # 部品の対応（K-1105）：組 → 頁が import で辿るファイル・どこかの頁や入口から辿れる物・頁が読むワークスペースの部品の src
+        graph = fidelity_parts.Graph(repo)
+        files = fidelity_parts.group_files(repo, groups, graph)
+        extra = {"group_files": files, "reach": fidelity_parts.reachable(repo, graph), "unsure_auto": fidelity_parts.workspace_src(repo)}
+        gates = {k: ({**v, **extra} if isinstance(v.get("parts"), dict) else v) for k, v in gates.items()}
+    return {**cfg, "gates": gates}
 
 
 def _web_pick(repo: str, tickets_dir: str, rules: dict, p: dict, tid: str | list[str]) -> dict:
@@ -709,22 +716,31 @@ def _web_pick(repo: str, tickets_dir: str, rules: dict, p: dict, tid: str | list
                              web_select.importers(repo), gate_cfg(repo, rules.get("web_select") or {}))
 
 
-def with_web_selection(p: dict, sel: dict) -> dict:
-    """選んだ画面の試験を出力に。チケットの範囲の回で 1 本も当たらなければ web の組を流さない（理由つき）。全部の回は今と同じ"""
+def with_web_selection(p: dict, sel: dict, defer: bool = False) -> dict:
+    """選んだ画面の試験を出力に。チケットの範囲の回で 1 本も当たらなければ web の組を流さない（理由つき）。全部の回は今と同じ。
+    defer（画面の行を後回しにする回・K-1105）：G48・G59・持ち主を空にし、web_gates は on_defer の段だけ残す。当たれば web_on_defer"""
     if p["mode"] == "full":
-        return {**p, "web_g48": [], "web_g59": [], "web_gates": {}, "web_tasks": []}
+        return {**p, "web_g48": [], "web_g59": [], "web_gates": {}, "web_tasks": [], "web_gate_groups": {}, "web_on_defer": False}
     gates = sel.get("gates") or {}
     hit = bool(sel["g48"] or sel["g59"] or any(gates.values()))   # 専用の段の画面の試験も選ぶ先（K-238）
     errs = list(p.get("errors") or [])
     if p["jobs"]["web"] and not hit:   # web の組を流すはずの変更なのに選べない：黙って飛ばさず止める（D-133.7・K-177 レビュー）
         errs.append("web の組を流すはずの変更なのに、流す画面の試験を決められない。チケットの tests: に画面の試験を書くか、"
                     "画面の試験を持つチケットを depends_on に書く（" + "・".join(sel["reasons"]) + "）")
-    return {**p, "jobs": {**p["jobs"], "web": p["jobs"]["web"] and hit}, "web_g48": sel["g48"], "web_g59": sel["g59"],
-            "web_gates": gates, "web_tasks": sel["tasks"], "errors": errs, "reasons": p.get("reasons", []) + list(sel["reasons"]), "web_reasons": list(sel["reasons"])}
+    web = p["jobs"]["web"] and hit
+    g48, g59, tasks = sel["g48"], sel["g59"], sel["tasks"]
+    on_defer = [g for g in (sel.get("on_defer") or []) if gates.get(g)]
+    if defer:   # 止める文は空にする前の一覧で数えた（上）。流すのは on_defer の段だけ
+        g48, g59, tasks = [], [], []
+        gates = {k: (v if k in on_defer else []) for k, v in gates.items()}
+    return {**p, "jobs": {**p["jobs"], "web": web}, "web_g48": g48, "web_g59": g59,
+            "web_gates": gates, "web_tasks": tasks, "web_gate_groups": dict(sel.get("gate_groups") or {}),
+            "web_on_defer": bool(defer and web and on_defer),
+            "errors": errs, "reasons": p.get("reasons", []) + list(sel["reasons"]), "web_reasons": list(sel["reasons"])}
 
 
 def plan(repo: str, base: str, head: str, scope: str, rules: dict, tickets_dir: str,
-         list_tests: Callable[[list[str]], dict], db_tests: Callable[[], list], ticket: str = "") -> dict:
+         list_tests: Callable[[list[str]], dict], db_tests: Callable[[], list], ticket: str = "", web_input: str = "") -> dict:
     if scope == "ticket":
         scope = "auto"   # K-172：ticket-flow の入口の名前。絞り方は auto と同じ
     p: dict = {"mode": "scoped", "full_reasons": [], "wide_reasons": [], "reasons": [], "spec_only": [], "date_only": [], "web_ticket_rows": [], "base": base if isinstance(base, str) else "",
@@ -923,7 +939,7 @@ def plan(repo: str, base: str, head: str, scope: str, rules: dict, tickets_dir: 
         sel = _web_pick(repo, tickets_dir, rules, p, list(ids))
         g48 = set(web_select.domain_g48(repo))
         sel = {**sel, "g48": sorted(set(sel["g48"]) | (web_direct & g48)), "g59": sorted(set(sel["g59"]) | (web_direct - g48))}
-        p = with_web_selection(p, sel)
+        p = with_web_selection(p, sel, defer=web_input == "defer")
     # 専用の段の設定の誤り（試験が無い・段の命令が無い・G48／G59 と重なる）は止める。画面の試験があるリポジトリだけ（K-238）
     if web_select.domain_g48(repo) or web_select.domain_g59(repo):
         p["errors"] = list(p.get("errors") or []) + web_select.check_gates(repo, rules.get("web_select") or {})
@@ -1036,10 +1052,11 @@ def outputs(p: dict) -> dict[str, str]:
             "reasons": j(p["reasons"] + p["mismatches"] + p["errors"]),
             "gates": "," + ",".join(p.get("gates") or []) + ",", "py_tests": j(p.get("py_tests") or []),
             "web_g48": j(p.get("web_g48") or []), "web_g59": j(p.get("web_g59") or []),
-            "web_gates": j(p.get("web_gates") or {}), "web_tasks": j(p.get("web_tasks") or [])}
+            "web_gates": j(p.get("web_gates") or {}), "web_tasks": j(p.get("web_tasks") or []),
+            "web_gate_groups": j(p.get("web_gate_groups") or {}), "web_on_defer": "true" if p.get("web_on_defer") else "false"}
 
 
-def _decide(argv: list[str]) -> int:
+def decide_parser() -> argparse.ArgumentParser:
     ap = argparse.ArgumentParser(prog="ci_scope.py")
     ap.add_argument("--repo", default=None)
     ap.add_argument("--base", default="")
@@ -1051,7 +1068,13 @@ def _decide(argv: list[str]) -> int:
     ap.add_argument("--github-output", default=None)
     ap.add_argument("--json", action="store_true")
     ap.add_argument("--no-vitest", action="store_true")
-    a = ap.parse_args(argv)
+    # 画面の行を後回しにする回（CI の入力 web・K-1105）。空は入力が無い回（push）
+    ap.add_argument("--web", default="", choices=["", "run", "defer"])
+    return ap
+
+
+def _decide(argv: list[str]) -> int:
+    a = decide_parser().parse_args(argv)
     repo = os.path.abspath(a.repo or git(os.getcwd(), "rev-parse", "--show-toplevel").stdout.decode().strip())
     rules = load_rules(a.rules or os.path.join(repo, "scripts", "ci", "ci_scope.json"))
     tickets = a.tickets or os.path.join(repo, "11_tickets")
@@ -1066,7 +1089,7 @@ def _decide(argv: list[str]) -> int:
             gw = [f for f in walk_files(repo, CODE_EXT) if match(f, rules["db"]["gateway"])]
             got = check_answer(lt(gw), gw) if gw else {}
             return sorted({t for v in got.values() for t in v} | set(db_tests_by_text(repo, rules)))
-    p = plan(repo, a.base, a.head, a.scope, rules, tickets, lt, dbt, ticket=a.ticket)
+    p = plan(repo, a.base, a.head, a.scope, rules, tickets, lt, dbt, ticket=a.ticket, web_input=a.web)
     red = bool(p["mismatches"] or p["errors"])
     out = _stop_plan(p) if red else p   # K-170：赤でも全部に倒さず、組を流さない
     if a.github_output:

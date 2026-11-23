@@ -691,16 +691,24 @@
   "apps/e2e/staging/k65-walking-skeleton.spec.ts": "台の一時の置き場に自分で置いた数（承認から帯が替わるまでの秒）を読む。リポジトリのファイルは読まない（K-65）"
  },
  "web_select": {
-  "_doc": "web の組でチケットの範囲の回に流す画面の試験の選び方（K-177・scripts/ci/web_select.py）。registry：みんなが書き足す一覧のファイル（作った人で選ばない）。all_on：変えたら全部の物。web_own：画面ごとのコード（作ったチケットの試験・当たらなければ全部）。web_tests：試験の置き場。gates：専用の段の画面の試験（G48・G59 の一覧に無く、その段が流す。tests が試験・on が変えたらその段を起こすファイル・K-238）。always_when_enrolled：突き合わせに入れた組が在るとき、画面の組が起きる回には必ず選ぶ段（K-379）",
+  "_doc": "web の組でチケットの範囲の回に流す画面の試験の選び方（K-177・scripts/ci/web_select.py）。registry：みんなが書き足す一覧のファイル（作った人で選ばない）。all_on：変えたら全部の物。web_own：画面ごとのコード（作ったチケットの試験・当たらなければ全部）。web_tests：試験の置き場。gates：専用の段の画面の試験（G48・G59 の一覧に無く、その段が流す。tests が試験・on が変えたらその段を起こすファイル・K-238）。always_when_enrolled：突き合わせに入れた組が在るとき、画面の組が起きる回には必ず選ぶ段（K-379）。parts：部品の対応で組を絞る段（K-1105・gates.70 の _doc_parts）",
   "registry": ["packages/db/src/index.ts", "packages/db/src/migrations.generated.ts", "11_tickets/**", "07_qa/**", "08_api/**", "07_functional/**", "05_flow/**", "01_hearing/**", "scripts/ci/ci_scope.json", ".github/**"],
-  "all_on": ["apps/web/playwright.config.ts", "apps/web/package.json", "pnpm-lock.yaml", "package.json", "scripts/ci/web_run.py", "scripts/ci/web_select.py"],
+  "all_on": ["apps/web/playwright.config.ts", "apps/web/package.json", "pnpm-lock.yaml", "package.json", "scripts/ci/web_run.py", "scripts/ci/web_select.py", "scripts/ci/fidelity_parts.py"],
   "web_own": ["apps/web/app/**"],
   "web_tests": ["apps/web/tests/**"],
   "gates": {
    "70": {
     "tests": ["apps/web/tests/fidelity/fidelity.spec.ts"],
     "on": ["scripts/ci/fidelity_compare.mjs", "scripts/ci/visual_fidelity.mjs", "04_design/fidelity.json", "04_design/canvas/**"],
-    "always_when_enrolled": true
+    "_doc_parts": "K-1105：組は、変えた部品を頁が import で辿って読む組だけ（scripts/ci/fidelity_parts.py）。all_on と unsure（と apps/web/package.json の workspace: の部品の src）とどの頁・入口からも辿れない画面の物は全部。parts の中で skip でない物を辿る。on_defer：画面の行を後回しにする回でも、当たればこの段だけ流す。group_title：組の行の名前の形（--grep で組を絞る）",
+    "parts": {
+     "all_on": ["apps/web/styles/**", "apps/web/app/globals.css", "apps/web/app/layout.tsx", "apps/web/next.config.ts", "apps/web/postcss.config.mjs", "apps/web/middleware.ts", "04_design/DESIGN-*.md", "04_design/gen_tokens.py"],
+     "parts": ["apps/web/**"],
+     "skip": ["apps/web/tests/**", "apps/web/test/**"],
+     "unsure": ["packages/errors/src/**"]
+    },
+    "on_defer": true,
+    "group_title": "K238-VF-003 {id}（"
    },
    "73": {
     "tests": ["apps/web/tests/bridge/k379-bridge-chrome.spec.ts"],
@@ -745,6 +753,7 @@
    "paths": [
     "scripts/ci/web_run.py",
     "scripts/ci/web_select.py",
+    "scripts/ci/fidelity_parts.py",
     "scripts/ci/fidelity_compare.mjs",
     "scripts/ci/visual_fidelity.mjs",
     "07_qa/test-specs/k/**",

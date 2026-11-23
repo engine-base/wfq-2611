@@ -1534,7 +1534,7 @@
    "id": 70,
    "name": "キャンバスとの見た目の突き合わせ（入れた組・幅ごと・値の読み方を data: の頁で確かめる・K-238）",
    "script": "PLAYWRIGHT_JUNIT_OUTPUT_NAME=\"$GITHUB_WORKSPACE/junit/web-fidelity.xml\" BASE_URL=http://127.0.0.1:3124 python3 scripts/ci/web_run.py gate 70",
-   "env": "          CI_FULL: ${{ needs.static.outputs.full }}\n          CI_WEB_GATES: ${{ needs.static.outputs.web_gates }}\n          CI_WEB_SPECS: ${{ needs.static.outputs.web_g48 }}\n          CI_WEB_OTHER: ${{ needs.static.outputs.web_g59 }}\n",
+   "env": "          CI_FULL: ${{ needs.static.outputs.full }}\n          CI_WEB_GATES: ${{ needs.static.outputs.web_gates }}\n          CI_WEB_GATE_GROUPS: ${{ needs.static.outputs.web_gate_groups }}\n          CI_WEB_SPECS: ${{ needs.static.outputs.web_g48 }}\n          CI_WEB_OTHER: ${{ needs.static.outputs.web_g59 }}\n",
    "job": "web",
    "blocking": true
   },

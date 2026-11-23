@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import subprocess
 import sys
 
@@ -41,16 +42,48 @@ def commands(part: str, full: bool, specs: list[str], tasks: list[str]) -> list[
     raise SystemExit(f"知らない段 {part}（g48・g59）")
 
 
-def gate_commands(gid: str, full: bool, selected: dict, cfg_tests: list[str]) -> list[list[str]]:
-    """専用の段の命令：全部の回は設定の一覧、範囲の回は選んだ試験だけ。無ければ命令 0"""
+def gate_commands(gid: str, full: bool, selected: dict, cfg_tests: list[str], grep: str = "") -> list[list[str]]:
+    """専用の段の命令：全部の回は設定の一覧、範囲の回は選んだ試験だけ。無ければ命令 0。
+    grep（範囲の回だけ・K-1105）：選んだ組の行と組に属さない行だけを流す Playwright の --grep"""
     specs = cfg_tests if full else list(selected.get(gid) or [])
     rel = [s[len(WEB):] if s.startswith(WEB) else s for s in specs]
-    return [["pnpm", "--filter", "@kaname/web", "exec", "playwright", "test", *rel]] if rel else []
+    extra = ["--grep", grep] if grep and not full else []
+    return [["pnpm", "--filter", "@kaname/web", "exec", "playwright", "test", *rel, *extra]] if rel else []
+
+
+def group_grep(title: str, ids: list[str]) -> str:
+    """組の行の名前の形（例 "K238-VF-003 {id}（"）と組の id → 選んだ組の行と、組に属さない行（形の前の字を含まない行）に当たる式。
+    Python の re と JS の RegExp で同じに読める書き方だけを使う"""
+    head, _, tail = title.partition("{id}")
+    alt = "|".join(_js_escape(i) for i in sorted(ids))
+    return f"^(?!.*{_js_escape(head)})|{_js_escape(head)}(?:{alt}){_js_escape(tail)}"
+
+
+def _js_escape(text: str) -> str:
+    """正規表現の記号だけを \\ で消す（JS の u 旗なしの RegExp と Python の re の両方で同じ意味）"""
+    return re.sub(r"([.*+?^${}()|\[\]\\/-])", r"\\\1", text)
+
+
+def gate_grep_from_env(gid: str, env: dict) -> str:
+    """範囲の台本の出力 CI_WEB_GATE_GROUPS（{"<段>": [組の id…]}）→ その段の --grep。無い・壊れている・鍵が無い・空なら ""（絞らない）"""
+    try:
+        got = json.loads(env.get("CI_WEB_GATE_GROUPS") or "{}")
+    except json.JSONDecodeError:
+        return ""
+    ids = got.get(gid) if isinstance(got, dict) else None
+    if not isinstance(ids, list) or not ids or not all(isinstance(i, str) and i for i in ids):
+        return ""
+    title = (_gate_cfg(gid) or {}).get("group_title") or ""
+    return group_grep(title, ids) if "{id}" in title else ""
+
+
+def _gate_cfg(gid: str) -> dict:
+    cfg = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "ci_scope.json"), encoding="utf-8"))
+    return (((cfg.get("web_select") or {}).get("gates") or {}).get(gid) or {})
 
 
 def gate_tests(gid: str) -> list[str]:
-    cfg = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "ci_scope.json"), encoding="utf-8"))
-    return list((((cfg.get("web_select") or {}).get("gates") or {}).get(gid) or {}).get("tests") or [])
+    return list(_gate_cfg(gid).get("tests") or [])
 
 
 def gate_selection(gid: str) -> list[str] | None:
@@ -109,7 +142,7 @@ def main() -> int:
                 print(f"★ gate {gid}：web の組が動いているのに、どの段にも流す画面の試験が無い（範囲の台本の出力が渡っていない）")
                 return 1
             gates = {gid: sel}
-        return run_all(gate_commands(gid, full, gates, cfg_tests), dict(os.environ))
+        return run_all(gate_commands(gid, full, gates, cfg_tests, gate_grep_from_env(gid, dict(os.environ))), dict(os.environ))
     specs = json.loads(os.environ.get("CI_WEB_SPECS") or "[]")
     tasks = json.loads(os.environ.get("CI_WEB_TASKS") or "[]")
     cmds = commands(part, full, specs, tasks)

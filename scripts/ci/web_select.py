@@ -43,6 +43,7 @@ def select(changed: list[str], ticket: str, tickets: dict, g48: list[str], g59: 
     pick: set[str] = set()
     why: list[str] = []
     every = False
+    infra = False   # 試験の設定・試験の置き場の物で全部に倒れた（部品の対応を持つ段も全部・K-1105）
     own, tst = cfg.get("web_own") or ["apps/web/app/**"], cfg.get("web_tests") or ["apps/web/tests/**"]
     tests_of = lambda tid: {x for x in (tickets.get(tid) or {}).get("tests") or [] if x in dom}  # noqa: E731
 
@@ -55,7 +56,7 @@ def select(changed: list[str], ticket: str, tickets: dict, g48: list[str], g59: 
             pick |= tests_of(d)
     for f in changed:
         if _any(f, cfg.get("all_on") or []):
-            every = True
+            every = infra = True
             why.append(f"web：画面の試験の設定 {f} を変えた（全部に効く）")
         elif f in dom:
             pick.add(f)
@@ -63,7 +64,7 @@ def select(changed: list[str], ticket: str, tickets: dict, g48: list[str], g59: 
             if f in importers:
                 pick |= set(importers[f]) & dom
             elif not f.endswith(".spec.ts"):
-                every = True
+                every = infra = True
                 why.append(f"web：試験の置き場の {f} はどの試験も読み込まない（設定と同じく全部に効く）")
         elif _any(f, own):
             hit = built_by(f)
@@ -80,22 +81,28 @@ def select(changed: list[str], ticket: str, tickets: dict, g48: list[str], g59: 
     if every:
         pick |= dom
     r48, r59 = sorted(pick & d48), sorted(pick & d59)
-    gates = gate_picks(changed, ticket, tickets, importers, cfg, every)
+    gates, groups = gate_picks(changed, ticket, tickets, importers, cfg, every, infra)
+    on_defer = sorted(g for g, v in gates.items() if v and ((cfg.get("gates") or {}).get(g) or {}).get("on_defer") is True)
     owners = sorted({tid for tid, t in tickets.items() for x in t.get("tests") or [] if x in r48}, key=lambda s: int(s.split("-")[1]))
     if not r48 and not r59 and not any(gates.values()):
         why.append("web：チケット・依存・変えたファイルのどれにも当たる画面の試験が無い（大分類の終わりの全部で見る）")
-    return {"g48": r48, "g59": r59, "gates": gates, "tasks": owners, "reasons": why}
+    return {"g48": r48, "g59": r59, "gates": gates, "gate_groups": groups, "on_defer": on_defer, "tasks": owners, "reasons": why}
 
 
 def gate_picks(changed: list[str], ticket: str | list[str], tickets: dict, importers: dict[str, set[str]], cfg: dict,
-               every: bool) -> dict[str, list[str]]:
-    """専用の段ごとに選んだ画面の試験（設定の段は、選ばなくても空の一覧で鍵を持つ）"""
+               every: bool, infra: bool = False) -> tuple[dict[str, list[str]], dict[str, list[str]]]:
+    """専用の段ごとに選んだ画面の試験（設定の段は、選ばなくても空の一覧で鍵を持つ）と、組を絞った段の組の一覧（K-1105）。
+    部品の対応（parts と ci_scope.gate_cfg が付ける group_files）を持つ段は、前からの全部の道に当たれば全部、当たらなければ
+    変えた部品を頁が読む組だけ（頁の無い組は部品を変えれば入る）。対応を持たない段は前からのまま（every・always で全部）"""
     out: dict[str, list[str]] = {}
+    groups: dict[str, list[str]] = {}
     tids = [ticket] if isinstance(ticket, str) else list(ticket or [])
     registry = cfg.get("registry") or []
     for gid, g in (cfg.get("gates") or {}).items():
         mine = set(g.get("tests") or [])
-        hit = set(mine) if every or g.get("always") else set()   # always：入れた組があるとき（ci_scope.gate_cfg が付ける・K-238）
+        mapped = isinstance(g.get("group_files"), dict) and isinstance(g.get("parts"), dict)
+        whole = infra if mapped else (every or bool(g.get("always")))   # always：入れた組があるとき（ci_scope.gate_cfg が付ける・K-238）
+        hit = set(mine) if whole else set()
         for tid in tids:
             for t in [tid, *((tickets.get(tid) or {}).get("depends_on") or [])]:
                 hit |= set((tickets.get(t) or {}).get("tests") or []) & mine
@@ -106,8 +113,32 @@ def gate_picks(changed: list[str], ticket: str | list[str], tickets: dict, impor
             if not _any(f, registry):
                 hit |= {x for t in tickets.values() if any(f == c or _match(f, c) for c in t.get("changes") or [])
                         for x in t.get("tests") or [] if x in mine}
+        if mapped and not hit:
+            picked = part_groups(changed, g)
+            if picked is None:
+                hit = set(mine)
+            elif picked:
+                hit, groups[gid] = set(mine), picked
         out[gid] = sorted(hit)
-    return out
+    return out, groups
+
+
+def part_groups(changed: list[str], g: dict) -> list[str] | None:
+    """変えたファイル → 組（K-1105）。None は全部（トークン・決められない物）、[] は当たらない"""
+    parts = g.get("parts") or {}
+    files: dict = g.get("group_files") or {}
+    reach = set(g.get("reach") or [])
+    unsure = list(parts.get("unsure") or []) + list(g.get("unsure_auto") or [])
+    picked: set[str] = set()
+    for f in changed:
+        if _any(f, parts.get("all_on") or []) or _any(f, unsure):
+            return None
+        if not _any(f, parts.get("parts") or []) or _any(f, parts.get("skip") or []):
+            continue
+        if f not in reach and not any(v and f in v for v in files.values()):
+            return None   # どの頁・入口からも辿れない画面の物（fs で読む文面など）：決められない
+        picked |= {k for k, v in files.items() if v is None or f in v}
+    return sorted(picked)
 
 
 WORKFLOW = ".github/workflows/v3-gate.yml"

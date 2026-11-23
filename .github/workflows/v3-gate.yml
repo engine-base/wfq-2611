@@ -55,6 +55,8 @@ jobs:
       web_g59: ${{ steps.scope.outputs.web_g59 }}
       web_gates: ${{ steps.scope.outputs.web_gates }}
       web_tasks: ${{ steps.scope.outputs.web_tasks }}
+      web_gate_groups: ${{ steps.scope.outputs.web_gate_groups }}
+      web_on_defer: ${{ steps.scope.outputs.web_on_defer }}
     steps:
       - uses: actions/checkout@v4
         with: { fetch-depth: 0 }
@@ -72,7 +74,8 @@ jobs:
           CI_SCOPE_INPUT: ${{ inputs.scope || 'full' }}
           CI_BASE_INPUT: ${{ inputs.base }}
           CI_TICKET_INPUT: ${{ inputs.ticket }}
-        run: python3 scripts/ci/ci_scope.py --base "$CI_BASE_INPUT" --head HEAD --scope "$CI_SCOPE_INPUT" --ticket "$CI_TICKET_INPUT" --github-output "$GITHUB_OUTPUT"
+          CI_WEB_INPUT: ${{ inputs.web }}
+        run: python3 scripts/ci/ci_scope.py --base "$CI_BASE_INPUT" --head HEAD --scope "$CI_SCOPE_INPUT" --ticket "$CI_TICKET_INPUT" --web "$CI_WEB_INPUT" --github-output "$GITHUB_OUTPUT"
       - name: "G1 lint"
         if: ${{ !cancelled() }}
         run: pnpm lint
@@ -771,7 +774,8 @@ jobs:
     needs: [static]
     # 入力 web=defer の回は組ごと流さない（チケットの CI で画面の試験を後回しにし、取り込んだ後に ci.py web が web=run で流す・K-258）。
     #   入力が空の回（push・入力を渡さない回）は今までどおり流れる
-    if: ${{ !cancelled() && needs.static.outputs.web == 'true' && inputs.web != 'defer' }}
+    #   K-1105：defer の回でも、突き合わせ（G70）に当たる部品を変えたら（範囲の台本の web_on_defer）組を起こす。流すのは G70 だけ（範囲の台本が G48・G59・G73 の一覧を空にする）
+    if: ${{ !cancelled() && needs.static.outputs.web == 'true' && (inputs.web != 'defer' || needs.static.outputs.web_on_defer == 'true') }}
     # 本物の口と DB を使う画面の試験（K-53 の K53-UI-023・024・D-128.172）のために、Postgres と API をこの組の中で立てる。
     #   ほかの画面の試験は今までどおり口を網の手前で差し替える（page.route）ので、どちらの道も同じ組で流れる
     # 組ごとに使い捨ての Linux の VM で走る。画面と口の番号（3011・3124・3191）は VM の中だけなので、回をまたいで同時に走ってよい（K-258）
@@ -854,6 +858,7 @@ jobs:
         env:
           CI_FULL: ${{ needs.static.outputs.full }}
           CI_WEB_GATES: ${{ needs.static.outputs.web_gates }}
+          CI_WEB_GATE_GROUPS: ${{ needs.static.outputs.web_gate_groups }}
           CI_WEB_SPECS: ${{ needs.static.outputs.web_g48 }}
           CI_WEB_OTHER: ${{ needs.static.outputs.web_g59 }}
         run: PLAYWRIGHT_JUNIT_OUTPUT_NAME="$GITHUB_WORKSPACE/junit/web-fidelity.xml" BASE_URL=http://127.0.0.1:3124 python3 scripts/ci/web_run.py gate 70
