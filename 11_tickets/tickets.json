@@ -24538,10 +24538,11 @@
    "choke_points": [],
    "choke_none": "画面だけ。決定を読む・足す・改める・取り消すのは前からの口（listTicketDecisions・createTicketDecision・updateTicketDecision・K-390・K-391）で、この葉は口を足さない・変えない。外には何も出さない",
    "tests": [
-    "apps/web/tests/k/k1119-decisions-no-section.spec.ts",
+    "apps/web/tests/k/k1119-decisions-no-section.spec.ts"
+   ],
+   "carry": [
     "apps/web/tests/k/k397-decisions.spec.ts"
    ],
-   "carry": [],
    "depends_on": [
     "K-397",
     "K-398"
