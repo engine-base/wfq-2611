@@ -2572,7 +2572,7 @@ K-433,版を読む口（listTicketVersions：本文の版の一覧と比べる 2
 - `restoreTicketVersion`（POST /api/v1/tickets/:id/versions/:v/restore）：本文を版 `:v` の中身に戻す。**戻すと新しい版が 1 つ増える**追記だけの形で、前の版の行は消えない（D-150.47）。入力は `current_version`（今見ている本文の版）だけ。今の版と合わなければ 409（D-150.13）。K-432 の DB の関数 `app.ticket_body_set` を呼ぶ（本文の行・版の行・やり取りの 1 行・証跡は K-432 と同じ 1 つの取引）
 - `listTicketItemChanges`（GET /api/v1/tickets/:id/item-changes?from=&to=・**この葉が足す新しい口**）：**項目の変更の点の一覧**（作成と、項目の更新の行 1 つごとの点）と、**比べる 2 つの点の間の正味の変わり**（期限 11/27 → 12/01 のような行）と、各行が**戻せるか**の印を返す。項目の変更は、段 7・8・5 の口が書く「やり取りの更新の行」（`ticket_messages` の kind `change`）から読む。**記録の表を別に作らない**（D-150.40）。省くと「今の点」と「その 1 つ前」
 - **項目を戻す口は、この葉に入れない**：戻す口は 期限・開始日（段 8 の期限の決まり：理由が必須・今日より前・親子の期限）・優先度（K-440）・会社の項目（K-564）の 3 つの別の口の決まりを通るので、1 本の葉（行 30・1 時間）に収まらない。別の葉に分ける案を報告に書いた（この葉の `diff` の `restorable` と `why` が、その葉の前提になる）
-- 「戻したら確認が古くなる」注意（D-125.84 の赤の注意）は、戻すと本文の版が上がることで足りる（画面の葉が答えの `version` が上がったことで出す）","- [ ] 下の表の 27 行（K433-API-001〜027）が緑：`apps/api/test/features/F4/ticket-versions.test.ts`（土台は K-432 の `ticket-body.harness.ts`）
+- 「戻したら確認が古くなる」注意（D-125.84 の赤の注意）は、戻すと本文の版が上がることで足りる（画面の葉が答えの `version` が上がったことで出す）","- [ ] 下の表の 29 行（K433-API-001〜029）が緑：`apps/api/test/features/F4/ticket-versions.test.ts`（土台は K-432 の `ticket-body.harness.ts`）
 - [ ] 契約の口 `listTicketVersions`・`restoreTicketVersion`・`listTicketItemChanges` が 501 でない（新しい口は契約から作る）。生成の試験 `get_tickets_id_versions.test.ts`・`post_tickets_id_versions_v_restore.test.ts`・`get_tickets_id_item_changes.test.ts` の it.todo が、na（理由つき）を除いて 0（`07_qa/test-plan/ears-elsewhere.d/K-433.json` の covers）
 - [ ] 共有の試験 k144 の入口の uuid の行 K144-API-510・511・512（`apps/api/test/features/contract/k144.d/K-433.ts`）が緑
 - [ ] 前からの試験は下の「前からの試験を替えた所」のとおり替えずに緑

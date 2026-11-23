@@ -72,6 +72,14 @@ const intact = async (id: string, version = 3) => {
   expect(await h.messages(id)).toHaveLength(0);
 };
 
+/** 読む関数を口の役（kaname_app）から呼べなくして、口の catch（unavailable）を通す。返す関数で戻す（finally で必ず呼ぶ） */
+const breakRead = async (fn: string) => {
+  await h.f.admin.query(`revoke execute on function app.${fn}(uuid, int, int) from kaname_app`);
+  return async () => {
+    await h.f.admin.query(`grant execute on function app.${fn}(uuid, int, int) to kaname_app`);
+  };
+};
+
 beforeAll(async () => {
   w = await h.world("K433");
 }, 60_000);
@@ -573,5 +581,51 @@ describe("K-433 項目の変更を比べる（listTicketItemChanges）", () => {
       expect(bareKeys(await h.json(r)), q).toEqual(BARE);
     }
     expect((await items(null, id)).status).toBe(401);
+  });
+
+  it("K433-API-029 項目の変更を読む DB が落ちた：503・E-PAGE-003・ログに「[ticket-body]」の 1 行がある・戻した後は 200 で読める", async () => {
+    const { id } = await changed();
+    const undo = await breakRead("ticket_item_changes");
+    let status = 0;
+    let code = "";
+    let logs: string;
+    try {
+      logs = await h.captureLogs(async () => {
+        const r = await items(w.writer, id);
+        status = r.status;
+        code = String((await h.json(r))["code"]);
+      });
+    } finally {
+      await undo();
+    }
+    expect(status).toBe(503);
+    expect(code).toBe("E-PAGE-003");
+    expect(logs).toContain("[ticket-body]");
+    expect((await items(w.writer, id)).status).toBe(200);
+  });
+});
+
+describe("K-433 版を読む口の失敗（読む DB が落ちた）", () => {
+  it("K433-API-028 版を読む DB が落ちた：503・E-PAGE-003・ログに「[ticket-body]」の 1 行があり本文の字が出ない・戻した後は 200 で読める", async () => {
+    const id = await history();
+    const undo = await breakRead("ticket_versions");
+    let status = 0;
+    let code = "";
+    let logs: string;
+    try {
+      logs = await h.captureLogs(async () => {
+        const r = await get(w.writer, id);
+        status = r.status;
+        code = String((await h.json(r))["code"]);
+      });
+    } finally {
+      await undo();
+    }
+    expect(status).toBe(503);
+    expect(code).toBe("E-PAGE-003");
+    expect(logs).toContain("[ticket-body]");
+    expect(logs).not.toContain("の直し");
+    await intact(id);
+    expect((await get(w.writer, id)).status).toBe(200);
   });
 });

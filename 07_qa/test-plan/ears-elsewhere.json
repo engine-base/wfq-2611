@@ -1789,12 +1789,12 @@
     "test_get_tickets_id_versions_session_unresolved_2": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
-    }
+    },
+    "test_get_tickets_id_versions_session_unresolved": "K433-API-028"
    },
    "na": {
     "test_get_tickets_id_versions_rejected_403": "読むだけの口で、そのチケットが見える人なら誰でも読める（閲覧のみの人も。見えない人は入口が 404 で止める。受けは K433-API-007・027）",
-    "test_get_tickets_id_versions_rate_limited": "回数は入口の共通の数えで、読む口の型の確かめは K144-API の共通の試験が持つ",
-    "test_get_tickets_id_versions_session_unresolved": "読む口の DB 落ちは、書く側と同じ bodyReply の 503・E-PAGE-003 の道を通る（本物の DB を落とせるのは書く側の K433-API-019 の取引の失敗だけ。読む側に専用の行は無い）"
+    "test_get_tickets_id_versions_rate_limited": "回数は入口の共通の数えで、読む口の型の確かめは K144-API の共通の試験が持つ"
    }
   },
   "listTicketItemChanges": {
@@ -1817,12 +1817,12 @@
     "test_get_tickets_id_item_changes_session_unresolved_2": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
-    }
+    },
+    "test_get_tickets_id_item_changes_session_unresolved": "K433-API-029"
    },
    "na": {
     "test_get_tickets_id_item_changes_rejected_403": "読むだけの口で、そのチケットが見える人なら誰でも読める（閲覧のみの人も。見えない人は入口が 404 で止める。受けは K433-API-007・027）",
-    "test_get_tickets_id_item_changes_rate_limited": "回数は入口の共通の数えで、読む口の型の確かめは K144-API の共通の試験が持つ",
-    "test_get_tickets_id_item_changes_session_unresolved": "読む口の DB 落ちは、書く側と同じ bodyReply の 503・E-PAGE-003 の道を通る（本物の DB を落とせるのは書く側の K433-API-019 の取引の失敗だけ。読む側に専用の行は無い）"
+    "test_get_tickets_id_item_changes_rate_limited": "回数は入口の共通の数えで、読む口の型の確かめは K144-API の共通の試験が持つ"
    }
   },
   "restoreTicketVersion": {
