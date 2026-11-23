@@ -1575,6 +1575,7 @@
   {
    "paths": [
     "apps/api/test/features/F9/knowledge-folders.test.ts",
+    "apps/api/test/features/F9/knowledge-base.test.ts",
     "apps/api/test/features/contract/k144-contract.test.ts",
     "apps/api/test/features/F1/terms.test.ts",
     "apps/api/test/features/contract/k144.d/K-678.ts"

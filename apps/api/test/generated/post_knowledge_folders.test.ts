@@ -26,8 +26,8 @@ describe("POST /api/v1/knowledge/folders", () => {
   });
   it("test_post_knowledge_folders_rejected_422", () => {
     // UNWANTED: IF 入力が決まりに合わないなら、Kaname は 422 と欄ごとの理由を返し、何も変えない
-    // 本物の試験：apps/api/test/features/F9/knowledge-folders.test.ts の「K675-API-003」（同じ CI の G3 で流れる）
-    expect(readFileSync("apps/api/test/features/F9/knowledge-folders.test.ts", "utf8")).toContain("K675-API-003");
+    // 本物の試験：apps/api/test/features/F9/knowledge-base.test.ts の「K675-API-003」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F9/knowledge-base.test.ts", "utf8")).toContain("K675-API-003");
   });
   it("test_post_knowledge_folders_not_found", () => {
     // UNWANTED: IF 置く先が無いか見えないなら、Kaname は 404 を返し、何も作らない

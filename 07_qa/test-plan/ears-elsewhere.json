@@ -1940,7 +1940,10 @@
     "test_post_knowledge_folders_shape": "K678-API-001",
     "test_post_knowledge_folders_rejected_401": "K678-API-019",
     "test_post_knowledge_folders_rejected_403": "K678-API-003",
-    "test_post_knowledge_folders_rejected_422": "K675-API-003",
+    "test_post_knowledge_folders_rejected_422": {
+     "file": "apps/api/test/features/F9/knowledge-base.test.ts",
+     "mark": "K675-API-003"
+    },
     "test_post_knowledge_folders_conflict": "K678-API-006",
     "test_post_knowledge_folders_rate_limited": "K678-API-020",
     "test_post_knowledge_folders_terms_pending": {
@@ -1975,7 +1978,10 @@
     "test_patch_knowledge_folders_id_rejected_401": "K678-API-019",
     "test_patch_knowledge_folders_id_rejected_403": "K678-API-013",
     "test_patch_knowledge_folders_id_not_found": "K678-API-013",
-    "test_patch_knowledge_folders_id_rejected_422": "K675-API-003",
+    "test_patch_knowledge_folders_id_rejected_422": {
+     "file": "apps/api/test/features/F9/knowledge-base.test.ts",
+     "mark": "K675-API-003"
+    },
     "test_patch_knowledge_folders_id_conflict": "K678-API-008",
     "test_patch_knowledge_folders_id_rate_limited": "K678-API-020",
     "test_patch_knowledge_folders_id_terms_pending": {

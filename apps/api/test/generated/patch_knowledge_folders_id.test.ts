@@ -26,8 +26,8 @@ describe("PATCH /api/v1/knowledge/folders/:id", () => {
   });
   it("test_patch_knowledge_folders_id_rejected_422", () => {
     // UNWANTED: IF 入力が決まりに合わないなら、Kaname は 422 と欄ごとの理由を返し、何も変えない
-    // 本物の試験：apps/api/test/features/F9/knowledge-folders.test.ts の「K675-API-003」（同じ CI の G3 で流れる）
-    expect(readFileSync("apps/api/test/features/F9/knowledge-folders.test.ts", "utf8")).toContain("K675-API-003");
+    // 本物の試験：apps/api/test/features/F9/knowledge-base.test.ts の「K675-API-003」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F9/knowledge-base.test.ts", "utf8")).toContain("K675-API-003");
   });
   it("test_patch_knowledge_folders_id_conflict", () => {
     // UNWANTED: IF 同じ場所に同じ名前のフォルダがあるなら、Kaname は 409 と E-KNW-020 を返し、ページもフォルダも変えない
