@@ -1,0 +1,36 @@
+{
+ "errors": [
+  {
+   "id": "E-VAL-027",
+   "class": "validation",
+   "where": {
+    "screen": "tickets",
+    "state": "talk"
+   },
+   "when": "やり取りに書くとき・直すときに、本文が空・空白だけ（全角の空白・改行も）",
+   "false_when": "1 文字以上の字を書いた",
+   "message": "書き込む文を書いてください",
+   "action": "文を書いてから送る",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットの詳細のやり取りを開く",
+    "steps": [
+     "書く欄に空白だけを入れて送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.45",
+    "D-130.1"
+   ],
+   "support_code": "VAL-027"
+  }
+ ]
+}

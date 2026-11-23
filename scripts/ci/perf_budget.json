@@ -58,6 +58,13 @@
       "max_begins": 1
     },
     {
+      "name": "やり取りの最初の 20 件",
+      "method": "GET",
+      "path": "/api/v1/tickets/:id/timeline?limit=20",
+      "max_statements": 7,
+      "max_begins": 1
+    },
+    {
       "name": "承認待ちの一覧",
       "method": "GET",
       "path": "/api/v1/approvals/queue",
@@ -134,9 +141,10 @@
         "/api/v1/approvals/queue",
         "/api/v1/bridge/devices",
         "/api/v1/tickets/:id",
-        "/api/v1/tickets/:id/runs"
+        "/api/v1/tickets/:id/runs",
+        "/api/v1/tickets/:id/timeline"
       ],
-      "max_calls": 6,
+      "max_calls": 7,
       "max_stages": 1
     },
     {

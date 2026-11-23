@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。231 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。248 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -3792,6 +3792,25 @@ export const CATALOG: Record<string, CatalogEntry> = {
       "state": "e"
     }
   },
+  "E-VAL-027": {
+    "id": "E-VAL-027",
+    "cls": "validation",
+    "message": "書き込む文を書いてください",
+    "action": "文を書いてから送る",
+    "undo": false,
+    "severity": "low",
+    "support_code": "VAL-027",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "talk"
+    }
+  },
   "E-CONF-030": {
     "id": "E-CONF-030",
     "cls": "conflict",
@@ -4045,6 +4064,40 @@ export const CATALOG: Record<string, CatalogEntry> = {
       "state": "invite"
     }
   },
+  "E-SEC-004": {
+    "id": "E-SEC-004",
+    "cls": "conflict",
+    "message": "先に直されました。読み直してから、もう一度直してください",
+    "action": "読み直してもう一度",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-SEC-004",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-SEC-005": {
+    "id": "E-SEC-005",
+    "cls": "conflict",
+    "message": "このチケットは完了しています。完了したチケットの本文は変えられません",
+    "action": "新しいチケットで書く",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-SEC-005",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
   "E-SPEC-001": {
     "id": "E-SPEC-001",
     "cls": "conflict",
@@ -4170,6 +4223,149 @@ export const CATALOG: Record<string, CatalogEntry> = {
       "state": "list"
     }
   },
+  "E-VWS-001": {
+    "id": "E-VWS-001",
+    "cls": "validation",
+    "message": "名前を入れてください",
+    "action": "名前を入れる",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-VWS-001",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "save"
+    }
+  },
+  "E-VWS-002": {
+    "id": "E-VWS-002",
+    "cls": "validation",
+    "message": "名前は 60 文字までにしてください",
+    "action": "名前を短くする",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-VWS-002",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "save"
+    }
+  },
+  "E-VWS-003": {
+    "id": "E-VWS-003",
+    "cls": "validation",
+    "message": "グループの全員に見せるときは、見せるグループを選んでください",
+    "action": "見せるグループを選ぶ",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-VWS-003",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "save"
+    }
+  },
+  "E-VWS-004": {
+    "id": "E-VWS-004",
+    "cls": "not_found",
+    "message": "見せるグループが見つかりませんでした。消されたか、見る権限が無いかもしれません",
+    "action": "見せるグループを選び直す",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "E-VWS-004",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "save"
+    }
+  },
+  "E-VWS-005": {
+    "id": "E-VWS-005",
+    "cls": "conflict",
+    "message": "同じ名前の保存した条件が、もうあります。別の名前にしてください",
+    "action": "別の名前にする",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-VWS-005",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "save"
+    }
+  },
+  "E-VWS-006": {
+    "id": "E-VWS-006",
+    "cls": "conflict",
+    "message": "保存できる条件は 50 件までです。いらないものを消してから保存してください",
+    "action": "いらない条件を消す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-VWS-006",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "save"
+    }
+  },
+  "E-VWS-007": {
+    "id": "E-VWS-007",
+    "cls": "validation",
+    "message": "条件の形が正しくありません。条件・列の並び・大きさを確かめてください",
+    "action": "条件を作り直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-VWS-007",
+    "must_not": false,
+    "layers": [
+      "API"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "save"
+    }
+  },
+  "E-VWS-008": {
+    "id": "E-VWS-008",
+    "cls": "validation",
+    "message": "名前に改行などの制御文字は使えません",
+    "action": "名前を打ち直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-VWS-008",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "save"
+    }
+  },
   "E-DEL-001": {
     "id": "E-DEL-001",
     "cls": "permission",
@@ -4185,6 +4381,110 @@ export const CATALOG: Record<string, CatalogEntry> = {
     ],
     "where": {
       "screen": "tickets"
+    }
+  },
+  "E-DEL-010": {
+    "id": "E-DEL-010",
+    "cls": "conflict",
+    "message": "このチケットには子・孫がいます。別の親へ移す・一緒に消す・親を外して残す、のどれかを選んでください",
+    "action": "扱いを選ぶ",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-DEL-010",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-DEL-011": {
+    "id": "E-DEL-011",
+    "cls": "conflict",
+    "message": "子の移し先に、消すチケット自身やその子・孫は選べません",
+    "action": "別の親を選ぶ",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-DEL-011",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-DEL-012": {
+    "id": "E-DEL-012",
+    "cls": "conflict",
+    "message": "その親に移すと、親子が 3 段を超えます",
+    "action": "浅い親を選ぶ",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-DEL-012",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-DEL-013": {
+    "id": "E-DEL-013",
+    "cls": "permission",
+    "message": "一緒に消す子・孫に、あなたが消せないチケットがあります",
+    "action": "別の扱いを選ぶか、そのグループの人に頼む",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-DEL-013",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-DEL-014": {
+    "id": "E-DEL-014",
+    "cls": "not_found",
+    "message": "子の移し先のチケットが見つかりませんでした",
+    "action": "親を選び直す",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-DEL-014",
+    "must_not": false,
+    "layers": [
+      "UI",
+      "API"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-CONF-020": {
+    "id": "E-CONF-020",
+    "cls": "conflict",
+    "message": "確認項目が 1 つもありません。確認項目を足すか、使わない理由を書いてから任せてください",
+    "action": "確認項目を足す／理由を書く",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "CONF-020",
+    "must_not": true,
+    "layers": [
+      "UI",
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets",
+      "state": "delegate"
     }
   }
 };
