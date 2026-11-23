@@ -131,6 +131,8 @@ test("K1113-UI-006 画面のコード：外枠（shell.tsx）・第 2 ナビ（m
 });
 
 test("K1113-UI-007 キャンバス（正の絵）：どの絵にも左の「取引先」の項目・鈴の「知らせ」・第 2 ナビの「知らせ」とその注の古い字が無い。EdPC は鈴が「お知らせ（3 件）」・第 2 ナビが「お知らせ」", () => {
+  // 絵が 1 枚も読めないと古い字も無く緑になるので、枚数も見る
+  expect(canvasFiles().length).toBeGreaterThan(100);
   const bad: string[] = [];
   for (const f of canvasFiles()) {
     const s = readFileSync(join(CANVAS, f), "utf8");
