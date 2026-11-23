@@ -44,8 +44,8 @@ describe("POST /api/v1/auth/two-factor/verify", () => {
     // 本物の試験：apps/api/test/features/F1/sign-in-code.test.ts の「K302-API-007」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F1/sign-in-code.test.ts", "utf8")).toContain("K302-API-007");
   });
-  it("test_post_auth_two_factor_verify_server_error", () => {
-    // UNWANTED: IF セッションを写す所が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、認証側のセッションも残さない
+  it("test_post_auth_two_factor_verify_session_unresolved", () => {
+    // UNWANTED: IF セッションを写す所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、認証側のセッションも残さない
     // 本物の試験：apps/api/test/features/F1/sign-in-code.test.ts の「K302-API-017」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F1/sign-in-code.test.ts", "utf8")).toContain("K302-API-017");
   });
@@ -69,7 +69,7 @@ describe("POST /api/v1/auth/two-factor/verify", () => {
     // 本物の試験：apps/api/test/features/F1/sign-in-code.test.ts の「K302-API-018」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F1/sign-in-code.test.ts", "utf8")).toContain("K302-API-018");
   });
-  it("test_post_auth_two_factor_verify_session_unresolved", () => {
+  it("test_post_auth_two_factor_verify_session_unresolved_2", () => {
     // UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない
     // 本物の試験：apps/api/test/features/contract/k144-contract.test.ts の「K144-API-032」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/contract/k144-contract.test.ts", "utf8")).toContain("K144-API-032");

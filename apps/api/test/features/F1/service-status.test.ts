@@ -381,6 +381,7 @@ describe("K-307 いまの様子：入口・守り・失敗", () => {
     );
     expect(code).toBe(503);
     expect((JSON.parse(text) as Record<string, unknown>)["code"]).toBe("E-PAGE-003");
+    expect((JSON.parse(text) as Record<string, unknown>)["error"]).toBe("unavailable");
     expect(text).not.toContain(RUN);
     expect(text).not.toContain("status_incidents");
     expect((await get()).status, "戻すと読める").toBe(200);

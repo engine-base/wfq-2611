@@ -27,8 +27,8 @@
     "test_post_auth_sign_up_ok_2": "K51-API-027 規約の版",
     "test_post_auth_sign_up_rejected_422_2": "K51-API-011 メールが空・形が違う",
     "test_post_auth_sign_up_rate_limited": "K51-API-023 1 分に 11 回",
-    "test_post_auth_sign_up_server_error": "K51-API-021",
-    "test_post_auth_sign_up_session_unresolved": {
+    "test_post_auth_sign_up_session_unresolved": "K51-API-021",
+    "test_post_auth_sign_up_session_unresolved_2": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
     },
@@ -98,8 +98,8 @@
     "test_post_auth_terms_consent_rate_limited": "K53-API-027",
     "test_post_auth_terms_consent_rejected_403": "K53-API-034",
     "test_post_auth_terms_consent_shape": "K53-API-030",
-    "test_post_auth_terms_consent_server_error": "K53-API-024",
-    "test_post_auth_terms_consent_session_unresolved": {
+    "test_post_auth_terms_consent_session_unresolved": "K53-API-024",
+    "test_post_auth_terms_consent_session_unresolved_2": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
     },
@@ -116,9 +116,9 @@
     "test_get_auth_terms_current_ok": "K53-API-016",
     "test_get_auth_terms_current_rejected_422": "K53-API-022",
     "test_get_auth_terms_current_rate_limited": "K53-API-028",
-    "test_get_auth_terms_current_server_error": "K53-API-033",
+    "test_get_auth_terms_current_session_unresolved": "K53-API-033",
     "test_get_auth_terms_current_shape": "K53-API-016",
-    "test_get_auth_terms_current_session_unresolved": {
+    "test_get_auth_terms_current_session_unresolved_2": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
     }
@@ -132,9 +132,9 @@
     "test_get_auth_service_status_ok_2": "K307-API-001",
     "test_get_auth_service_status_rejected_422": "K307-API-013",
     "test_get_auth_service_status_rate_limited": "K307-API-014",
-    "test_get_auth_service_status_server_error": "K307-API-015",
+    "test_get_auth_service_status_session_unresolved": "K307-API-015",
     "test_get_auth_service_status_shape": "K307-API-002",
-    "test_get_auth_service_status_session_unresolved": {
+    "test_get_auth_service_status_session_unresolved_2": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
     }
@@ -848,9 +848,9 @@
     "test_post_auth_sign_in_rejected_422_4": "K301-API-010",
     "test_post_auth_sign_in_rate_limited": "K301-API-004",
     "test_post_auth_sign_in_rate_limited_2": "K301-API-020",
-    "test_post_auth_sign_in_server_error": "K301-API-019",
+    "test_post_auth_sign_in_session_unresolved": "K301-API-019",
     "test_post_auth_sign_in_shape": "K301-API-024",
-    "test_post_auth_sign_in_session_unresolved": {
+    "test_post_auth_sign_in_session_unresolved_2": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
     },
@@ -872,10 +872,10 @@
     "test_post_auth_two_factor_verify_rejected_403": "K302-API-016",
     "test_post_auth_two_factor_verify_rejected_422_3": "K302-API-012",
     "test_post_auth_two_factor_verify_rate_limited": "K302-API-007",
-    "test_post_auth_two_factor_verify_server_error": "K302-API-017",
+    "test_post_auth_two_factor_verify_session_unresolved": "K302-API-017",
     "test_post_auth_two_factor_verify_rate_limited_2": "K302-API-018",
     "test_post_auth_two_factor_verify_shape": "K302-API-021",
-    "test_post_auth_two_factor_verify_session_unresolved": {
+    "test_post_auth_two_factor_verify_session_unresolved_2": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
     },
@@ -921,14 +921,14 @@
     "test_post_auth_password_reset_ok": "K314-API-001 期限内のリンクで決める",
     "test_post_auth_password_reset_gone": "K314-API-003 期限切れ",
     "test_post_auth_password_reset_rejected_422": "K314-API-009 新しいパスワード 11 文字は 422",
-    "test_post_auth_password_reset_server_error": "K314-API-017 端末を切る所で失敗",
+    "test_post_auth_password_reset_session_unresolved": "K314-API-017 端末を切る所で失敗",
     "test_post_auth_password_reset_rate_limited": "K314-API-019 同じ IP から 1 分に 11 回",
     "test_post_auth_password_reset_shape": "K314-API-020 DB の中",
     "test_post_auth_password_reset_too_large": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-042"
     },
-    "test_post_auth_password_reset_session_unresolved": {
+    "test_post_auth_password_reset_session_unresolved_2": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
     },

@@ -80,6 +80,16 @@ describe("K-1106 契約の口の中の DB の失敗は 503 E-PAGE-003", () => {
     expect(body(r.text)["code"]).toBe("E-PAGE-003");
   });
 
+  it("K1106-API-009 口の中で DB との接続が切れた（Connection terminated unexpectedly）：503・E-PAGE-003", async () => {
+    const r = await callWith({
+      before: async () => {
+        throw new Error("Connection terminated unexpectedly");
+      },
+    });
+    expect(r.status, r.text).toBe(503);
+    expect(body(r.text)["code"]).toBe("E-PAGE-003");
+  });
+
   it("K1106-API-004 口の中で DB でない例外（TypeError）：500・code null（onError のまま）", async () => {
     const r = await callWith({
       before: async () => {
@@ -139,16 +149,33 @@ describe("K-1106 500 の残り", () => {
     expect(hits).toEqual([]);
   });
 
-  it("K1106-API-008 契約の元 screen_api.py の 500 は、やらないことの 2 口（頼みを書く DB・確定の途中で DB か認証）の物だけ", () => {
+  it("K1106-API-008 契約の元 screen_api.py：7 口の DB の失敗の行は 503・unavailable・EARS に「503 と」。500 の行と文は、やらないことの 2 口（頼みを書く DB・確定の途中で DB か認証）の物だけ", () => {
     const lines = readFileSync(join(ROOT, "05_flow/screen_api.py"), "utf8").split("\n");
+    const MINE = [
+      "ロックを見る DB かセッションを写す所が落ちたなら",
+      "セッションを写す所が落ちたなら",
+      "同意を書く DB が落ちたなら",
+      "今の版を読む DB が落ちたなら",
+      "稼働状況を読む DB が落ちたなら",
+      "端末を切る所かパスワードを変える所で落ちたなら",
+      "規約の版を読む DB か申し込みを書く DB が落ちたなら",
+    ];
+    for (const m of MINE) {
+      const i = lines.findIndex((l) => l.includes(`IF ${m}、Kaname は`));
+      expect(i, m).toBeGreaterThan(1);
+      expect(lines[i], m).toContain("503 と E-PAGE-003");
+      const status = lines[i - 2]!;
+      expect(status, m).toContain('"status": 503');
+      expect(status, m).toContain('"error": "unavailable"');
+    }
     const statusLines = lines.map((l, i) => ({ l, i })).filter((x) => /"status": 500\b/.test(x.l));
     const ears = lines.filter((l) => /500 と E-PAGE-003/.test(l));
     const allowed = [/頼みを書く DB が落ちたなら/, /確定の途中で DB か認証が落ちたなら/];
     expect(ears.filter((l) => !allowed.some((a) => a.test(l)))).toEqual([]);
     expect(ears).toHaveLength(2);
     expect(statusLines).toHaveLength(2);
-    for (const s of statusLines) {
-      const next = lines.slice(s.i, s.i + 4).join("\n");
+    for (const x of statusLines) {
+      const next = lines.slice(x.i, x.i + 4).join("\n");
       expect(
         allowed.some((a) => a.test(next)),
         next,

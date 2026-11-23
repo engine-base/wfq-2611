@@ -604,7 +604,7 @@ describe("K-53 規約に同意する：同意の状態 × 入口 × 利用者の
       } finally {
         for (const s of spies) s.mockRestore();
       }
-      expect(r.status, await r.clone().text()).toBeGreaterThanOrEqual(500);
+      expect(r.status, await r.clone().text()).toBe(503);
       expect((await json(r))["code"]).toBe("E-PAGE-003");
       const log = out.join("\n");
       expect(log, "運営が気づけるように「規約の版が無い」をログに出す").toContain("規約の版が無い");
@@ -871,6 +871,7 @@ describe("K-53 時間の流れ・失敗", () => {
       expect(r.status).toBe(503);
       const text = await r.text();
       expect((JSON.parse(text) as Record<string, unknown>)["code"]).toBe("E-PAGE-003");
+      expect((JSON.parse(text) as Record<string, unknown>)["error"]).toBe("unavailable");
       expect(text).not.toContain("K-53 の試験");
       expect(
         (await consentsOf(p.userId)).map((x) => x.terms_version_id),
@@ -1048,6 +1049,7 @@ describe("K-53 精査で足した行（DB が落ちた・2 段階の後のログ
       expect(r.status).toBe(503);
       const text = await r.text();
       expect((JSON.parse(text) as Record<string, unknown>)["code"]).toBe("E-PAGE-003");
+      expect((JSON.parse(text) as Record<string, unknown>)["error"]).toBe("unavailable");
       expect(text).not.toContain("terms_versions");
       expect(text).not.toContain("kaname.example");
     } finally {

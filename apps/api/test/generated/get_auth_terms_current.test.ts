@@ -14,8 +14,8 @@ describe("GET /api/v1/auth/terms/current", () => {
     // 本物の試験：apps/api/test/features/F1/terms.test.ts の「K53-API-022」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F1/terms.test.ts", "utf8")).toContain("K53-API-022");
   });
-  it("test_get_auth_terms_current_server_error", () => {
-    // UNWANTED: IF 今の版を読む DB が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、版も url も返さない
+  it("test_get_auth_terms_current_session_unresolved", () => {
+    // UNWANTED: IF 今の版を読む DB が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、版も url も返さない
     // 本物の試験：apps/api/test/features/F1/terms.test.ts の「K53-API-033」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F1/terms.test.ts", "utf8")).toContain("K53-API-033");
   });
@@ -24,7 +24,7 @@ describe("GET /api/v1/auth/terms/current", () => {
     // 本物の試験：apps/api/test/features/F1/terms.test.ts の「K53-API-028」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F1/terms.test.ts", "utf8")).toContain("K53-API-028");
   });
-  it("test_get_auth_terms_current_session_unresolved", () => {
+  it("test_get_auth_terms_current_session_unresolved_2", () => {
     // UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない
     // 本物の試験：apps/api/test/features/contract/k144-contract.test.ts の「K144-API-032」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/contract/k144-contract.test.ts", "utf8")).toContain("K144-API-032");

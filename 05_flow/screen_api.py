@@ -580,7 +580,7 @@ STATIC_SCREENS = {
 # 口ごとの 4xx（operationId → 答えの並び）。ここにある口は、汎用の 409（冪等キー）・422 の代わりにこの並びを使う（429・502 は汎用のまま足す）。
 #   EARS の文には状態の番号を入れる（05_flow/build_testplan.py の classify() が番号で試験の名前を決める）
 ERRORS_4XX = {
-    # パスワードで入る（K-301・D-042・D-128.141）。違う（401・残り回数）・会社の人が無い（403）・空と形（422）・5 回でロック（429）・写す所の失敗（500）
+    # パスワードで入る（K-301・D-042・D-128.141）。違う（401・残り回数）・会社の人が無い（403）・空と形（422）・5 回でロック（429）・写す所の失敗（503・K-1106）
     "signInWithPassword": [
         {"status": 401, "code": "E-AUTH-001", "body": {"error": "auth", "code": "E-AUTH-001", "remaining": 4}, "errors": ["E-AUTH-001"],
          "trigger": "メールアドレスかパスワードが違う・登録していないメール（同じ答え・同じくらいの時間）",
@@ -603,14 +603,14 @@ ERRORS_4XX = {
         {"status": 429, "code": "E-AUTH-002", "body": {"error": "auth", "code": "E-AUTH-002", "retry_after_sec": 900, "remaining": 0}, "errors": ["E-AUTH-002"],
          "trigger": "5 回続けて違えた・ロック中（15 分）",
          "ears_form": "UNWANTED: IF 5 回続けて違えたなら、Kaname は 429 と待つ秒数を返し、15 分は正しいパスワードでも入れない"},
-        {"status": 500, "code": "E-PAGE-003", "body": {"error": "internal", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
+        {"status": 503, "code": "E-PAGE-003", "body": {"error": "unavailable", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
          "trigger": "ロックを見る・数える DB が落ちた・セッションを写す所で失敗した",
-         "ears_form": "UNWANTED: IF ロックを見る DB かセッションを写す所が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、半分だけ入った状態を残さず失敗の数に入れない"},
+         "ears_form": "UNWANTED: IF ロックを見る DB かセッションを写す所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、半分だけ入った状態を残さず失敗の数に入れない"},
         {"status": 503, "code": "E-PAGE-003", "body": {"error": "unavailable", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
          "trigger": "止めの確かめ（app.login_gate）が落ちた・読めない（K-303・止める側に倒す）",
          "ears_form": "UNWANTED: IF 止めの確かめができなかったなら、Kaname は 503 を返し、セッションを作らない"},
     ],
-    # 確認のコードで入る（K-302・D-128.141）。コードが違う・待ちの印が切れた（401）・会社の人が無い（403）・入力（422）・6 けたの止め（429）・写す所の失敗（500）
+    # 確認のコードで入る（K-302・D-128.141）。コードが違う・待ちの印が切れた（401）・会社の人が無い（403）・入力（422）・6 けたの止め（429）・写す所の失敗（503・K-1106）
     "verifySignInCode": [
         {"status": 401, "code": "E-AUTH-004", "body": {"error": "auth", "code": "E-AUTH-004"}, "errors": ["E-AUTH-004"],
          "trigger": "6 けたかバックアップコードが違う・使ったバックアップコード・同じ 30 秒に通ったコードをもう一度",
@@ -630,9 +630,9 @@ ERRORS_4XX = {
         {"status": 429, "code": "E-AUTH-014", "body": {"error": "auth", "code": "E-AUTH-014", "retry_after_sec": 900}, "errors": ["E-AUTH-014"],
          "trigger": "6 けたかバックアップコードを 5 回続けて違えた・止めの 15 分の間",
          "ears_form": "UNWANTED: IF 6 けたを 5 回続けて違えたなら、Kaname は 429 と待つ秒数を返し、15 分は正しいコードでも入れない"},
-        {"status": 500, "code": "E-PAGE-003", "body": {"error": "internal", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
+        {"status": 503, "code": "E-PAGE-003", "body": {"error": "unavailable", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
          "trigger": "セッションを写す所で失敗した・部品の確かめの途中で DB が落ちた",
-         "ears_form": "UNWANTED: IF セッションを写す所が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、認証側のセッションも残さない"},
+         "ears_form": "UNWANTED: IF セッションを写す所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、認証側のセッションも残さない"},
         # 止めの 1 か所（K-303）に断られた・止めの確かめが落ちた（振り分けは K-302・確かめは K-305。前は同じ鍵が 2 つあり、こちらが消えていた）
         {"status": 403, "code": "E-AUTH-011", "body": {"error": "auth", "code": "E-AUTH-011"}, "errors": ["E-AUTH-011", "E-AUTH-012"],
          "trigger": "6 けた（かバックアップコード）は合っているが、人（members.suspended_at・所属の status = suspended）かワークスペース（subscriptions.suspended_at）が止められている（K-303・止めはセッションを作る前の 1 か所）",
@@ -717,15 +717,15 @@ ERRORS_4XX = {
         {"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []}, "errors": ["E-VAL-019"],
          "trigger": "同意の印（agree=true）が無い・版の ID が空か形が違うか無い版・利用規約とプライバシーポリシーの片方だけ",
          "ears_form": "UNWANTED: IF 同意の印が無いか版の ID が受け付けられないなら、Kaname は 422 と項目ごとの理由（同意の印が無いときは E-VAL-019）を返し、同意の行を書かない"},
-        {"status": 500, "code": "E-PAGE-003", "body": {"error": "internal", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
+        {"status": 503, "code": "E-PAGE-003", "body": {"error": "unavailable", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
          "trigger": "同意を書く DB（今の版を読む・同意の行を書く）が落ちた",
-         "ears_form": "UNWANTED: IF 同意を書く DB が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、同意の行もセッションの印も変えない"},
+         "ears_form": "UNWANTED: IF 同意を書く DB が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、同意の行もセッションの印も変えない"},
     ],
     # 今の版を読む（K-53）。DB が落ちたら中身を返さない
     "getCurrentTerms": [
-        {"status": 500, "code": "E-PAGE-003", "body": {"error": "internal", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
+        {"status": 503, "code": "E-PAGE-003", "body": {"error": "unavailable", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
          "trigger": "今の版を読む DB が落ちた",
-         "ears_form": "UNWANTED: IF 今の版を読む DB が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、版も url も返さない"},
+         "ears_form": "UNWANTED: IF 今の版を読む DB が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、版も url も返さない"},
     ],
     # いまの様子を読む（K-307）。DB が落ちたら「ふつう」（空）を返さず中身も返さない
     # 招待の下見（K-331・D-128.62・D-128.63）。使えない招待（期限切れ・取り消し・使われた）は 200 の state で返し、行が無いときだけ 404
@@ -765,9 +765,9 @@ ERRORS_4XX = {
          "ears_form": "UNWANTED: IF 利用者を作る所か受諾が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、作った利用者を消して招待を使わない"},
     ],
     "getServiceStatus": [
-        {"status": 500, "code": "E-PAGE-003", "body": {"error": "internal", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
+        {"status": 503, "code": "E-PAGE-003", "body": {"error": "unavailable", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
          "trigger": "稼働状況を読む DB（障害とお知らせ）が落ちた",
-         "ears_form": "UNWANTED: IF 稼働状況を読む DB が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、題も時刻も返さない"},
+         "ears_form": "UNWANTED: IF 稼働状況を読む DB が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、題も時刻も返さない"},
     ],
     # 確認のリンクで確定する（K-52・D-088.9・D-128.146）。冪等キーは使わない：2 回目にログインの印を渡すと、リンクを持つ人なら誰でも入れてしまう
     "verifySignup": [
@@ -820,15 +820,15 @@ ERRORS_4XX = {
         {"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []}, "errors": ["E-VAL-005", "E-VAL-026", "E-VAL-011"],
          "trigger": "新しいパスワードが 12 文字より短い・128 文字を超える・漏れたもの（手がかり・新しいパスワードの欄が無いときも 422）",
          "ears_form": "UNWANTED: IF 新しいパスワードが 12 文字より短いか 128 文字を超えるか漏れたものなら、Kaname は 422 と欄 new_password の理由を返し、端末を切らずパスワードを変えない"},
-        {"status": 500, "code": "E-PAGE-003", "body": {"error": "internal", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
+        {"status": 503, "code": "E-PAGE-003", "body": {"error": "unavailable", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
          "trigger": "端末を切る所かパスワードを変える所で DB が落ちた",
-         "ears_form": "UNWANTED: IF 端末を切る所かパスワードを変える所で落ちたなら、Kaname は 500 と E-PAGE-003 を返し、リンクを使えるまま残す"},
+         "ears_form": "UNWANTED: IF 端末を切る所かパスワードを変える所で落ちたなら、Kaname は 503 と E-PAGE-003 を返し、リンクを使えるまま残す"},
     ],
     # 登録の申し込み（K-51・K-144）。規約の版を読む DB が落ちたら申し込みを作らない（汎用の 409・422 はそのまま）
     "createSignup": [
-        {"status": 500, "code": "E-PAGE-003", "body": {"error": "internal", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
+        {"status": 503, "code": "E-PAGE-003", "body": {"error": "unavailable", "code": "E-PAGE-003"}, "errors": ["E-PAGE-003"],
          "trigger": "規約の版を読む DB か申し込みを書く DB が落ちた",
-         "ears_form": "UNWANTED: IF 規約の版を読む DB か申し込みを書く DB が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、申し込みを作らずメールも送らない"},
+         "ears_form": "UNWANTED: IF 規約の版を読む DB か申し込みを書く DB が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、申し込みを作らずメールも送らない"},
     ],
     # 配布物を受け取る（K-57・K-144）。目録に無い名前・その OS の配布物が無い・知らない名前・置き場に届かない
     "downloadBridgeRelease": [

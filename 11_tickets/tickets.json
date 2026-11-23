@@ -22795,6 +22795,85 @@
     "申し送り": "- なし"
    },
    "file": "11_tickets/K-1100.md"
+  },
+  {
+   "id": "K-1106",
+   "title": "DB が失敗したときの答えを、段を問わず 503 E-PAGE-003 にそろえる（本線の口に残る 500 を掃く・PM の直しの葉）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-1",
+   "milestone": "基盤",
+   "area": "口",
+   "assignee": "実装",
+   "due": "2026-11-24",
+   "estimate_hours": "0.75",
+   "estimate_basis": "実測なし・仮。決まった形の置き換え（口のコード 8 ファイル 9 か所・契約の元 1 ファイル 7 か所）と、契約の口の入口の 1 か所に DB の失敗を 503 にする受けを足す作業の内訳から引いた：口の置き換え 10 分・入口の受け 10 分・契約の作り直し 5 分・前からの試験の期待の置き換え（13 ファイル 20 か所）は書く段・CI 15 分",
+   "decisions": [
+    "D-136.1"
+   ],
+   "split": "",
+   "choke_points": [
+    "C2"
+   ],
+   "choke_none": "",
+   "tests": [
+    "apps/api/test/k1106_db_down_503.test.ts",
+    "apps/api/test/features/F1/password-reset.test.ts",
+    "apps/api/test/features/F1/service-status.test.ts",
+    "apps/api/test/features/F1/sign-in-code-claim.test.ts",
+    "apps/api/test/features/F1/sign-in-code.test.ts",
+    "apps/api/test/features/F1/sign-in.test.ts",
+    "apps/api/test/features/F1/sign-out.test.ts",
+    "apps/api/test/features/F1/sign-up.test.ts",
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/F1/login.harness.ts",
+    "apps/api/test/features/F3/connect-pc.test.ts",
+    "apps/api/test/features/F4/create-ticket.test.ts",
+    "apps/api/test/features/F5/approve-complete-approve.test.ts",
+    "apps/api/test/k234_one_transaction.test.ts"
+   ],
+   "carry": [],
+   "depends_on": [
+    "K-474"
+   ],
+   "acts": [],
+   "screens": [],
+   "apis": [],
+   "canvas": [],
+   "canvas_none": "口の答えの状態の番号だけ。画面のコードを変えない（画面は 500 も 503 も「落ちている」として同じに出す・signup-form.tsx の r.status >= 500）",
+   "affects": [
+    "@kaname/api"
+   ],
+   "ci_wide": [],
+   "changes": [
+    "apps/api/src/contract/op.ts",
+    "apps/api/src/features/F1/consent-terms/index.ts",
+    "apps/api/src/features/F1/login/sign-in-code.ts",
+    "apps/api/src/features/F1/login/sign-in.ts",
+    "apps/api/src/features/F1/login/sign-out.ts",
+    "apps/api/src/features/F1/password-reset/index.ts",
+    "apps/api/src/features/F1/service-status/index.ts",
+    "apps/api/src/features/F1/sign-up/index.ts",
+    "apps/api/src/features/F5/approve-complete/decide.ts",
+    "05_flow/screen_api.py"
+   ],
+   "flow": "ログインして使う",
+   "sections": {
+    "目的": "DB が失敗したとき（問い合わせが例外・接続できない・取引が落ちた）の口の答えを、段を問わず **503 E-PAGE-003**（「いま使えません」・中身を返さない）にそろえる。\n共通の決まり D-136.1（守りの判定が内部の不具合で判定できないときは 503 E-PAGE-003 で止める側に倒す）と同じ側にする PM の決め（控え帳 2026-11-22 18:30 を、11-23 に「段を問わず」に広げた）。\n\n今の本線には 500 で返す所が残っている：\n\n1. 口の中で DB の失敗を受けて **500 と E-PAGE-003** を返す所（F1 の認証の口・F5 の承認の decide.ts）\n2. 口の中で受けずに投げた DB の例外が app.ts の onError まで落ちて **500（code null）** になる所（例：K234-API-012 の読む口の中の `1 / 0`・チケットを作る途中の知らせの書き込み・PC の印の受け取り）\n3. 契約（`05_flow/screen_api.py` → `08_api/endpoints.json`）の outputs に `status: 500` の E-PAGE-003 が 9 口（EP-024・025・026・027・029・032・034・035・036）\n\nPM の決め（作り方・2026-11-23）：\n\n1. 1 は各口のその行を 503 に直す（文と中身を返さないのは今のまま）\n2. 2 は契約の口の入口（`contract/op.ts` の `op()` が返す関数・要求の取引 inRequest の外側。中の取引は例外で戻ってから受ける）で受ける：投げられた例外が **DB の失敗**（SQLSTATE を持つ DB の例外か、DB に繋がらない・接続の取得が時間切れ）なら 503 E-PAGE-003 を返し、ログは口の名前と例外の種類だけ。入力が DB の決まりに合わない例外（22P02 ほか・dbInputFailure）は今のまま 422、DB でない例外（プログラムの誤り）は今のまま onError の 500\n3. app.ts の onError は変えない（契約の外の口・DB でない例外の受け。app.ts は K-420・K-421・K-422 が作っている途中）\n4. 管理者に頼む（admin-recovery・EP-025）とメールの確認（verify-email・EP-032）は、この葉では直さない（下の「やらないこと」）\n5. ほかの葉が作っている途中の物は触らない：`ticket-update/update.ts`・`05_flow/screen_api.d/K-387.py`・`progress.test.ts`（K-440・K-564・K-583 が 503 にしている）、`approve-complete/complete.ts`・`approve-complete-complete.test.ts`（K-566 が 503 にしている）、K-477 の見えるグループの確かめ（K-477 の枝にだけ在る）。この葉の静的の試験は、持ち主が別の葉の物と、やらないことの 2 口を外して数える",
+    "完了の条件": "- [ ] 下の表の行（K1106-API-001〜008）が緑：`apps/api/test/k1106_db_down_503.test.ts`\n- [ ] 前からの試験を替えた所の行（500 → 503）が緑\n- [ ] 手元の CI（このチケットの範囲）が緑",
+    "前提と制約": "分類: CRUD\n\n- E-PAGE-003 の文と次の一手は正本（07_qa/test-specs/errors.json）のまま。答えに DB の文・表の名前・送った値を出さない\n- 503 の体の `error` は、口が自分で組む所（consent-terms・service-status・入口の受け）は `unavailable`（入口の守りの 503 と同じ）。正本の toJSON で組む所（reply・fromCatalog）は正本の class のまま\n- 契約の outputs の 500 の行は、状態を 503・体の error を `unavailable` に、EARS の文の「500」を「503」にする。同じ口に入口の 503 の行が先に在るが、trigger の違う行として並べる（EP-007 と同じ形）\n- 画面は 500 も 503 も「落ちている」として同じに出す（signup-form.tsx・signup-waiting.tsx の `r.status >= 500`）。画面の試験の偽の 500 は変えない",
+    "依存の理由": "- K-474: 要る — 同じファイル（connect-pc.test.ts）を作っている途中。その上に重ねて始め、取り込みはその後",
+    "目録で探した結果": "- 使う：`contract/op.ts` の `pgCode`・`dbInputFailure`・`guardDown`（503 E-PAGE-003 の組み方）、試験の土台 `apps/api/test/features/fixture.js`（makeFixture・hooks の差し替え）\n- 作る：`dbDownFailure`（例外が DB の失敗か）と、入口の受け（op.ts の口を流す所の catch）。似た物の guardDown は「守りの判定の所」の 503 で、場所が違う",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| 口の 500 を 503 に | 下の search の 9 か所（complete.ts・update.ts・admin-recovery・verify-email を除く）の `500` を `503` に。consent-terms・service-status の体の error を `unavailable` に。コメントの「500」も直す |\n| 入口の受け | `apps/api/src/contract/op.ts`：`dbDownFailure(ex)`（SQLSTATE 5 字＋severity を持つ DB の例外／code が ECONNREFUSED・ECONNRESET・ETIMEDOUT・EPIPE・ENOTFOUND・EHOSTUNREACH・EAI_AGAIN／文が Connection terminated・timeout exceeded when trying to connect・Client has encountered a connection error）。ただし dbInputFailure に当たる物は外す（今の 422）。`op()` が返す関数（要求の取引 inRequest の外側）を try で包み、当たれば 503 E-PAGE-003（error unavailable）・ログは口の名前と例外の種類だけ。当たらなければ投げ直す |\n| 契約 | `05_flow/screen_api.py` の `\"status\": 500` の 7 行（EP-025・EP-032 を除く）を 503・error `unavailable`・EARS の「500 と」を「503 と」に。コメントの「（500）」も。作る段で `python3 scripts/tickets/regen_all.py`（build_api.py・contract.mjs gen・EARS の試験の作り直し。生成物は changes_ignore） |\n| 試験 | `apps/api/test/k1106_db_down_503.test.ts`（新しい）と、前からの試験の期待（下） |",
+    "外に影響する手順": "- なし — DB に書く手順は足さない。答えの状態の番号と、例外を受ける所だけ（受けた後は何も書かない・取引は今のまま withTenant が戻す）",
+    "テスト仕様と確認の結果": "`apps/api/test/k1106_db_down_503.test.ts`（口・本物の DB・偽の画面のログイン。hooks を試験の中だけ差し替える・K-234 と同じ土台）\n\n### 行の表\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K1106-API-001 | 失敗 | 契約の口（GET /ticket_kinds）の中の問い合わせが DB に断られる（`select 1 / 0`・SQLSTATE 22012） | 503・code E-PAGE-003・error unavailable・message は正本の E-PAGE-003 の文・答えに `division` も `22012` も出ない |\n| K1106-API-002 | 失敗 | 口の中で DB に繋がらない（code ECONNREFUSED の例外） | 503・code E-PAGE-003 |\n| K1106-API-003 | 失敗 | 口の中で接続の取得が時間切れ（文 `timeout exceeded when trying to connect` の例外） | 503・code E-PAGE-003 |\n| K1106-API-004 | 失敗 | 口の中で DB でない例外（TypeError） | 500・code null（onError のまま・503 にしない） |\n| K1106-API-005 | 入力 | 口の中で入力が DB の決まりに合わない（`select 'x'::uuid`・22P02） | 422・code VALIDATION_ERROR（今のまま・503 にしない） |\n| K1106-API-006 | 時間の流れ | 001 の 503 の直後に、差し替えを戻して同じ口 | 200・借りたままの接続 0（503 で接続を返している） |\n| K1106-API-007 | 守り | 本線の口のコード（apps/api/src）に、E-PAGE-003 を 500 で返す書き方 `(500, \"E-PAGE-003\"`・`\"E-PAGE-003\", 500)`・`fromCatalog(500`・`status: 500,` が残っていない（持ち主が別の葉の complete.ts＝K-566・update.ts＝K-440 と、やらないことの admin-recovery・verify-email を除く） | 見つかる所 0 |\n| K1106-API-008 | 守り | 契約の元 `05_flow/screen_api.py` の `\"status\": 500` の行と「500 と E-PAGE-003」の文が、やらないことの 2 口（頼みを書く DB・確定の途中で DB か認証）のものだけ | ほかの口の物 0・その 2 口の物はちょうど 2 行 |\n\n### テストの型の受け（分類 CRUD）\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-CRUD-05 保存の途中で失敗 | K1106-API-001〜003・006 と、前からの試験の各口の DB の失敗の行（500 → 503。書く途中の失敗で何も残らないのは前からの各行が見る） |\n| 要らない：TP-CRUD-01 答えの状態の番号を変えるこの葉では振る舞いが変わらない（各口の前からの試験が持つ） | — |\n| 要らない：TP-CRUD-02 答えの状態の番号を変えるこの葉では振る舞いが変わらない（各口の前からの試験が持つ） | — |\n| 要らない：TP-CRUD-03 答えの状態の番号を変えるこの葉では振る舞いが変わらない（各口の前からの試験が持つ） | — |\n| 要らない：TP-CRUD-04 答えの状態の番号を変えるこの葉では振る舞いが変わらない（各口の前からの試験が持つ） | — |\n| 要らない：TP-CRUD-06 答えの状態の番号を変えるこの葉では振る舞いが変わらない（各口の前からの試験が持つ） | — |",
+    "前からの試験を替えた所": "本線の口が E-PAGE-003 を 500 で返す所：\n\n```search\ngit grep -nE \"\\(500, \\\"E-PAGE-003\\\"|\\\"E-PAGE-003\\\", 500\\)|status: 500,|fromCatalog\\(500\" -- apps/api/src\n16\n```\n\n（このうち complete.ts:117 は K-566、update.ts:94 は K-440 が 503 にしている。admin-recovery の 1 か所と verify-email の 4 か所はやらないこと。この葉は残りの 9 か所）\n\n契約の元の 500：\n\n```search\ngit grep -n \"\\\"status\\\": 500\" -- 05_flow\n10\n```\n\n（screen_api.py の 9 行のうち 7 行をこの葉で。EP-025・EP-032 の 2 行はやらないこと。screen_api.d/K-387.py の 1 行は K-440 が 503 にしている）\n\n500 を期待する前からの試験：\n\n```search\ngit grep -n \"toBe(500)\" -- apps/api/test\n34\n```\n\n- apps/api/test/features/F1/admin-recovery.test.ts: 替えない — やらないこと（K-420・K-421・K-422 が作っている途中のファイル）。口も 500 のまま\n- apps/api/test/features/F1/password-reset.test.ts: 替える（K314-API-017・018・021 の 500 → 503）\n- apps/api/test/features/F1/service-status.test.ts: 替える（K307-API-015）\n- apps/api/test/features/F1/sign-in-code-claim.test.ts: 替える（K322-API-002・003・006）\n- apps/api/test/features/F1/sign-in-code.test.ts: 替える（K302-API-017）\n- apps/api/test/features/F1/sign-in.test.ts: 替える（K301-API-019）\n- apps/api/test/features/F1/sign-out.test.ts: 替える（K306-API-010）\n- apps/api/test/features/F1/sign-up.test.ts: 替える（K51-API-021・申し込みの書き込みの失敗は入口の受けで 503）\n- apps/api/test/features/F1/terms.test.ts: 替える（同意を書く所・今の版を読む所の DB の失敗）\n- apps/api/test/features/F1/verify-email.test.ts: 替えない — やらないこと（同上）。口の 500 は全部その口の中の catch で返すので、入口の受けには当たらない\n- apps/api/test/features/F1/login.harness.ts: 替える（頭のコメントの「500 E-PAGE-003」だけ）\n- apps/api/test/features/F3/connect-pc.test.ts: 替える（PC の印を受け取る途中の知らせの書き込みの失敗・入口の受けで 503）\n- apps/api/test/features/F4/create-ticket.test.ts: 替える（K60-API-028・入口の受けで 503。K-437 の切る段の枝 c/段5 も 503 にしている）\n- apps/api/test/features/F5/approve-complete-approve.test.ts: 替える（decide.ts の書く所の失敗）\n- apps/api/test/k234_one_transaction.test.ts: 替える（K234-API-012・入口の受けで 503）\n- apps/api/test/errors.test.ts: 替えない — DB でない例外（throw new Error）は onError のまま 500\n- apps/api/test/features/F5/approve-complete-complete.test.ts: 替えない — complete.ts は K-566 の持ち物（本線ではまだ 500 を返すので期待も 500 のまま）\n- apps/api/test/features/F6/progress.test.ts: 替えない — update.ts は K-440・K-564・K-583 の持ち物\n- apps/api/test/features/F4/test-spec-create.test.ts: 替えない — 件数の 500 で状態の番号ではない",
+    "やらないこと": "- 契約の外の素の道すじ（`app.ts` の onError まで落ちる auth/agent.ts ほか）の DB の例外は 500 のまま。app.ts を K-420・K-421・K-422 が作っている途中で、契約の口の入口（op.ts）で受ければ契約の口は全部そろうため（PM の決め 11-23）\n- 管理者に頼む（`F1/admin-recovery`・EP-025）とメールの確認（`F1/verify-email`・EP-032）の 500 は残す。その試験のファイル（admin-recovery.test.ts・verify-email.test.ts）を K-420・K-421・K-422 が作っている途中で、それらの枝は本線から遠く（107〜349 本遅れ）重ねて始められないため。3 本が入った後に、同じ形の直しの葉で 503 にする\n- DB でない例外の 500（onError）・DB の決まり違反の 422 はそのまま",
+    "決定ログ": "- D-136.1（守りの判定の例外は 503 E-PAGE-003）と同じ側にそろえる PM の決め（.ticket-flow/pm-decisions-2026-11-22.md 11-23 11:01・控え帳 2026-11-22 18:30）",
+    "リスクと懸念": "- 入口の受けは契約の口だけ。契約の外の口（auth/agent.ts ほか素の道すじ）の DB の例外は onError の 500 のまま（app.ts は作っている途中の葉が 3 本ある。それが入った後に別の葉で見る）\n- 作っている途中のほかの葉で、DB の例外を受けずに投げて 500 を期待する試験があれば、この葉が入った後にその葉の CI で 503 になる（K-477 の見えるグループの確かめは 503 にする向き）",
+    "申し送り": "- K-437（c/段5）は create-ticket.test.ts の K60-API-028 を自分でも 503 にしている。この葉が先に入ると同じ所がぶつかるので、K-437 の担当が本線を取り込むときに K-437 の側の形で解く\n- admin-recovery・verify-email の 500 → 503 は、K-420・K-421・K-422 が入った後の直しの葉で（PM が切る）"
+   },
+   "file": "11_tickets/K-1106.md"
   }
  ]
 }

@@ -21,8 +21,8 @@ describe("POST /api/v1/auth/sign-up", () => {
     // 本物の試験：apps/api/test/features/F1/sign-up.test.ts の「K51-API-011 メールが空・形が違う」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F1/sign-up.test.ts", "utf8")).toContain("K51-API-011 メールが空・形が違う");
   });
-  it("test_post_auth_sign_up_server_error", () => {
-    // UNWANTED: IF 規約の版を読む DB か申し込みを書く DB が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、申し込みを作らずメールも送らない
+  it("test_post_auth_sign_up_session_unresolved", () => {
+    // UNWANTED: IF 規約の版を読む DB か申し込みを書く DB が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、申し込みを作らずメールも送らない
     // 本物の試験：apps/api/test/features/F1/sign-up.test.ts の「K51-API-021」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F1/sign-up.test.ts", "utf8")).toContain("K51-API-021");
   });
@@ -36,7 +36,7 @@ describe("POST /api/v1/auth/sign-up", () => {
     // 本物の試験：apps/api/test/features/F1/sign-up.test.ts の「K51-API-023 1 分に 11 回」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F1/sign-up.test.ts", "utf8")).toContain("K51-API-023 1 分に 11 回");
   });
-  it("test_post_auth_sign_up_session_unresolved", () => {
+  it("test_post_auth_sign_up_session_unresolved_2", () => {
     // UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない
     // 本物の試験：apps/api/test/features/contract/k144-contract.test.ts の「K144-API-032」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/contract/k144-contract.test.ts", "utf8")).toContain("K144-API-032");

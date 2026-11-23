@@ -24,8 +24,8 @@ describe("POST /api/v1/auth/password/reset", () => {
     // 本物の試験：apps/api/test/features/F1/pm-fuzz-auth.test.ts の「K638-API-009」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F1/pm-fuzz-auth.test.ts", "utf8")).toContain("K638-API-009");
   });
-  it("test_post_auth_password_reset_server_error", () => {
-    // UNWANTED: IF 端末を切る所かパスワードを変える所で落ちたなら、Kaname は 500 と E-PAGE-003 を返し、リンクを使えるまま残す
+  it("test_post_auth_password_reset_session_unresolved", () => {
+    // UNWANTED: IF 端末を切る所かパスワードを変える所で落ちたなら、Kaname は 503 と E-PAGE-003 を返し、リンクを使えるまま残す
     // 本物の試験：apps/api/test/features/F1/password-reset.test.ts の「K314-API-017 端末を切る所で失敗」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F1/password-reset.test.ts", "utf8")).toContain("K314-API-017 端末を切る所で失敗");
   });
@@ -39,7 +39,7 @@ describe("POST /api/v1/auth/password/reset", () => {
     // 本物の試験：apps/api/test/features/F1/password-reset.test.ts の「K314-API-019 同じ IP から 1 分に 11 回」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F1/password-reset.test.ts", "utf8")).toContain("K314-API-019 同じ IP から 1 分に 11 回");
   });
-  it("test_post_auth_password_reset_session_unresolved", () => {
+  it("test_post_auth_password_reset_session_unresolved_2", () => {
     // UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない
     // 本物の試験：apps/api/test/features/contract/k144-contract.test.ts の「K144-API-032」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/contract/k144-contract.test.ts", "utf8")).toContain("K144-API-032");

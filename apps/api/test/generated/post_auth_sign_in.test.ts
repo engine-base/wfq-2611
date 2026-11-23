@@ -49,8 +49,8 @@ describe("POST /api/v1/auth/sign-in", () => {
     // 本物の試験：apps/api/test/features/F1/sign-in.test.ts の「K301-API-004」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F1/sign-in.test.ts", "utf8")).toContain("K301-API-004");
   });
-  it("test_post_auth_sign_in_server_error", () => {
-    // UNWANTED: IF ロックを見る DB かセッションを写す所が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、半分だけ入った状態を残さず失敗の数に入れない
+  it("test_post_auth_sign_in_session_unresolved", () => {
+    // UNWANTED: IF ロックを見る DB かセッションを写す所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、半分だけ入った状態を残さず失敗の数に入れない
     // 本物の試験：apps/api/test/features/F1/sign-in.test.ts の「K301-API-019」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F1/sign-in.test.ts", "utf8")).toContain("K301-API-019");
   });
@@ -69,7 +69,7 @@ describe("POST /api/v1/auth/sign-in", () => {
     // 本物の試験：apps/api/test/features/F1/sign-in.test.ts の「K301-API-020」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F1/sign-in.test.ts", "utf8")).toContain("K301-API-020");
   });
-  it("test_post_auth_sign_in_session_unresolved", () => {
+  it("test_post_auth_sign_in_session_unresolved_2", () => {
     // UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない
     // 本物の試験：apps/api/test/features/contract/k144-contract.test.ts の「K144-API-032」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/contract/k144-contract.test.ts", "utf8")).toContain("K144-API-032");

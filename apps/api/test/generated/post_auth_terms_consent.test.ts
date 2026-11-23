@@ -29,8 +29,8 @@ describe("POST /api/v1/auth/terms/consent", () => {
     // 本物の試験：apps/api/test/features/F1/terms.test.ts の「K53-API-018」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F1/terms.test.ts", "utf8")).toContain("K53-API-018");
   });
-  it("test_post_auth_terms_consent_server_error", () => {
-    // UNWANTED: IF 同意を書く DB が落ちたなら、Kaname は 500 と E-PAGE-003 を返し、同意の行もセッションの印も変えない
+  it("test_post_auth_terms_consent_session_unresolved", () => {
+    // UNWANTED: IF 同意を書く DB が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、同意の行もセッションの印も変えない
     // 本物の試験：apps/api/test/features/F1/terms.test.ts の「K53-API-024」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F1/terms.test.ts", "utf8")).toContain("K53-API-024");
   });
@@ -44,7 +44,7 @@ describe("POST /api/v1/auth/terms/consent", () => {
     // 本物の試験：apps/api/test/features/F1/terms.test.ts の「K53-API-027」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/F1/terms.test.ts", "utf8")).toContain("K53-API-027");
   });
-  it("test_post_auth_terms_consent_session_unresolved", () => {
+  it("test_post_auth_terms_consent_session_unresolved_2", () => {
     // UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない
     // 本物の試験：apps/api/test/features/contract/k144-contract.test.ts の「K144-API-032」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/contract/k144-contract.test.ts", "utf8")).toContain("K144-API-032");
