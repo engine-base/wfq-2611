@@ -3337,6 +3337,8 @@
     "updateMemory"
    ],
    "tests": [
+    "apps/api/test/generated/delete_knowledge_folders_id.test.ts",
+    "apps/api/test/generated/delete_knowledge_pages_id.test.ts",
     "apps/api/test/generated/delete_knowledge_pages_id_draft.test.ts",
     "apps/api/test/generated/delete_memories_id.test.ts",
     "apps/api/test/generated/delete_rules_id.test.ts",
@@ -3353,6 +3355,7 @@
     "apps/api/test/generated/get_knowledge_pages_id_messages.test.ts",
     "apps/api/test/generated/get_knowledge_pages_id_usage.test.ts",
     "apps/api/test/generated/get_knowledge_pages_id_versions.test.ts",
+    "apps/api/test/generated/get_knowledge_pages_id_versions_v.test.ts",
     "apps/api/test/generated/get_knowledge_proposals.test.ts",
     "apps/api/test/generated/get_knowledge_tree.test.ts",
     "apps/api/test/generated/get_knowledge_verifications.test.ts",
@@ -3365,6 +3368,7 @@
     "apps/api/test/generated/get_work_types_id_versions.test.ts",
     "apps/api/test/generated/get_workspace_rules.test.ts",
     "apps/api/test/generated/get_workspace_ticket_shape.test.ts",
+    "apps/api/test/generated/patch_knowledge_folders_id.test.ts",
     "apps/api/test/generated/patch_knowledge_pages_id.test.ts",
     "apps/api/test/generated/patch_knowledge_pages_id_draft.test.ts",
     "apps/api/test/generated/patch_layers_id.test.ts",
@@ -3377,11 +3381,13 @@
     "apps/api/test/generated/patch_workspace_ticket_shape.test.ts",
     "apps/api/test/generated/post_knowledge_ask.test.ts",
     "apps/api/test/generated/post_knowledge_ask_feedback.test.ts",
+    "apps/api/test/generated/post_knowledge_folders.test.ts",
     "apps/api/test/generated/post_knowledge_imports.test.ts",
     "apps/api/test/generated/post_knowledge_imports_id_commit.test.ts",
     "apps/api/test/generated/post_knowledge_pages.test.ts",
     "apps/api/test/generated/post_knowledge_pages_id_archive.test.ts",
     "apps/api/test/generated/post_knowledge_pages_id_attachments.test.ts",
+    "apps/api/test/generated/post_knowledge_pages_id_copy.test.ts",
     "apps/api/test/generated/post_knowledge_pages_id_links.test.ts",
     "apps/api/test/generated/post_knowledge_pages_id_messages.test.ts",
     "apps/api/test/generated/post_knowledge_pages_id_publish.test.ts",
@@ -3390,6 +3396,7 @@
     "apps/api/test/generated/post_knowledge_pages_id_versions_v_restore.test.ts",
     "apps/api/test/generated/post_knowledge_proposals_id_accept.test.ts",
     "apps/api/test/generated/post_knowledge_proposals_id_decline.test.ts",
+    "apps/api/test/generated/post_knowledge_similar.test.ts",
     "apps/api/test/generated/post_layers.test.ts",
     "apps/api/test/generated/post_learning_candidates_id_accept.test.ts",
     "apps/api/test/generated/post_learning_candidates_id_dismiss.test.ts",
@@ -3408,7 +3415,8 @@
     "apps/api/test/generated/post_workspace_escalation_rules.test.ts",
     "apps/api/test/generated/post_workspace_escalation_rules_preview.test.ts",
     "apps/api/test/generated/post_workspace_rules.test.ts",
-    "apps/api/test/generated/post_workspace_ticket_shape_preview.test.ts"
+    "apps/api/test/generated/post_workspace_ticket_shape_preview.test.ts",
+    "apps/api/test/generated/put_knowledge_pages_id_must.test.ts"
    ],
    "depends_on": [],
    "sections": {
