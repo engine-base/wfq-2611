@@ -99,6 +99,9 @@
   font-size: var(--k-text-label-xs);
   font-weight: var(--k-fw-label-xs);
 }
+.k-talk-avatar[data-glyph]::before {
+  content: attr(data-glyph);
+}
 .k-talk-avatar[data-size="sm"] {
   width: var(--k-c-list-avatar-width);
   height: var(--k-c-list-avatar-height);
@@ -152,6 +155,7 @@
   margin: 0;
   line-height: var(--k-lh-body);
   overflow-wrap: anywhere;
+  white-space: pre-wrap;
 }
 .k-talk-mention {
   padding: 0 var(--k-s-xs);

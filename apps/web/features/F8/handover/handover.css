@@ -1,0 +1,218 @@
+/* 渡す・配る（F8・段 9）の部品（切る段の下絵）。値は正本のトークン（--k-*）だけを読む。生の大きさ・色を書かない。
+   小窓・帯・欄・ボタンの形は components/k の型のまま。ここは並べ方だけ */
+
+/* ---- パネルの「担当者 ▾」 ---- */
+.k-hnd-assignee {
+  display: inline-flex;
+  flex-direction: column;
+  gap: var(--k-s-xs);
+  min-width: 0;
+}
+.k-hnd-assignee-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--k-s-xs);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.k-hnd-assignee-btn:hover {
+  color: var(--k-primary);
+}
+.k-hnd-assignee-note {
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-lh-body-sm);
+}
+
+/* ---- 相手を選ぶ小窓の並び ---- */
+.k-hnd-intro,
+.k-hnd-note {
+  margin: 0;
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-lh-body-sm);
+}
+.k-hnd-pick {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: var(--k-c-dialog-group-border);
+  border-radius: var(--k-r-md);
+}
+.k-hnd-pick > li + li {
+  border-top: var(--k-c-doc-toolbar-border-bottom);
+}
+.k-hnd-pick-item {
+  display: flex;
+  align-items: center;
+  gap: var(--k-s-sm);
+  width: 100%;
+  padding: var(--k-s-sm);
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.k-hnd-pick-item:hover {
+  background: var(--k-surface-variant);
+}
+.k-hnd-pick-item[aria-disabled="true"] {
+  opacity: var(--k-c-button-disabled-opacity);
+  cursor: not-allowed;
+}
+.k-hnd-pick-item[aria-current="true"] {
+  opacity: 1;
+  color: var(--k-primary);
+}
+.k-hnd-pick-main {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+}
+.k-hnd-pick-name {
+  font-size: var(--k-text-body);
+  font-weight: var(--k-fw-label-md);
+  overflow-wrap: anywhere;
+}
+.k-hnd-pick-sub {
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-lh-body-sm);
+}
+.k-hnd-code {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: var(--k-c-detail-avatar-width);
+  height: var(--k-c-detail-avatar-height);
+  border-radius: var(--k-r-sm);
+  background: var(--k-side-bg);
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-label-xs);
+  font-weight: var(--k-fw-label-md);
+}
+
+/* ---- 小窓の相手の行（名前と「変える」） ---- */
+.k-hnd-to {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--k-s-sm);
+  min-width: 0;
+}
+
+/* ---- 担当者でない人の、題名の下の申し出のボタン ---- */
+.k-hnd-offer {
+  display: flex;
+  justify-content: flex-start;
+}
+
+/* ---- 承認待ちの「渡された」の行（見てほしい行だけ淡い面） ---- */
+.k-hnd-row[data-highlight] td {
+  background: var(--k-select);
+}
+
+/* ---- 相手を選ぶ小窓：合う人がいないときの 1 行（探す欄は components/k の SearchField） ---- */
+.k-hnd-empty {
+  margin: 0;
+  padding: var(--k-s-md);
+  border: var(--k-c-state-empty-border);
+  border-radius: var(--k-r-md);
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-lh-body-sm);
+  text-align: center;
+}
+
+/* ---- 承認待ち：幅 767 以下は表をやめ、カードを縦に並べる（キャンバス MbApprovals）。768 以上はカードを出さない ---- */
+.k-hnd-mq {
+  display: none;
+}
+@media (max-width: 767px) {
+  .k-ap-card.k-hnd-q-table {
+    display: none;
+  }
+  .k-hnd-mq {
+    display: grid;
+    gap: var(--k-s-sm);
+    min-width: 0;
+  }
+}
+.k-hnd-mchips {
+  display: flex;
+  gap: var(--k-s-xs);
+  overflow-x: auto;
+  min-width: 0;
+}
+.k-hnd-mchips .k-ap-chip {
+  flex: none;
+}
+.k-hnd-mcards {
+  display: grid;
+  gap: var(--k-s-sm);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-hnd-mcard {
+  display: grid;
+  gap: var(--k-s-xs);
+  min-width: 0;
+  padding: var(--k-s-md);
+  border: var(--k-c-card-border);
+  border-radius: var(--k-r-card);
+  background: var(--k-card);
+}
+.k-hnd-mcard-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--k-s-xs) var(--k-s-sm);
+  color: var(--k-on-surface-variant);
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-lh-body-sm);
+}
+.k-hnd-mcard-num {
+  padding: 0 var(--k-s-sm);
+  border-radius: var(--k-r-sm);
+  background: var(--k-surface-variant);
+  color: var(--k-on-surface);
+}
+.k-hnd-mcard-from {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.k-hnd-mcard-title {
+  color: var(--k-on-surface);
+  font-size: var(--k-text-body-md);
+  font-weight: var(--k-fw-h3);
+  line-height: var(--k-lh-body);
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+.k-hnd-mcard-sub,
+.k-hnd-mcard-note {
+  margin: 0;
+  font-size: var(--k-text-body-sm);
+  line-height: var(--k-lh-body-sm);
+  overflow-wrap: anywhere;
+}
+.k-hnd-mcard-sub {
+  color: var(--k-on-surface-variant);
+}
+.k-hnd-mcard-note {
+  color: var(--k-st-on-warning-container);
+}
+.k-hnd-mcard-acts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--k-s-sm);
+  margin-top: var(--k-s-sm);
+}

@@ -1,0 +1,12 @@
+{
+ "data_links": [
+  {"paths": ["apps/api/src/hooks/ticket-delete-preview.ts", "apps/api/src/features/F7/ticket-delete/**", "packages/db/migrations/20261123082700_ticket_delete_preview.sql"],
+   "tests": ["apps/api/test/features/F7/ticket-delete-preview.test.ts", "apps/api/test/features/contract/k144-contract.test.ts"]},
+  {"paths": ["apps/api/test/features/F7/ticket-delete-preview.test.ts", "apps/api/test/features/contract/k144-contract.test.ts", "apps/api/test/features/F1/terms.test.ts"],
+   "tests": ["apps/api/test/generated/get_tickets_id_delete_preview.test.ts"]}
+ ],
+ "reads_ok": {
+  "apps/api/test/features/contract/k144.d/K-487.ts": "k144 の置き場の葉のファイル。準備の中で F3/leaf-hooks.ts を動的 import し、hooks のファイルを最初の要求のときに読む。ファイルは読まない（K-378）",
+  "apps/api/test/features/F7/ticket-delete.harness.ts": "土台。leaf-hooks 越しに葉の hooks のファイルを読む。K-488・K-489 の試験も使う・K-487"
+ }
+}

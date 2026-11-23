@@ -354,6 +354,10 @@
     "test_get_tickets_rejected_401": "K92-API-020",
     "test_get_tickets_rejected_403": "K92-API-020",
     "test_get_tickets_rejected_422": "K92-API-023",
+    "test_get_tickets_conflict": {
+     "file": "apps/api/test/features/F7/list-filters.test.ts",
+     "mark": "K472-API-016"
+    },
     "test_get_tickets_rate_limited": "K92-API-029",
     "test_get_tickets_terms_pending": "K92-API-020",
     "test_get_tickets_session_unresolved": {
@@ -422,6 +426,10 @@
     "test_post_tickets_id_delegate_rejected_403": "K62-API-024",
     "test_post_tickets_id_delegate_not_found": "K62-API-026",
     "test_post_tickets_id_delegate_conflict": "K62-API-020",
+    "test_post_tickets_id_delegate_conflict_2": {
+     "file": "apps/api/test/features/F5/delegate-body.test.ts",
+     "mark": "K565-API-011"
+    },
     "test_post_tickets_id_delegate_rejected_422": "K62-API-030",
     "test_post_tickets_id_delegate_rate_limited": "K62-API-034",
     "test_post_tickets_id_delegate_shape": "K62-API-001",

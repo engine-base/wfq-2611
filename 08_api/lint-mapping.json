@@ -26,17 +26,6 @@
   },
   {
    "method": "POST",
-   "path": "/api/v1/action_runs/:id/retry",
-   "implementation_path": "apps/api/src/routes/action_runs.ts::retryActionRun",
-   "screen_ids_referencing": [
-    "ai-activity"
-   ],
-   "acts": [
-    "A57"
-   ]
-  },
-  {
-   "method": "POST",
    "path": "/api/v1/action_runs/:id/stop",
    "implementation_path": "apps/api/src/routes/action_runs.ts::stopActionRun",
    "screen_ids_referencing": [

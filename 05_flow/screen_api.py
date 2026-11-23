@@ -162,7 +162,6 @@ SCREEN_API = {
         ("GET", "/clones/me/growth", "A53", "action_runs", "getCloneGrowth", ["approvals", "ticket_section_versions"]),
         ("GET", "/clones/me/activity", "A53", "action_runs", "listCloneActivity", ["memories", "learning_candidates"]),
         ("POST", "/clones/me/activity/export", "A53", "export_jobs", "exportCloneActivity", []),
-        ("POST", "/action_runs/:id/retry", "A57", "action_runs", "retryActionRun", []),
         ("POST", "/action_runs/:id/takeover", "A57", "action_runs", "takeoverActionRun", ["tickets"]),
     ],
     # ---------------------------------------------------------------- ログイン・登録・2 段階・パスキー（08_api/phase1/04_ログイン.md）
@@ -542,7 +541,7 @@ INPUTS = {
     # K-250：key が無ければ箱を閉じる。在れば任意の項目（credentials）を「あとで」で飛ばす（ほかの値は 422・欄 key）
     "dismissSetupTasks": ("DismissSetupTasksInput", {"key": "string"}),
     # K-62：AI に任せる。任せる体は空（担当者・人・プロンプトは入れさせない・押した人の AI が動く・D-128.138）。PC の口は仕事の id を道すじで受ける（体に入れない）
-    "delegateTicket": ("TicketDelegateInput", {}),
+    "delegateTicket": ("TicketDelegateInput", {"no_spec_reason": "string"}),   # K-565：確認項目が 0 件のときに送る使わない理由（1〜500 字・無くてよい）
     "takeBridgeJob": ("BridgeTakeInput", {"wait_sec": "integer", "protocol": "integer", "idle": "boolean"}),
     "reportJobProgress": ("BridgeProgressInput", {"seq": "integer", "kind": "string", "text": "string", "agent_session_id": "uuid", "model": "string",
                                                   "tool": "any", "usage": "any", "todos": "any", "windows": "any", "blocked": "any"}),
@@ -706,9 +705,12 @@ ERRORS_4XX = {
         {"status": 409, "code": "CONFLICT", "body": {"error": "conflict", "code": "E-CONF-013", "run_id": ""}, "errors": ["E-CONN-001", "E-CONF-013", "E-CONF-014"],
          "trigger": "PC を一度もつないでいない・外した（E-CONN-001）／同じチケットに走っている実行がある（E-CONF-013・今の run_id）／承認待ち・完了（E-CONF-014）",
          "ears_form": "UNWANTED: IF PC がつながっていないか、走っている実行があるか、承認待ち・完了なら、Kaname は 409 と理由（E-CONN-001・E-CONF-013 と今の run_id・E-CONF-014）を返し、仕事も実行の記録も積まない"},
+        {"status": 409, "code": "CONFLICT", "body": {"error": "conflict", "code": "E-CONF-020"}, "errors": ["E-CONF-020"],
+         "trigger": "確認項目が 1 つも無く、使わない理由（no_spec_reason）も送られていない（本文の行が在るチケットだけ・K-565）",
+         "ears_form": "UNWANTED: IF 確認項目が 1 つも無く使わない理由も無いなら、Kaname は 409 と E-CONF-020 を返し、仕事も実行の記録も理由も積まない"},
         {"status": 422, "code": "VALIDATION_ERROR", "body": {"error": "validation_failed", "details": []}, "errors": [],
-         "trigger": "チケットの id が uuid でない・本文に知らない欄（担当者・人・プロンプト）",
-         "ears_form": "UNWANTED: IF チケットの id が uuid でないか本文に知らない欄があるなら、Kaname は 422 と項目ごとの理由を返し、何も積まない"},
+         "trigger": "チケットの id が uuid でない・本文に知らない欄（担当者・人・プロンプト）・使わない理由が空・空白だけ・501 字以上・文字でない",
+         "ears_form": "UNWANTED: IF チケットの id が uuid でないか本文に知らない欄があるか使わない理由の形が違うなら、Kaname は 422 と項目ごとの理由を返し、何も積まない"},
     ],
     # 規約に同意する（K-53・D-128.146）。版が古い（409・今の版の並び current）・同意の印が無い（422）。冪等キーは使わない（同じ版の 2 回目は 1 回目の行のまま）
     "consentToTerms": [
@@ -740,6 +742,9 @@ ERRORS_4XX = {
     ],
     # 招待で参加する（K-332 ログインしていない人・K-333 ログイン中は今のアカウントで参加し、その画面だけ招かれた所へ切り替える・別のメール宛ては 403・もう入っていれば 409・answer=becc3d3aa526）。冪等キーは使わない（答えにログインの印が入る・汎用の 409 は NO_GENERIC_409 で外す）
     "acceptInvitation": [
+        {"status": 401, "code": "UNAUTHENTICATED", "body": {"error": "unauthenticated", "code": "UNAUTHENTICATED"},
+         "trigger": "ログインしていない人が、宛てのメールを持たない招待（リンクの招待・K-421）で参加しようとした（確認のメールの道 K-422 が入るまでの間・ログインしてから参加）",
+         "ears_form": "UNWANTED: IF ログインしていない人が宛てのメールを持たない招待で参加しようとしたなら、Kaname は 401 と UNAUTHENTICATED を返し、利用者も所属も作らず招待も使わない"},
         {"status": 403, "code": "E-AUTH-012", "body": {"error": "auth", "code": "E-AUTH-012"}, "errors": ["E-AUTH-012"],
          "trigger": "招いたワークスペースが止められている（subscriptions.suspended_at）",
          "ears_form": "UNWANTED: IF 招いたワークスペースが止められているなら、Kaname は 403 と E-AUTH-012 を返し、利用者を作らず招待も使わない"},
@@ -865,7 +870,7 @@ EARS_OK = {
     "requestPasswordReset": "登録の有無に関わらず同じ答え（accepted）を返し、登録されていれば答えの後に再設定のリンクを 1 通送る",   # K-313・D-042
 }
 # 汎用の 409（冪等キー）を外す口。冪等キーを使わない口（答えに冪等の器へ残すものが無い）
-NO_GENERIC_409 = {"requestPasswordReset", "resetPassword", "acceptInvitation"}   # K-313：答えはいつも同じ。登録の有無を器に残さない／K-314：リンクは 1 回だけ（器に残すと 2 回目に 201 を返す）／K-332：答えにログインの印が入る（器に残さない・2 回目は 410）
+NO_GENERIC_409 = {"requestPasswordReset", "resetPassword", "acceptInvitation", "createInvitationLink"}   # K-313：答えはいつも同じ。登録の有無を器に残さない／K-314：リンクは 1 回だけ（器に残すと 2 回目に 201 を返す）／K-332：答えにログインの印が入る（器に残さない・2 回目は 410）／K-421：答えにリンクのトークンが入る（器に残さない・二度押しで 2 本のリンクができ、どちらも使える）
 # JSON でなくファイルそのものを返す口（operationId → 200 の application/octet-stream の中身の形・K-144）。JSON の答えと並べて契約に書く
 RAW_200 = {
     "downloadBridgeRelease": {"type": "string", "format": "binary"},   # 手元のフォルダの配布物はファイルそのもの。外の置き場なら JSON の期限つき URL
@@ -932,6 +937,7 @@ VALUE_RANGES = {
     "claimPairingCode": {   # apps/api/src/features/F3/connect-pc/code.ts:27〜36（NFKC・大文字・区切りを落として、見分けやすい英数字 6 けた。32 字まで）
         "code": {"maxLength": 32, "pattern": f"^[{_CODE_SEP}]*(?:[{_CODE_CHAR}][{_CODE_SEP}]*){{6}}$"},
     },
+    "delegateTicket": {"no_spec_reason": {"pattern": "\\S", "maxLength": 500}},   # K-565：app.ticket_delegate が最後の砦（REASON_INVALID）
     "updateConversation": {"title": {"pattern": "\\S"}},   # apps/api/src/hooks/agent.ts（改行を空白にして前後を落とし、空は 422）
     "updateMemory": {"body": {"pattern": "\\S"}},          # apps/api/src/hooks/agent.ts
     "createMemory": {"confidence": {"pattern": "^-?(?:[0-8](?:\\.[0-9]+)?|9(?:\\.(?:[0-9]{1,2}|(?:[0-8][0-9]|9[0-8])[0-9]+|99[0-4][0-9]*))?)$"}, "kind_id": {"enum": ["rule", "preference", "example", None]}},   # memories.confidence numeric(3,2)（10 以上は DB が断る）
@@ -988,7 +994,7 @@ HEADERS = {
 RESPONSES = {
     "getScopeOverview": ("ScopeOverview", {"by_stage": "array", "milestones": "array", "recent": "array", "total": "integer"}),
     "previewTicketKindChange": ("TicketKindChangePreview", {"added_sections": "array", "removed_sections": "array", "moved_to_body": "array", "checks_reset": "boolean"}),
-    "previewTicketDelete": ("TicketDeletePreview", {"children": "integer", "attachments": "integer", "artifacts": "integer", "restorable_until": "string"}),
+    "previewTicketDelete": ("TicketDeletePreview", {"children": "integer", "descendants": "integer", "attachments": "integer", "artifacts": "integer", "pending_approvals": "integer", "links": "integer", "running_runs": "integer", "descendant_pending_approvals": "integer", "descendant_running_runs": "integer", "restorable_until": "string"}),
     "search": ("SearchHit", {"kind": "string", "id": "string", "title": "string", "snippet": "string", "url": "string"}),
     "listTicketTimeline": ("TimelineItem", {"id": "string", "kind": "string", "at": "string", "actor": "object?", "message": "object?", "changes": "array?", "run": "object?", "deleted": "object?"}),
     "lintTestSpecs": ("TestSpecLint", {"missing": "array", "warnings": "array"}),
@@ -1071,10 +1077,10 @@ RESPONSES = {
     #   まだ無い時刻・途中の 1 行・止まった理由・差し戻しの理由は null（? は null を許す・Q2 回 2）
     "getActionRun": ("ActionRunView", {"id": "string", "ticket_id": "string", "phase": "string", "status": "string", "by": "object", "pc": "string",
                                         "silent": "boolean", "last_event_at": "string?", "progress": "string?", "stopped_reason": "string?",
-                                        "return_reason": "string?", "started_at": "string?", "finished_at": "string?", "checks": "object"}),
+                                        "return_reason": "string?", "started_at": "string?", "finished_at": "string?", "taken_over_at": "string?", "reason_kind": "string?", "checks": "object"}),
     "listTicketRuns": ("ActionRunView", {"id": "string", "ticket_id": "string", "phase": "string", "status": "string", "by": "object", "pc": "string",
                                           "silent": "boolean", "last_event_at": "string?", "progress": "string?", "stopped_reason": "string?",
-                                          "return_reason": "string?", "started_at": "string?", "finished_at": "string?", "checks": "object"}),
+                                          "return_reason": "string?", "started_at": "string?", "finished_at": "string?", "taken_over_at": "string?", "reason_kind": "string?", "checks": "object"}),
     # K-354：PC の鍵でしか開けない封（平文を返さない）。封の外は情報の id・種類・名前・使える場所・2 段階の種類・期限だけ
     "resolveCredential": ("ResolvedCredential", {"credential_id": "uuid", "kind": "string", "name": "string", "destinations": "array", "two_factor": "string",
                                                  "expires_at": "string?", "server_key": "string", "iv": "string", "tag": "string", "ciphertext_for_executor": "string"}),
@@ -1127,7 +1133,7 @@ RESPONSES = {
     "getServiceStatus": ("PublicServiceStatus", {"incidents": "array", "maintenance": "object?"}),
     # 招待の下見（K-331）：表の写し（token_hash まで出る）でなく、画面が形を決める欄だけ。signed_in はログイン中だけ { email, email_matches, already_member }
     "getInvitation": ("InvitationPreview", {"state": "string", "workspace_name": "string", "inviter_name": "string?", "group_name": "string?",
-                                            "role": "string", "message": "string?", "email": "string", "expires_at": "string",
+                                            "role": "string", "message": "string?", "email": "string?", "expires_at": "string",
                                             "account_exists": "boolean", "signed_in": "object?"}),
     # 招待で参加した（K-332）：ログインの印（部品のセッションの token）・入ったワークスペース・次に移る画面（入った直後は /mfa-setup）
     "acceptInvitation": ("InvitationAccepted", {"token": "string", "workspace_id": "string", "next": "string"}),
@@ -1135,7 +1141,6 @@ RESPONSES = {
 }
 # 一覧の答えの meta に足す数（数だけの API を作らず、一覧の 1 回目で返す・D-128.111）。値は型の名前か、型の決まりの辞書（null を返す欄・K-92）
 META = {
-    "listTickets": {"next_cursor": {"type": "string", "nullable": True}},   # 次の分の鍵（keyset・最後の分は null）。総数も数も返さない（D-144.3・K-92）
     "listScopes": {"writable": "array"},   # チケットを書けるグループの id（K-60）
     "listSetupTasks": {"dismissed": "boolean"},   # 箱を「いまは閉じる」で閉じたか（K-250・D-128.62）
     "listApprovalQueue": {"counts": "object"},
@@ -1150,11 +1155,9 @@ RATES = {
 }
 # 一覧の口の細目（K-92）：limit の上限・sort を受けない口・説明（行為から作る説明の代わり）・答えの meta の形（endpoints.json の outputs_2xx）
 LIST_DETAILS = {
-    "listTickets": {"limit_max": 100, "sort": False, "desc": "取得（tickets）— チケットの一覧を見る（自分に関わるもの・すべて・グループ・題名か番号で絞る・期限切れの印）", "meta": "{ next_cursor }"},
 }
 # 一覧の絞り込み（operationId → query の名前）。cursor・limit・sort はいつも付く（sort は LIST_DETAILS で外せる）
 QUERIES = {
-    "listTickets": ["view", "q", "scope_id"],   # ほかの絞り込みは K-67 が作るまで 422・E-VAL-018（K-92・D-128.152）
     "search": ["q", "kinds"],
     "listNotifications": ["unread", "actor_member_id"],
     "listMembers": ["scope_id", "q"],
@@ -1196,15 +1199,15 @@ QUERIES = {
 PERMS = {
     # チケット
     "listTickets": ("read", "見られるグループのチケットだけ（RLS）", False),
-    "getScopeOverview": ("read", "そのグループを見られる人", False),
+    "getScopeOverview": ("read", "そのグループが見える人（席のグループとその下・権限の付いたグループ。見えないグループは 404）。数えるのは見えるチケットだけ", False),
     "search": ("read", "見られるチケット・ページ・決定・自分の会話だけ", False),
     "getTicket": ("read", "そのチケットのグループを見られる人", False),
     "createTicket": ("write", "書けるグループにだけ作れる。複製・AI の案も同じ", False),
     "updateTicket": ("write", "そのチケットを書ける人（担当者・書ける権限の人）。今は段・実績・保留の理由と再開の条件だけ（ほかの欄は段 8・E-VAL-018）。期限と担当を変えるときは理由が必須（段 8）", False),
     "previewTicketKindChange": ("write", "そのグループの人", False),
     "listWorkTypeCandidates": ("read", "その人が使える業務の型だけ", False),
-    "previewTicketDelete": ("assignee", "担当者・作成者・マネージャー", False),
-    "deleteTicket": ("assignee", "担当者・作成者・マネージャー（子の扱いを選ぶ）", False),
+    "previewTicketDelete": ("assignee", "作った人か、そのグループで tickets の edit を持つ人（D-125.62・P14）", False),
+    "deleteTicket": ("assignee", "作った人か、そのグループで tickets の edit を持つ人（D-125.62）。子・孫の扱い（children）を選ぶ", False),
     "restoreTicket": ("assignee", "消した本人と、そのグループのマネージャー・管理者（D-128.84）", False),
     "completeTicket": ("write", "そのチケットを直せる人なら誰でも（担当者・書ける権限の人・D-128.138）。完了の条件は同じ", False),
     "bulkUpdateTickets": ("write", "1 件ずつ updateTicket と同じ権限で確かめ、権限の無い行は外して理由を返す", False),
@@ -1233,7 +1236,7 @@ PERMS = {
     "stopActionRun": ("assignee", "担当者・承認する人・マネージャー", False),
     "listTicketReferences": ("read", "そのチケットを見られる人。見られないページは題名も出さない", False),
     "listTicketTimeline": ("read", "そのチケットを見られる人", False),
-    "createTicketMessage": ("write", "そのグループの人（閲覧のみは書けない）", False),
+    "createTicketMessage": ("read", "そのチケットを見られる人（閲覧のみの人も書ける。段や決定は変えられない・⑧）", False),
     "updateTicketMessage": ("self", "書いた本人", False),
     "deleteTicketMessage": ("self", "書いた本人（マネージャーは消した印を残して消せる）", False),
     "starTicketMessage": ("read", "そのチケットを見られる人（自分の印だけ）", False),
@@ -1250,7 +1253,7 @@ PERMS = {
     "createTicketAttachment": ("write", "そのグループの人（大きさ・種類の上限）", False),
     "requestAcceptance": ("assignee", "担当者とマネージャー。送る先はその取引先の人だけ", False),
     "listSavedViews": ("self", "自分のものと、グループの全員に見せたもの", False),
-    "createSavedView": ("self", "グループの全員に見せるのはそのグループの人", False),
+    "createSavedView": ("self", "グループの全員に見せるのは、そのグループが見える人（見えないグループは 404）", False),
     "updateSavedView": ("self", "作った本人", False),
     "deleteSavedView": ("self", "作った本人", False),
     "listNotifications": ("self", "自分あてだけ", False),
@@ -1327,8 +1330,7 @@ PERMS = {
     "getCloneGrowth": ("self", "自分の分身だけ", False),
     "listCloneActivity": ("self", "自分の分身がやったことだけ", False),
     "exportCloneActivity": ("self", "自分の分身がやったことだけ", False),
-    "retryActionRun": ("assignee", "そのチケットの担当者", False),
-    "takeoverActionRun": ("assignee", "そのチケットの担当者（自分でやるに切り替える）", False),
+    "takeoverActionRun": ("assignee", "そのチケットの担当者だけ（自分で進める形に切り替える。動いている・待っている仕事はその場で止める）", False),
     # ログイン・登録（ログイン前は public。どれも IP ごとの上限が厳しい・同じ答えを返して有る無しを漏らさない）
     "createSignup": ("public", "誰でも。確認のメールを押すまで会社も利用者も作らない（D-088.2）。漏れたパスワードは弾く（D-125.137）", False),
     "getSignupStatus": ("public", "申し込んだ本人の画面（申し込みの印で）。メールの有る無しは漏らさない", False),

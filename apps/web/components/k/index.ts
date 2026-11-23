@@ -33,3 +33,4 @@ export { PageBody, PageHeader, Section, Prose, TextLink, Row } from "./page";
 export { MeSub, type MeSubKey } from "./me-sub";
 export { Band, BandCaution, BandLine, NoticeBox, type BandProps, type BandTone } from "./band";
 export { DocTools, DOC_TOOL_ITEMS, type DocToolsProps } from "./doc-tools";
+export { SearchField, type SearchFieldProps } from "./search-field";

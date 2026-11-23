@@ -885,7 +885,6 @@
     "GET /api/clones/me/growth",
     "GET /api/clones/me/activity",
     "POST /api/clones/me/activity/export",
-    "POST /api/action_runs/:id/retry",
     "POST /api/action_runs/:id/takeover",
     "navigate /account",
     "navigate /settings/close",
@@ -5437,12 +5436,6 @@
      "role": "action",
      "method": "POST",
      "path_draft": "/api/clones/me/activity/export"
-    },
-    {
-     "act": "A57",
-     "role": "action",
-     "method": "POST",
-     "path_draft": "/api/action_runs/:id/retry"
     },
     {
      "act": "A57",

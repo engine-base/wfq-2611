@@ -103,19 +103,26 @@ test("K235-UI-002 作る画面（/tickets?new=1）：答えの前に種別・人
   expect(dups([...l.before, ...l.after])).toEqual([]);
 });
 
-test("K235-UI-003 詳細（/tickets/:id）：答えの前に詳細と実行の一覧と /me が出る・答えの後に出た口 0・同じ口 2 回 0・口は 6 本以下", async ({
+test("K235-UI-003 詳細（/tickets/:id）：答えの前に詳細と実行の一覧とやり取りの最初の 20 件（K-392）と /me が出る・答えの後に出た口 0・同じ口 2 回 0・口は 8 本以下（K-397 の決定の一覧を含む）", async ({
   page,
 }) => {
   const l = await firstLoad(
     page,
     `/tickets/${TICKET}`,
-    [`GET /api/v1/tickets/${TICKET}`, `GET /api/v1/tickets/${TICKET}/runs`, "GET /api/auth-ext/me"],
+    [
+      `GET /api/v1/tickets/${TICKET}`,
+      `GET /api/v1/tickets/${TICKET}/runs`,
+      `GET /api/v1/tickets/${TICKET}/timeline`, // K-392：タブの読んでいない数を出すため、詳細の答えを待たずに同時に読む
+      "GET /api/auth-ext/me",
+    ],
     "detail",
   );
   const all = [...l.before, ...l.after];
   expect(l.after).toEqual([]);
   expect(dups(all)).toEqual([]);
-  expect(all.length, all.join("\n")).toBeLessThanOrEqual(6);
+  // K-392 がやり取りの読む口を 1 本（台帳 perf_budget.json は 7）・K-397 が決定の一覧の口を 1 本（台帳 8）足す。どちらも詳細と同時に出す（上の l.after が空）。
+  // 決定の一覧は K-397 の後だけ出るので目印には入れない。同じ試験を 2 つの葉の版で持たないため、上限は K-397 の分も含めて 8
+  expect(all.length, all.join("\n")).toBeLessThanOrEqual(8);
 });
 
 test("K235-UI-004 承認待ち（/approvals）：答えの前に承認待ちと /me が出る・答えの後に出た口 0・同じ口 2 回 0・口は 4 本以下", async ({

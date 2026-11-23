@@ -1,0 +1,33 @@
+{
+ "errors": [
+  {
+   "id": "E-DEL-001",
+   "class": "permission",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "作った人でも、そのグループで tickets の edit を持つ人でもない人が、消す前の下見・消すを開いた",
+   "false_when": "作った人か、そのグループで tickets の edit を持つ人",
+   "message": "このチケットを消せるのは、作った人と、このグループで編集の権限を持つ人です",
+   "action": "作った人か権限のある人に頼む",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "見るだけの権限の人で、チケットの詳細を開く",
+    "steps": [
+     "「…」から「消す」を選ぶ"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.62",
+    "D-151.16"
+   ]
+  }
+ ]
+}

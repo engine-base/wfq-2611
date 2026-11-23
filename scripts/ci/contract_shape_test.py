@@ -78,7 +78,7 @@ NO_REQUIRED_INPUTS: dict[str, str] = {
     "createConversation": "incognito だけを読み、無ければ普通の会話（hooks/agent.ts:35）。{} で 201",
     "updateConversation": "title・starred_at・incognito は無ければ変えない（hooks/agent.ts:42〜47）。{} で 200",
     "createMemory": "表の素の書き込み。無い列は DB の既定（{} で 201・K144-API-033）",
-    "delegateTicket": "体は空の形（K-62）。{} で 201。知らない欄は 422（K62-API-030）",
+    "delegateTicket": "使わない理由 no_spec_reason は無くてよい（K-565）。{} で 201。知らない欄は 422（K62-API-030）",
     "takeBridgeJob": "wait_sec・protocol・idle はどれも無くてよい（無ければ 0・古い印・いま動いている）。bridge.ts の takeBridgeJob（K-62）",
     "callKanameTool": "input が無ければ {} として道具に渡す（tools.ts・K-62）",
     "approveApproval": "体は空の形（K-162）。{} で 201。知らない欄は 422（契約の strict）",
@@ -126,6 +126,7 @@ VALUE_RANGES: dict[str, dict[str, dict]] = {
     "verifySignInCode": {"code": {"pattern": "\\S", "maxLength": 64}, "backup_code": {"pattern": "\\S", "maxLength": 64}},   # apps/api/src/features/F1/login/sign-in-code.ts（空・64 文字を超えると 422 E-VAL-009・K302-API-012）
     "renamePasskey": {"name": {"pattern": "\\S"}},     # apps/api/src/features/F1/passkeys/index.ts（空・空白だけは 422・K-309）
     "confirmTwoFactor": {"code": {"pattern": "\\S", "maxLength": 64}},   # apps/api/src/features/F1/two-factor/index.ts（空・64 文字を超えると入口で 422 欄 code・6 けたでないは口が 422 欄 code・K311-API-007）
+    "delegateTicket": {"no_spec_reason": {"pattern": "\\S", "maxLength": 500}},   # apps/api/src/features/F5/delegate/people.ts・app.ticket_delegate（使わない理由・1〜500 字・K-565）
     "finishBridgeJob": {"result": {"maxLength": 200000}},   # apps/api/src/features/F5/delegate/bridge.ts（REPLY_MAX・K62-API-032）。その欄だけの上限（K-62）
     "consentToTerms": {"agree": {"enum": [True]}},      # apps/api/src/features/F1/consent-terms/index.ts:72（true でなければ 422 E-VAL-019）
 }
@@ -1073,6 +1074,8 @@ class ContractShapeTest(unittest.TestCase):
     # 契約の口の振る舞い（apps/api/src/hooks と apps/api/src/features）で、入力を `.slice(0, 数)` で黙って切る所は、ここに理由つきで載せたものだけ。
     #   人が自由に書く欄（区画・下書き・記憶の本文と題・会話の名前）は切らない（D-130.1・D-130.4）。載せた所は人が書く欄でない（日付の形・外の理由のログ・Bridge が送る値）
     SLICE_ALLOWED: dict[str, list[tuple[str, str]]] = {
+        # K-475：保存した条件の一覧（DB から上限 +1 件取った行を、超えたかを見た後に上限の 500 件に戻す・K-351 の credentials/list.ts と同じ形）
+        "apps/api/src/features/F7/saved-views/list.ts": [("rows.slice(0, LIST_MAX)", "DB から上限 +1 件取った行を、超えたかを見た後に上限の 500 件に戻す（入力でない）")],
         "apps/api/src/features/F4/create-ticket/input.ts": [("toISOString().slice(0, 10)", "日本時間の今日を日付の形にする（入力でない）")],
         "apps/api/src/features/F1/sign-up/index.ts": [("reason.slice(0, 200)", "外の照合サービスの失敗の理由を記録と運営への知らせに残す（入力でない）")],
         "apps/api/src/features/F1/sign-up/pwned.ts": [("hash.slice(0, 5)", "漏れたパスワードの照合に送るハッシュの頭 5 字（k-匿名・入力でない）")],

@@ -84,17 +84,24 @@ describe("行に結ぶ言葉の条件（K-15）", () => {
     expect(await h.repo.rowAllowed(staff, r.table, id, r.sql)).not.toBe("ok");
   });
 
-  it("チケットを消す：担当者・作成者・マネージャー（管理者）は通り、関わりの無い人は止まる", async () => {
+  // K-487（段 8・P14）：消す・消す前の下見の入口は「そのチケットが見える」だけ（true）。作った人か edit か（403・E-DEL-001）は、口と DB の関数が持つ
+  //   （入口が担当者・作成者・マネージャーで止めると、edit を持つ別の人が通れず、消せない訳の文 E-DEL-001 も入口の汎用の 403 に奪われる）。
+  //   判定そのものは K487-API-010・K488-API-003・K488-API-028 が本物の DB で見る
+  it("チケットを消す・消す前の下見：入口は「見える」だけ（true）で、作った人でない担当者も通る。無い行は missing（404）", async () => {
     const id = await h.freshRow("tickets");
-    const r = sqlOf("deleteTicket");
     await admin.query(
       "update tickets set assignee_member_id = null, created_by = $1, scope_id = $3, draft_import_id = null where id = $2",
       [h.S.bossA, id, h.S.scopeRootA],
     );
-    expect(await h.repo.rowAllowed(boss, r.table, id, r.sql)).toBe("ok"); // 管理者（試験の土台で社長は管理者）
-    expect(await h.repo.rowAllowed(staff, r.table, id, r.sql)).not.toBe("ok");
-    await admin.query("update tickets set assignee_member_id = $1 where id = $2", [h.S.staffA, id]);
-    expect(await h.repo.rowAllowed(staff, r.table, id, r.sql)).toBe("ok");
+    for (const op of ["deleteTicket", "previewTicketDelete"]) {
+      const r = sqlOf(op);
+      expect(r.table, op).toBe("tickets");
+      expect(r.sql, op).toBe("true");
+      expect(await h.repo.rowAllowed(boss, r.table, id, r.sql), op).toBe("ok");
+      await admin.query("update tickets set assignee_member_id = $1 where id = $2", [h.S.staffA, id]);
+      expect(await h.repo.rowAllowed(staff, r.table, id, r.sql), op).toBe("ok"); // 担当者のほかは edit も作った人も要らない（判定は口と DB の関数）
+      expect(await h.repo.rowAllowed(staff, r.table, NONE, r.sql), op).toBe("missing");
+    }
   });
 
   it("本人：自分の通知だけを直せる", async () => {

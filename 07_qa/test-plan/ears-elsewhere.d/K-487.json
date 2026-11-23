@@ -1,0 +1,30 @@
+{
+ "ops": {
+  "previewTicketDelete": {
+   "file": "apps/api/test/features/F7/ticket-delete-preview.test.ts",
+   "reason": "消す前の下見は、そのチケットの子・承認待ち・つながり・実行の件数と、作った人か edit かの判定で答えが変わる。生成の試験の種ではその組を作れない（K-487）",
+   "covers": {
+    "test_get_tickets_id_delete_preview_ok": "K487-API-001",
+    "test_get_tickets_id_delete_preview_shape": "K487-API-001",
+    "test_get_tickets_id_delete_preview_rejected_401": "K487-API-012",
+    "test_get_tickets_id_delete_preview_rejected_403": "K487-API-010",
+    "test_get_tickets_id_delete_preview_not_found": "K487-API-011",
+    "test_get_tickets_id_delete_preview_rate_limited": "K487-API-012",
+    "test_get_tickets_id_delete_preview_rejected_422": {
+     "file": "apps/api/test/features/contract/k144.d/K-487.ts",
+     "mark": "K144-API-887"
+    },
+    "test_get_tickets_id_delete_preview_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_get_tickets_id_delete_preview_session_unresolved": "K487-API-014",
+    "test_get_tickets_id_delete_preview_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {}
+  }
+ }
+}
