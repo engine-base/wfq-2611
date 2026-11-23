@@ -52,10 +52,11 @@ export function Toaster({ children }: { children: ReactNode }) {
   );
 }
 
-/** 知らせを出す。失敗の知らせ（error）は自分で閉じるまで残す */
+/** 知らせを出す。失敗の知らせ（error）は自分で閉じるまで残す。
+ *  読み上げと探し方のため、題を role の付いた要素で包む（失敗は alert・ふつうは status。sonner は role を付けないのでここ 1 か所で付ける） */
 export function useNotify() {
   return (title: string, o: { description?: string; type?: "info" | "error" } = {}) =>
-    (o.type === "error" ? toast.error : toast)(title, {
+    (o.type === "error" ? toast.error : toast)(<span role={o.type === "error" ? "alert" : "status"}>{title}</span>, {
       toasterId: TOASTER_ID,
       ...(o.description ? { description: o.description } : {}),
       duration: o.type === "error" ? Infinity : 5000,

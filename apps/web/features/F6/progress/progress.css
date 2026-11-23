@@ -13,10 +13,13 @@
   outline: var(--k-c-approvals-chip-on-border);
   outline-offset: var(--k-s-xs);
 }
-.k-prog-stage-locked {
+/* 鍵の札は、印と字の間の分を左右の余白から引き、鍵の無い札と同じ幅にする（幅 375 の頭の行で札が次の行へ落ちない・K-1100）。
+   .k-detail-stage の余白に勝つよう 2 つの組で当てる */
+.k-detail-stage.k-prog-stage-locked {
   display: inline-flex;
   align-items: center;
-  gap: var(--k-s-xs);
+  gap: var(--k-c-detail-stage-locked-gap);
+  padding: var(--k-c-detail-stage-locked-pad);
 }
 /* 箱を本文の道具の帯（詳細の上に貼り付く）より上に出すのは、メニューの型の置き場の重なりの順（K-381・components/k の .k-popup-layer）。ここでは当てない */
 .k-prog-menu {

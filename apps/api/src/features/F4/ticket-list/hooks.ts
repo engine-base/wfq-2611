@@ -3,6 +3,7 @@
 //   mine：担当者が自分（AI に任せているものも）か、自分が承認する（決めていない）もの（D-128.11・D-128.161）。all：見えるもの全部。
 //   並び：mine は期限の近い順（無いものは最後）→ 更新の新しい順 → id。all は更新の新しい順 → id。次の分は keyset（読んでいる間に動いても重ならない）。
 //   印は期限切れだけ（D-128.159）：日本時間の今日より前の期限で、段が完了でないもの。総数・数は返さない（D-144.3）。
+//   絞り込み（K-472）：欄ごとの表 FILTERS（query.ts）が where の条件と値を足す（kind_id・stage_id・assignee_id・done）。全部 AND・値は $10 から
 //   select は 1 本（関門 C2・withTenant の接続 1 本）。ログに題名と q を出さない
 import type pg from "pg";
 import { withTenant } from "@kaname/db/context";
@@ -41,7 +42,9 @@ const ORDER = {
 } as const;
 const OUTER_ORDER = { mine: "p.due_key asc, p.updated_at desc, p.id asc", all: "p.updated_at desc, p.id asc" } as const;
 
-const sqlFor = (view: keyof typeof ORDER): string => `
+const BASE_PARAMS = 9;
+/** 絞り込みの欄の条件を where の最後（order by の前）に足す。conds は表が返した条件（値は $10 から） */
+const sqlFor = (view: keyof typeof ORDER, conds: readonly string[]): string => `
 with recursive scope_down(id) as (
   select s.id from scopes s where $5::uuid is not null and s.id = $5::uuid
   union all
@@ -67,7 +70,9 @@ page as (
           or ($1::boolean and (coalesce(t.due_on, 'infinity'::date) > $6::date
                or (coalesce(t.due_on, 'infinity'::date) = $6::date
                    and (t.updated_at < $7::timestamptz or (t.updated_at = $7::timestamptz and t.id > $8::uuid)))))
-          or (not $1::boolean and (t.updated_at < $7::timestamptz or (t.updated_at = $7::timestamptz and t.id > $8::uuid))))
+          or (not $1::boolean and (t.updated_at < $7::timestamptz or (t.updated_at = $7::timestamptz and t.id > $8::uuid))))${conds
+            .map((c) => `\n     and (${c})`)
+            .join("")}
    order by ${ORDER[view]}
    limit $9
 )
@@ -88,19 +93,30 @@ select p.id, p.number, p.title, k.id as kind_id, k.name as kind_name, s.id as st
   left join members m on m.id = p.assignee_member_id
  order by ${OUTER_ORDER[view]}`;
 
-const params = (q: ListQuery, today: string): unknown[] => {
+/** 文と値。表の欄が積んだ値は $10 から（積む順＝番号の順） */
+const build = (q: ListQuery, today: string): { text: string; values: unknown[] } => {
   const c: Cursor | null = q.cursor;
-  return [
-    q.view === "mine",
-    today,
-    q.titleLike,
-    q.number,
-    q.scopeId,
-    c?.view === "mine" ? c.due : null,
-    c?.updated ?? null,
-    c?.id ?? null,
-    q.limit + 1,
-  ];
+  const pushed: unknown[] = [];
+  const add = (v: unknown): string => {
+    pushed.push(v);
+    return `$${BASE_PARAMS + pushed.length}`;
+  };
+  const conds = q.filters.map((f) => f.def.sql(f.value, add)).filter((x): x is string => x !== null);
+  return {
+    text: sqlFor(q.view, conds),
+    values: [
+      q.view === "mine",
+      today,
+      q.titleLike,
+      q.number,
+      q.scopeId,
+      c?.view === "mine" ? c.due : null,
+      c?.updated ?? null,
+      c?.id ?? null,
+      q.limit + 1,
+      ...pushed,
+    ],
+  };
 };
 
 const toItem = (r: ListRow) => ({
@@ -125,6 +141,12 @@ const nextCursor = (q: ListQuery, last: ListRow): string =>
       : { view: "all", updated: last.updated_key, id: last.id },
   );
 
+/** 形に合うのに今の状態では読めない続きの鍵：409・E-LST-001（欄なし・DB に行かない）。画面は鍵なしで最初から読み直す */
+function unreadableCursor(): HookReply {
+  const e = new KanameError("E-LST-001");
+  return { status: e.status, body: e.toJSON() };
+}
+
 function invalid(
   code: "VALIDATION_ERROR" | "E-VAL-017" | "E-VAL-018",
   details: { field: string; message: string }[],
@@ -143,13 +165,10 @@ export function createTicketListHooks(appPool: pg.Pool): Record<string, Hook> {
     listTickets: {
       before: async (a: HookArgs) => {
         const parsed = parseListQuery(a.c.req.query());
-        if (!parsed.ok) return invalid(parsed.code, parsed.details);
+        if (!parsed.ok) return parsed.code === "E-LST-001" ? unreadableCursor() : invalid(parsed.code, parsed.details);
         const q = parsed.value;
-        const rows = await withTenant(
-          appPool,
-          a.ctx,
-          async (cl) => (await cl.query<ListRow>(sqlFor(q.view), params(q, todayJst()))).rows,
-        );
+        const { text, values } = build(q, todayJst());
+        const rows = await withTenant(appPool, a.ctx, async (cl) => (await cl.query<ListRow>(text, values)).rows);
         const page = rows.slice(0, q.limit);
         const more = rows.length > q.limit;
         return {

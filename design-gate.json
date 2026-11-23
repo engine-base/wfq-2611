@@ -104,6 +104,7 @@
     "detail-meta-side": ".k-detail-meta-side",
     "detail-kind": ".k-detail-kind",
     "detail-stage": ".k-detail-stage",
+    "detail-stage-locked": ".k-detail-stage.k-prog-stage-locked",
     "detail-head": ".k-detail-card > .k-page-head",
     "detail-title": ".k-detail-card > .k-page-head h1",
     "detail-doc": ".k-detail-doc",
@@ -524,6 +525,10 @@
     {
       "part": "list-late",
       "reason": "チケットの一覧の部品（K-251・features/F4/ticket-list/ticket-list.css）。値は 外の余白（margin）と縦の位置（vertical-align） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
+    },
+    {
+      "part": "search-focus",
+      "reason": "探す欄の型の部品（段 9・components/k/search-field.css の .k-search-field:focus-within）。値は 焦点の輪（outline） で使い、D5 が比べる性質に無い（D5 は width・height・gap など素の性質を比べる）。CSS はこのトークンだけを読む"
     }
   ],
   "max_type_sizes": 10,

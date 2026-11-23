@@ -338,6 +338,8 @@ components:
     gap: "12px"
   dialog-select:        # 小窓の中の選ぶ欄の高さ（StReturnModal「どこを直すか」35）
     height: "35px"
+  search-focus:         # 探す欄の型（components/k/search-field・段 9）：焦点が中に入ったら枠全体（虫眼鏡ごと）に紺の輪 2px（入力だけに輪を付けない・代表の直し 2026-11-20）
+    border: "2px solid {colors.primary}"
   dialog-textarea:      # 小窓の中の複数行の欄の高さ（StReturnModal「理由」64）
     height: "64px"
   field-required:       # 必須の印（StReturnModal「必須」）
@@ -502,6 +504,9 @@ components:
     lineHeight: 1.7
     rounded: "{rounded.full}"
     padding: "2px 12px"
+  detail-stage-locked:  # 鍵の印つきの段の札（仕組みの段の間）。印 11px と字の間 2px を左右の余白から引き、札の幅を鍵の無い札と同じにする（7＋2＋11＋4＝12＋12）
+    padding: "2px 4px 2px 7px"
+    gap: "2px"
   detail-copy:          # 番号をコピー（24 の四角・線）
     width: "24px"
     height: "24px"

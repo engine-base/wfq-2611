@@ -5,6 +5,7 @@
 //   ③ メニューに「完了にする…」（作業中のときだけ押せ、今の完了の小窓を開く）／④ 保留は題名の下の帯／⑤ 完了を「開き直す」を入れる／
 //   ⑥ 実績は人の分を「時間」と「分」で入れ、AI の分は自動で足す／㉒ 文は勧めのとおり
 import { Lock } from "lucide-react";
+import { useState } from "react";
 import {
   Band,
   BandLine,
@@ -17,6 +18,7 @@ import {
   TextArea,
   TextField,
 } from "@/components/k";
+import { checkHold, type HoldErrors } from "./hold-fields";
 import "./progress.css";
 
 export interface StageView {
@@ -52,10 +54,19 @@ export interface StageMenuProps {
   locked?: boolean;
   /** メニューを開いておく（モック） */
   open?: boolean;
+  /** 項目を選んだとき（無ければ押しても何も起きない・モック） */
+  onPick?: (pick: StagePick) => void;
+  /** 送っている間：札を押せない（MenuTrigger の disabled・焦点は札に残る） */
+  busy?: boolean;
+  /** 完了にできるか（口の can.complete）。false なら作業中でも「完了」は押せない（既定は true） */
+  canComplete?: boolean;
 }
 
+/** メニューの項目：未着手・作業中・保留・完了にする…・開き直す */
+export type StagePick = "todo" | "doing" | "hold" | "complete" | "reopen";
+
 /** 頭の行の段の札。押すとメニュー（未着手・作業中・保留…・完了にする…／完了なら 開き直す） */
-export function StageMenu({ stage, canChange, locked, open }: StageMenuProps) {
+export function StageMenu({ stage, canChange, locked, open, onPick, busy, canComplete = true }: StageMenuProps) {
   if (locked)
     return (
       <span
@@ -77,8 +88,13 @@ export function StageMenu({ stage, canChange, locked, open }: StageMenuProps) {
     );
   const done = stage.key === "done";
   // 選ぶ物は頭の段の札と同じ色つきの札で並べる（代表の直し 2026-11-20・answer=fabd031f9b37）
-  const item = (to: StageView, note?: string, disabled?: boolean) => (
-    <MenuItem key={`${to.key}-${note ?? ""}`} disabled={disabled ?? false} className="k-prog-item">
+  const item = (to: StageView, pick: StagePick, note?: string, disabled?: boolean) => (
+    <MenuItem
+      key={`${to.key}-${note ?? ""}`}
+      disabled={disabled ?? false}
+      className="k-prog-item"
+      onSelect={() => onPick?.(pick)}
+    >
       <StageTag stage={to} />
       {to.key === stage.key && !note ? <span aria-label="いまの段">✓</span> : null}
       {note ? <span className="k-prog-item-note">{note}</span> : null}
@@ -86,27 +102,32 @@ export function StageMenu({ stage, canChange, locked, open }: StageMenuProps) {
   );
   return (
     <Menu defaultOpen={open ?? false}>
-      <MenuTrigger className="k-detail-stage k-prog-stage-btn" label={`状態：${stage.name}（変える）`}>
+      <MenuTrigger
+        className="k-detail-stage k-prog-stage-btn"
+        label={`状態：${stage.name}（変える）`}
+        disabled={busy ?? false}
+      >
         <span data-part="stage">{stage.name}</span>
         <span aria-hidden="true">▾</span>
       </MenuTrigger>
       <MenuPopup className="k-prog-menu">
         {done ? (
           <>
-            {item(STAGES.done)}
+            {item(STAGES.done, "complete")}
             <hr className="k-prog-sep" />
-            {item(STAGES.doing, "開き直す")}
+            {item(STAGES.doing, "reopen", "開き直す")}
           </>
         ) : (
           <>
-            {item(STAGES.todo)}
-            {item(STAGES.doing)}
-            {item(STAGES.hold, stage.key === "hold" ? undefined : "理由を書く")}
+            {item(STAGES.todo, "todo")}
+            {item(STAGES.doing, "doing")}
+            {item(STAGES.hold, "hold", stage.key === "hold" ? undefined : "理由を書く")}
             <hr className="k-prog-sep" />
             {item(
               STAGES.done,
+              "complete",
               stage.key === "doing" ? "確かめて完了にする…" : "作業中にしてから",
-              stage.key !== "doing",
+              stage.key !== "doing" || !canComplete,
             )}
           </>
         )}
@@ -119,32 +140,77 @@ export interface HoldDialogProps {
   open: boolean;
   reason?: string;
   resume?: string;
-  errors?: { reason?: string; resume?: string };
+  /** 口の 422 の欄の断り（口を呼ぶ前の確かめの文は小窓の中で出す） */
+  errors?: HoldErrors | undefined;
   target?: string;
+  /** 送っている間：ボタンを押せない・Esc でも閉じない */
+  busy?: boolean;
+  /** やめる・Esc・×（無ければ閉じない・モック） */
+  onCancel?: () => void;
+  /** 確かめが通ったとき。前後の空白を除いた理由と再開の条件（口を呼ぶのは呼んだ側） */
+  onSubmit?: (reason: string, resume: string) => void;
 }
 
 /** 保留にする小窓（理由と再開の条件は必須・D-125.33） */
-export function HoldDialog({ open, reason = "", resume = "", errors, target }: HoldDialogProps) {
+export function HoldDialog({
+  open,
+  reason = "",
+  resume = "",
+  errors,
+  target,
+  busy = false,
+  onCancel,
+  onSubmit,
+}: HoldDialogProps) {
+  const [r, setR] = useState(reason);
+  const [c, setC] = useState(resume);
+  const [local, setLocal] = useState<HoldErrors>({});
+  const submit = () => {
+    if (busy) return;
+    const checked = checkHold(r, c);
+    if (!checked.ok) {
+      setLocal(checked.errors);
+      return;
+    }
+    setLocal({});
+    onSubmit?.(checked.body.hold_reason, checked.body.resume_condition);
+  };
   return (
     <Dialog
       open={open}
+      onOpenChange={(o) => {
+        if (!o && !busy) onCancel?.();
+      }}
       title="保留にします"
       {...(target ? { target } : {})}
       actions={
         <>
-          <Button variant="outlined">やめる</Button>
-          <Button>保留にする</Button>
+          <Button variant="outlined" disabled={busy} onClick={() => onCancel?.()}>
+            やめる
+          </Button>
+          <Button loading={busy} onClick={submit}>
+            保留にする
+          </Button>
         </>
       }
     >
-      <TextArea label="保留の理由" name="hold_reason" required defaultValue={reason} rows={2} error={errors?.reason} />
+      <TextArea
+        label="保留の理由"
+        name="hold_reason"
+        required
+        value={r}
+        onChange={(e) => setR(e.target.value)}
+        rows={2}
+        error={local.reason ?? errors?.reason}
+      />
       <TextField
         label="再開の条件"
         name="hold_resume"
         required
-        defaultValue={resume}
+        value={c}
+        onChange={(e) => setC(e.target.value)}
         placeholder="例：先方の返事が来たら"
-        error={errors?.resume}
+        error={local.resume ?? errors?.resume}
       />
       <p className="k-desc">保留の間も、やり取りと決定は書けます</p>
     </Dialog>
@@ -157,16 +223,28 @@ export interface HoldBandProps {
   /** 「11/01 10:41 佐藤 が保留にした」 */
   by: string;
   canChange: boolean;
+  /** 「作業中に戻す」を押したとき */
+  onResume?: () => void;
+  /** 送っている間 */
+  busy?: boolean;
 }
 
 /** 保留中の帯（題名の下・帯は 1 つだけ）。変えられない人にはボタンを出さない */
-export function HoldBand({ reason, resume, by, canChange }: HoldBandProps) {
+export function HoldBand({ reason, resume, by, canChange, onResume, busy }: HoldBandProps) {
   return (
     <Band
       tone="plain"
       title="保留中です"
       sub={by}
-      {...(canChange ? { acts: <Button size="sm">作業中に戻す</Button> } : {})}
+      {...(canChange
+        ? {
+            acts: (
+              <Button size="sm" loading={busy ?? false} onClick={() => onResume?.()}>
+                作業中に戻す
+              </Button>
+            ),
+          }
+        : {})}
     >
       <BandLine>理由：{reason}</BandLine>
       <BandLine>再開の条件：{resume}</BandLine>
@@ -211,10 +289,12 @@ export interface ActualTimeProps {
   /** AI が動いた時間（分・実行の記録から自動）。PC が無い時点は 0 */
   ai: number;
   canEdit: boolean;
+  /** 「直す」を押したとき */
+  onEdit?: () => void;
 }
 
 /** 実績の読む形：合計と内訳（AI の分が 0 なら内訳を出さない）・「直す」 */
-export function ActualTime({ human, ai, canEdit }: ActualTimeProps) {
+export function ActualTime({ human, ai, canEdit, onEdit }: ActualTimeProps) {
   return (
     <span className="k-prog-time">
       {hm(human + ai)}
@@ -224,7 +304,7 @@ export function ActualTime({ human, ai, canEdit }: ActualTimeProps) {
         </span>
       ) : null}
       {canEdit ? (
-        <Button variant="ghost" size="sm">
+        <Button variant="ghost" size="sm" onClick={() => onEdit?.()}>
           直す
         </Button>
       ) : null}
@@ -232,31 +312,50 @@ export function ActualTime({ human, ai, canEdit }: ActualTimeProps) {
   );
 }
 
-/** 実績の直す形：人が使った時間を「時間」と「分」で入れる */
-export function ActualTimeEdit({
-  hours,
-  minutes,
-  ai,
-  error,
-}: {
+export interface ActualTimeEditProps {
   hours: number;
   minutes: number;
   ai: number;
-  error?: string;
-}) {
+  error?: string | undefined;
+  /** 送っている間 */
+  busy?: boolean;
+  onCancel?: () => void;
+  /** 「保存」。入れた字のまま（確かめて分に直すのは呼んだ側・to-minutes.ts） */
+  onSave?: (hours: string, minutes: string) => void;
+}
+
+/** 実績の直す形：人が使った時間を「時間」と「分」で入れる */
+export function ActualTimeEdit({ hours, minutes, ai, error, busy = false, onCancel, onSave }: ActualTimeEditProps) {
+  const [h, setH] = useState(String(hours));
+  const [m, setM] = useState(String(minutes));
   return (
     <div className="k-prog-time-edit">
       <span className="k-prog-time-sub">人が使った時間</span>
       <div className="k-prog-time-row">
-        <TextField label="時間" name="actual_hours" inputMode="numeric" defaultValue={String(hours)} error={error} />
-        <TextField label="分" name="actual_minutes" inputMode="numeric" defaultValue={String(minutes)} />
+        <TextField
+          label="時間"
+          name="actual_hours"
+          inputMode="numeric"
+          value={h}
+          onChange={(e) => setH(e.target.value)}
+          error={error}
+        />
+        <TextField
+          label="分"
+          name="actual_minutes"
+          inputMode="numeric"
+          value={m}
+          onChange={(e) => setM(e.target.value)}
+        />
       </div>
       <span className="k-prog-time-sub">AI が動いた時間{ai > 0 ? `（${hm(ai)}）` : ""}は自動で足されます</span>
       <div className="k-prog-time-acts">
-        <Button variant="outlined" size="sm">
+        <Button variant="outlined" size="sm" disabled={busy} onClick={() => onCancel?.()}>
           やめる
         </Button>
-        <Button size="sm">保存</Button>
+        <Button size="sm" loading={busy} onClick={() => onSave?.(h, m)}>
+          保存
+        </Button>
       </div>
     </div>
   );

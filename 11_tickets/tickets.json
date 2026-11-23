@@ -3133,7 +3133,6 @@
    "split": "これから",
    "screens": [],
    "apis": [
-    "createTicketMessage",
     "deleteTicketMessage",
     "starTicketMessage",
     "updateTicketDecision",
@@ -3143,8 +3142,7 @@
     "apps/api/test/generated/delete_ticket_messages_id.test.ts",
     "apps/api/test/generated/patch_ticket_decisions_id.test.ts",
     "apps/api/test/generated/patch_ticket_messages_id.test.ts",
-    "apps/api/test/generated/post_ticket_messages_id_star.test.ts",
-    "apps/api/test/generated/post_tickets_id_messages.test.ts"
+    "apps/api/test/generated/post_ticket_messages_id_star.test.ts"
    ],
    "depends_on": [],
    "sections": {
@@ -3460,14 +3458,21 @@
    ],
    "apis": [
     "copyNotificationSettings",
+    "createInvitationLink",
+    "createInvitations",
     "getMe",
     "getNotificationSettings",
+    "getWorkspaceMembers",
     "leaveWorkspace",
     "listMySessions",
+    "nudgeMember",
     "requestEmailChange",
+    "resendInvitation",
+    "revokeInvitation",
     "revokeMySession",
     "revokeOtherSessions",
     "updateMe",
+    "updateMemberRole",
     "updateNotificationSettings",
     "uploadAvatar",
     "verifyEmailChange"
@@ -3486,6 +3491,7 @@
     "apps/api/test/generated/get_members_id.test.ts",
     "apps/api/test/generated/get_members_id_remove_preview.test.ts",
     "apps/api/test/generated/get_workspace.test.ts",
+    "apps/api/test/generated/get_workspace_members.test.ts",
     "apps/api/test/generated/patch_me.test.ts",
     "apps/api/test/generated/patch_me_notification_settings.test.ts",
     "apps/api/test/generated/patch_members_id_groups.test.ts",
@@ -3494,6 +3500,7 @@
     "apps/api/test/generated/patch_workspace.test.ts",
     "apps/api/test/generated/patch_workspace_permissions.test.ts",
     "apps/api/test/generated/post_exports.test.ts",
+    "apps/api/test/generated/post_invitations.test.ts",
     "apps/api/test/generated/post_invitations_id_resend.test.ts",
     "apps/api/test/generated/post_invitations_link.test.ts",
     "apps/api/test/generated/post_me_avatar.test.ts",
@@ -19312,6 +19319,105 @@
    "file": "11_tickets/K-384.md"
   },
   {
+   "id": "K-385",
+   "title": "やり取りに書き込む口（createTicketMessage・入力は本文・@・知らせる人・引用元だけ・読める人は書ける・受け箱に 1 人 1 通・二度押し）（K-66 の葉）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-66",
+   "milestone": "F6",
+   "area": "やり取り",
+   "assignee": "実装",
+   "due": "2026-11-26",
+   "estimate_hours": "1",
+   "estimate_basis": "実測なし・仮。形の近い段 2 の K-60（作る口・関数 1 本で本体と受け箱の行を 1 つの取引・知らせる人）と段 4 の K-351（口 1 本と migration 1 本・見込み 1 時間）から引いた：migration 1 本（見られるかの関数・人の確かめ・書き込みと受け箱の関数）25 分・口 1 本（入力の正規化と確かめ）10 分・契約の 6 つの表とエラー 1 つ 10 分・自分の確かめ 15 分。試験 18 行は切る段で書いた",
+   "decisions": [
+    "D-125.29",
+    "D-125.122",
+    "D-125.130",
+    "D-125.131",
+    "D-128.45",
+    "D-128.81",
+    "D-128.92",
+    "D-128.96",
+    "D-128.115",
+    "D-128.125",
+    "D-128.143",
+    "D-129.42",
+    "D-130.1",
+    "D-130.4",
+    "D-136.1",
+    "D-136.2"
+   ],
+   "split": "",
+   "choke_points": [
+    "C2",
+    "C6"
+   ],
+   "tests": [
+    "apps/api/test/features/F6/thread-post.test.ts",
+    "apps/api/test/generated/post_tickets_id_messages.test.ts"
+   ],
+   "carry": [
+    "apps/api/test/features/contract/k144.d/K-385.ts"
+   ],
+   "depends_on": [
+    "K-383"
+   ],
+   "acts": [
+    "A107"
+   ],
+   "screens": [],
+   "canvas": [],
+   "canvas_none": "口と DB だけで見た目を変えない（画面は段 7 の画面の葉 K-392〜K-398 が持つ）。正の絵の組とモックの状態は持たない",
+   "apis": [
+    "createTicketMessage"
+   ],
+   "affects": [
+    "@kaname/api",
+    "@kaname/contracts",
+    "@kaname/db",
+    "@kaname/errors"
+   ],
+   "ci_wide": [
+    "db",
+    "shared"
+   ],
+   "changes": [
+    "packages/db/migrations/20261120130200_ticket_message_post.sql",
+    "packages/db/src/migrations.generated.ts",
+    "apps/api/src/hooks/ticket-message-post.ts",
+    "apps/api/src/features/F6/thread/post.ts",
+    "apps/api/src/features/F6/thread/input.ts",
+    "05_flow/screen_api.py",
+    "05_flow/screen_api.d/K-385.py",
+    "scripts/ci/contract_shape.d/K-385.py",
+    "07_qa/test-specs/errors.d/K-385.json",
+    "07_qa/test-plan/ears-elsewhere.d/K-385.json",
+    "scripts/ci/ci_scope.d/K-385.json",
+    "08_api/phase1/01_チケット.md",
+    "11_tickets/K-66.md"
+   ],
+   "flow": "自分でやるチケットを進めて、話して、決める",
+   "sections": {
+    "目的": "やり取りの書く欄（画面は K-393）で「送る」を押したときに呼ぶ契約の口 `createTicketMessage`（POST /api/v1/tickets/:id/messages）を作る（今は 501）。\n\n- **入力を作り直す**：今の契約の入力は表の写し（書いた人・種類・☆ まで入れられる形）。本文・@ する人・知らせる人・引用元の 4 つだけにする（書いた人はセッションから・種類は post に決まる）\n- **読める人は書ける**（代表の答え ⑧ answer=eaa451436670）：閲覧のみの人も書ける。入口の言葉を write → read に替える\n- **知らせる人**（⑨）：選んだ人と @ した人に受け箱で知らせる（1 人 1 通・自分には知らせない・⑮7）。候補はそのチケットを見られる人だけ（口でも確かめる）\n- 完了したチケットにも書ける（⑭）。字数の上限なし（D-130.1・守りは送る量 1MB だけ）。二度押しは冪等キーで 1 つ（入口の共通）\n\n答えは K-383 と同じ 1 件の形（kind post）。画面はそのまま一覧の下に足せる（読み直さない）。",
+    "完了の条件": "- [ ] 下の表の 18 行（K385-API-001〜018）が緑：`apps/api/test/features/F6/thread-post.test.ts`（土台は K-383 の `thread.harness.ts`）\n- [ ] 契約の口 `createTicketMessage` が 501 でない。生成の試験 `apps/api/test/generated/post_tickets_id_messages.test.ts` の it.todo が、na（理由つき）を除いて 0（`07_qa/test-plan/ears-elsewhere.d/K-385.json` の covers）\n- [ ] 共有の試験 k144 の入口の uuid の行 K144-API-720（葉のファイル `k144.d/K-385.ts`）が緑\n- [ ] 前からの試験は下の「前からの試験を替えた所」のとおり（替える物は無い）で緑\n- [ ] 出す前に Squawk（G58）を手元で流して緑・手元の CI（このチケットの範囲）が緑",
+    "前提と制約": "分類: CRUD, PERM\n\n- 依存：K-383（列 notify_member_ids・quote_text、1 件の形 app.ticket_timeline_item、口の手助け reply.ts、試験の土台）\n- 入口の言葉 read（:id の表は tickets・行の守りでチケットが見えれば通る）。チケットが見えなければ 404。取引先の役は 403（入口の共通・社内のやり取りを先方に見せない・D-125.122）。書く関数の中でもう一度「見えるか」を確かめる（守りは 2 層）\n- 段は変えない（書き込みと一緒に段を変えるのは K-389）。仕組みの段（承認待ち・実行中・確認中）・完了でも書ける\n- 体（strict）：`body: string`（必須）・`mention_member_ids?: uuid[]`・`notify_member_ids?: uuid[]`・`quote_of_id?: uuid | null`。ほかの欄（author_member_id・kind・reactions・changes など）は入口の strict で 422\n- 本文：前後の空白を落とした後が空（空白・全角の空白・改行だけを含む）なら 422・E-VAL-027（error validation・欄 body の明細 1 件・新しい番号・下の「エラー」）。口の前処理が断る。契約の pattern `\\S` と REQUIRED_INPUTS は形として残す（fuzz の入力を絞る）。保存する本文は、入口の normalize（apps/api/src/contract/op.ts：体の字を全部 NFKC にし、前後の空白を落とす）を通った後の字を、それ以上は落とさず・切らずに残す（D-130.4）。そのため本文の頭と終わりの空白は落ち、全角の英数字・①・半角のカナなどは NFKC で書き換わる（K60-API-019 の題名と同じ・今の入口のまま・仮）\n- @ する人・知らせる人：重なりは 1 つにし、並びは最初に出た順。どの人も「そのチケットを見られる・抜けていない・止められていない人」（下の app.ticket_visible_for）。1 人でも違えば 404・E-PAGE-001（DB の中身で決まる断りは 422 にしない。欄の名前・明細は付けず、在るかを漏らさない）で何も書かない。知らせる人の並びから自分を外して残す（@ は本文の札なので自分も残す）\n- 引用：同じチケットの、消していない書き込み（kind post）だけ。違えば 404・E-PAGE-001（欄・明細なし）。元の本文の頭の 2 行（改行で分けた最初の 2 行・行の中は切らない）を quote_text に写す（⑮3：元を消しても字は残る）\n- 受け箱（関門 C6 の受け箱の行・メールは送らない D-125.130・ベルで見る画面は段 8）：宛先＝(@ する人 ∪ 知らせる人) − 自分、1 人 1 通。@ した人は event_kind_id `ticket.mentioned`、ほかは `ticket.message`。payload は `{ ticket_id, number, title, message_id, url: \"/tickets/<id>\" }`（本文は入れない）・dedupe_key `ticket.message:<書き込みの id>:<人の id>`・sent_at は今（受け箱に入った時点で届いた）。notifications の dedupe_key には一意の索引が無い（0015・0090 は insert するだけ）ので on conflict は使えない。**同じ dedupe_key の行が受け箱にもう在る人には書かない**（`where not exists (select 1 from notifications n where n.dedupe_key = <その人の dedupe_key>)`）＝同じ要求の中の重なりも、K-386 で直して同じ人をまた @ したときの 2 通目も、同じ考えで出さない（K-389 の「この書き込みの id を持つ受け箱の行がまだ無ければ」とも同じ）\n- 書き込みと受け箱の行は 1 つの取引（DB の関数 1 回）。途中で落ちたら何も残らない（503・E-PAGE-003・ログは場所と例外の種類だけ・本文を出さない・11-22 18:30 の決め）。守りの判定の例外は 503・E-PAGE-003（D-136.1）\n- 消したチケットは 404（D-136.2）",
+    "依存の理由": "- 08_api/phase1/01_チケット.md は段 7 の K-384・K-386・K-387・K-390・K-391 と段 9 の K-401・K-405・K-406・K-408・K-409・K-410 も変える。どれも表の別々の行を足す・直すだけなので、overlap_ok を PM に頼んだ（別々の行）。依存は足さない\n- K-383: 要る — 列 ticket_messages.notify_member_ids・quote_text と 1 件の形 app.ticket_timeline_item（migration 20261120130000）・口の手助け reply.ts・試験の土台 thread.harness.ts を使う。書いた行が読む口に出る行（K385-API-018）が K-383 の口を使う",
+    "目録で探した結果": "- 使う：K-383 の app.ticket_timeline_item・reply.ts。`app.ticket_visible`（0102）・`app.ticket_member_ok`（0090：抜けていない・止められていない）・`visible_scopes`（0075）・`app.ticket_involved`（0077）・`app.ticket_draft_ok`。受け箱の行の前例は K-60 の app.ticket_create（0090：作る関数の中で notifications に直に入れる・dedupe_key）と K-165 の app.ticket_completed_notice（0100・0101：宛先を関数の中で決め直す・sent_at）\n- 使う：エラーの番号 E-PAGE-001（見つかりません。選べない人・引用元の断りも、見えないチケットと同じ答えの形）。新しい番号は本文が空の 1 つだけ（E-VAL-027）\n- 作る：口の登録 `apps/api/src/hooks/ticket-message-post.ts`・`apps/api/src/features/F6/thread/`（post.ts・input.ts）・DB の関数 3 つ。探したが、人を指定してその人がチケットを見られるかを引く関数は無い（app.ticket_visible は呼んだ人だけ・app.ticket_writable_for は書けるか）ので app.ticket_visible_for を作る",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| DB（migration 1 本） | `packages/db/migrations/20261120130200_ticket_message_post.sql`：① `app.ticket_visible_for(p_ticket uuid, p_member uuid) returns boolean`（stable・security definer・中だけで使う＝誰にも渡さない）：会社 app.tenant_id() のチケットで消していない・その人が `app.ticket_member_ok(t.tenant_id, p_member)` で人（kind_id human）・`app.ticket_draft_ok(t.draft_import_id, p_member)`・（`t.scope_id = any(visible_scopes(p_member))` か担当者か `app.ticket_involved(t.id, p_member)`）② `app.ticket_message_people(p_ticket uuid, p_ids uuid[]) returns uuid`（見られない最初の人の id か null・中だけ・K-386 も使う）③ `app.ticket_message_notify(p_message uuid, p_members uuid[], p_mentioned uuid[]) returns integer`（受け箱の行を書く・宛先から自分を外す・宛先の重なりを 1 つにし、同じ dedupe_key の行が notifications にもう在る人には書かない＝`where not exists (select 1 from notifications n where n.dedupe_key = …)`・一意の索引が無いので on conflict は使わない・答えは書いた行の数・中だけ・K-386 も使う）④ `app.ticket_message_post(p_ticket uuid, p jsonb) returns jsonb`（security definer・kaname_app に渡す）：見ている人が member_ok でなく、`app.ticket_visible(p_ticket)` でなければ `{ error: \"not_found\" }` → 本文が空なら `{ error: \"empty\", field: \"body\" }` → @・知らせる人を ② で確かめ、違えば `{ error: \"not_selectable\" }`（欄を返さない） → 引用元を確かめ、違えば `{ error: \"not_selectable\" }` → insert（kind post・author と created_by は見ている人・mentions・notify_member_ids・quote_of_id・quote_text）→ ③ → `{ item: app.ticket_timeline_item(新しい id, 見ている人の最後に開いた時刻) }`。一覧は作り手 `python3 scripts/ci/gen_migrations.py` |\n| 口 | `apps/api/src/features/F6/thread/input.ts`：体の本文の空の判定（`/^[\\s　]*$/`・JS の \\s は全角の空白も含む）・uuid の並びの重なりを落とす・知らせる人から自分を外す（関数 50 行まで）。`post.ts`：input.ts → withTenant の中で `select app.ticket_message_post($1, $2::jsonb) as v` を 1 回 → error で分ける（not_found 404・empty 422 E-VAL-027 欄 body・not_selectable 404 E-PAGE-001 欄・明細なし・知らない言葉 503）→ 201 `{ data: v.item }`・`Cache-Control: private, no-store`。例外は守りの所（先に `select app.ticket_visible($1)` を同じ取引で 1 回引く）なら 503（down）、書く所も 503（broke）。ログに本文・名前を出さない |\n| 口の登録 | `apps/api/src/hooks/ticket-message-post.ts`：`export function ticketMessagePostHooks(appPool: pg.Pool): Record<string, Hook>`（createTicketMessage の before）と `export const register = defineHooks({ name: \"ticketMessagePostHooks\", make: (d) => ticketMessagePostHooks(d.appPool), fuzz: \"same\" })` |\n| 契約の形 | `05_flow/screen_api.py`（前からある行なので本体）：PERMS の createTicketMessage を `(\"read\", \"そのチケットを見られる人（閲覧のみの人も書ける。段や決定は変えられない・⑧）\", False)` に。`05_flow/screen_api.d/K-385.py`：`INPUTS = {\"createTicketMessage\": (\"TicketMessageInput\", {\"body\": \"string\", \"mention_member_ids\": \"uuid[]\", \"notify_member_ids\": \"uuid[]\", \"quote_of_id\": \"uuid?\"})}`・`REQUIRED_INPUTS = {\"createTicketMessage\": [\"body\"]}`・`VALUE_RANGES = {\"createTicketMessage\": {\"body\": {\"pattern\": \"\\\\S\"}}}`・`UNEXPRESSIBLE_422: dict = {}`（形の決まりは REQUIRED_INPUTS・VALUE_RANGES で契約に書く。例外は足さない・控え帳 2026-11-21 01:15）・`RESPONSES = {\"createTicketMessage\": (\"TimelineItem\", <K-383 と同じ 8 つの欄>)}`・`ERRORS_4XX`（下の「エラー」の 422 E-VAL-027・404 E-PAGE-001・404 NOT_FOUND と 503・503）→ `python3 05_flow/build_api.py`。`scripts/ci/contract_shape.d/K-385.py`：`REQUIRED_INPUTS = {\"createTicketMessage\": {\"body\"}}`・`VALUE_RANGES = {\"createTicketMessage\": {\"body\": {\"pattern\": \"\\\\S\"}}}`・`UNEXPRESSIBLE_422 = {}`・ほかは空。RESPONSES の名前 TimelineItem は K-383 と同じ欄（作り手が同じ名前の違う形を止めなければ、契約の形の試験で照らす。違えば切る段に戻す） |\n| エラー | `07_qa/test-specs/errors.d/K-385.json` に **E-VAL-027**（class validation・where { screen: tickets, state: talk }・when「やり取りに書くとき・直すときに、本文が空・空白だけ（全角の空白・改行も）」・false_when「1 文字以上の字を書いた」・message「書き込む文を書いてください」・action「文を書いてから送る」・undo false・layers [UI, API, DB]・must_not false・reproduce { setup: チケットの詳細のやり取りを開く, steps: [書く欄に空白だけを入れて送る], needs: なし }・source [D-128.45, D-130.1]）。番号は取り込む時点の次の空き（段 7 の C は E-VAL-040〜・まとめ役がまとめて見る）。直す口 K-386 も同じ番号を使う（K-386 はこの葉に依存） |\n| 登録先（touch_rules） | hooks の register・`05_flow/screen_api.d/K-385.py`・`scripts/ci/contract_shape.d/K-385.py`・`07_qa/test-plan/ears-elsewhere.d/K-385.json`・`scripts/ci/ci_scope.d/K-385.json`・`07_qa/test-specs/errors.d/K-385.json`。生成物は `python3 scripts/ci/build_registries.py`・`gen_ts_registries.py`・`gen_migrations.py`・`05_flow/build_api.py` |\n| 文書 | `08_api/phase1/01_チケット.md` の権限の表 157 行を `read`・「そのチケットを見られる人（閲覧のみの人も書ける）」に |\n| 親 | 11_tickets/K-66.md の apis から createTicketMessage を、tests から apps/api/test/generated/post_tickets_id_messages.test.ts を外す |\n\n### エラー（ERRORS_4XX の createTicketMessage）\n\n| 状態 | コード | いつ |\n|---|---|---|\n| 422 | E-VAL-027 | 本文が無い・空・空白だけ（全角の空白・改行も）。error validation・欄 body の明細 1 件 |\n| 404 | E-PAGE-001 | @ する人・知らせる人・引用元が選べない（見られない・抜けた・止められた・別のチケットの書き込み・消した書き込み。欄・明細は付けない） |\n| 404 | NOT_FOUND | チケットが無い・見えない・消した |\n| 503 | E-PAGE-003 | 守りの判定（見えるか）で例外・関数が知らない言葉を返した |\n\n### 生成の試験（ears-elsewhere.d/K-385.json）\n\n```json\n{\"ops\": {\"createTicketMessage\": {\"file\": \"apps/api/test/features/F6/thread-post.test.ts\",\n  \"reason\": \"書き込みは、書く人がチケットを見られるか・@ と知らせる人がそのチケットを見られるか・引用元の在りかで答えと受け箱の行が変わる。生成の試験の種では作れない（K-385）\",\n  \"covers\": {\"test_post_tickets_id_messages_ok\": \"K385-API-001\", \"test_post_tickets_id_messages_rejected_401\": \"K385-API-015\",\n             \"test_post_tickets_id_messages_rejected_403\": \"K385-API-014\", \"test_post_tickets_id_messages_not_found\": \"K385-API-006\", \"test_post_tickets_id_messages_not_found_2\": \"K385-API-014\",\n             \"test_post_tickets_id_messages_rejected_422\": \"K385-API-013\", \"test_post_tickets_id_messages_rejected_422_2\": \"K385-API-009\",\n             \"test_post_tickets_id_messages_too_large\": \"K385-API-010\", \"test_post_tickets_id_messages_rate_limited\": \"K385-API-015\",\n             \"test_post_tickets_id_messages_shape\": \"K385-API-001\",\n             \"test_post_tickets_id_messages_terms_pending\": {\"file\": \"apps/api/test/features/F1/terms.test.ts\", \"mark\": \"K53-API-005\"},\n             \"test_post_tickets_id_messages_session_unresolved\": {\"file\": \"apps/api/test/features/contract/k144-contract.test.ts\", \"mark\": \"K144-API-032\"}},\n  \"na\": {}}}}\n```\n\n（`rejected_422` は生成の試験の上の注が「同じ冪等キーで二度来たら」の行。出た名前で 1 対 1 に結び直す）\n\n### 範囲の地図（ci_scope.d/K-385.json）\n\n```json\n{\"data_links\": [\n  {\"paths\": [\"apps/api/src/hooks/ticket-message-post.ts\", \"apps/api/src/features/F6/thread/**\"],\n   \"tests\": [\"apps/api/test/features/F6/thread-post.test.ts\", \"apps/api/test/features/contract/k144-contract.test.ts\"]},\n  {\"paths\": [\"apps/api/test/features/F6/thread-post.test.ts\", \"apps/api/test/features/F1/terms.test.ts\", \"apps/api/test/features/contract/k144-contract.test.ts\"],\n   \"tests\": [\"apps/api/test/generated/post_tickets_id_messages.test.ts\"]}],\n \"reads_ok\": {\"apps/api/test/features/contract/k144.d/K-385.ts\": \"setup の中で土台 ../../F6/thread.harness.js を動的 import で読む（K-378.ts の注）・K-385\"}}\n```",
+    "受け持ちをまたぐ名前": "- まとめ役の案 `app.ticket_message_post(...)` は `app.ticket_message_post(p_ticket uuid, p jsonb) returns jsonb`（p の鍵：body・mention_member_ids・notify_member_ids・quote_of_id）。答え `{ item }` か `{ error, field? }`。**K-389（書き込みと一緒に段を変える）はこの関数を作り直し、p に段の欄を足して、同じ取引で K-387 の関数を呼ぶ**\n- 足した：`app.ticket_visible_for(p_ticket, p_member)`・`app.ticket_message_people(p_ticket, p_ids)`・`app.ticket_message_notify(p_message, p_members, p_mentioned)`（どれも中だけ。K-386 が使う）\n- 入力の欄の名前：画面の試験の道具 thread-mock.ts（K-393）に合わせて `mention_member_ids`（まとめ役の指示の「@」）・`notify_member_ids`・`quote_of_id`\n- エラーの番号 E-VAL-027（本文が空）。K-386 も使う",
+    "外に影響する手順": "- S1: DB に書く（書き込みの 1 行と、受け箱の行を 1 つの取引・関門 C2 と C6 の受け箱の行）。失敗したら 503・E-PAGE-003 で書き込みも受け箱の行も残らない（K385-API-017）。1 つの取引なので片方だけが残ることは無い。メールは送らず、外のサービスは呼ばない（D-125.130）",
+    "テスト仕様と確認の結果": "`apps/api/test/features/F6/thread-post.test.ts`（本物の DB・入口は createApp と契約の op・偽の画面のログイン。土台 thread.harness.ts。引用元の書き込みは DB に直に入れる）\n\n### 状態 × 入口 × 利用者の状態\n\n| 対象の状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| 作業中のチケット | 書く欄で送る | 書ける人 | 201・書き込みと受け箱の行 | このチケット | K385-API-001 |\n| 同じ | 同じ | 閲覧のみの人 | 201（⑧） | このチケット | K385-API-002 |\n| 完了・承認待ち | 同じ | 書ける人 | 201・段は変わらない（⑭） | このチケット | K385-API-012 |\n| 同じ | 二度押し（同じ冪等キー）・押し直し | 同じ | 1 つ・同じ答え／違う本文は 409 | 入口の共通 | K385-API-013 |\n| どれでも | 直に口を呼ぶ | 見えない人・別の会社 | 404 | このチケット | K385-API-014 |\n| どれでも | 同じ | 取引先の役 | 403 | 入口の共通 | K385-API-014 |\n| 消したチケット | 古い画面から送る | 書ける人 | 404（D-136.2） | このチケット | K385-API-014 |\n| どれでも | 送る | ログインしていない | 401 | 入口の共通 | K385-API-015 |\n| どれでも | 送る | 同意し直しが要る・付けるまで進めない | 403 | 入口の共通（K-53・K-321） | K53-API-005・生成の試験 mfa_pending |\n| どれでも | 書いている間に @ した人が抜けた | 書ける人 | 404・E-PAGE-001・何も書かない | このチケット | K385-API-006 |\n| 守りの判定が落ちる | 送る | 書ける人 | 503・何も書かない | このチケット | K385-API-016 |\n\n### 入力・失敗・操作の揺れ・守り\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K385-API-001 | 対象の状態 | 本文・@ 1 人・知らせる人 1 人 | 201・答えの鍵 8 つと message の鍵 11・kind post・actor は書いた人・message は本文・@・知らせた人・can_edit と can_delete true・is_new false・stars 0・edited_at と quote は null。DB の 1 行（kind post・author と created_by は書いた人・mentions・notify_member_ids）。受け箱は @ の人に ticket.mentioned・知らせる人に ticket.message の 2 通。Cache-Control に private と no-store |\n| K385-API-002 | 利用者の状態 | 閲覧のみの人 | 201・1 行 |\n| K385-API-003 | 入力 | 同じ人が @ に 2 回と知らせる人に | mentions は重なりを落として書いた順（高本・鈴木）。高本への知らせは ticket.mentioned の 1 通・全部で 2 通 |\n| K385-API-004 | 入力 | 自分を @・知らせる人に自分 | 201・notified は自分を外した並び（高本だけ）・受け箱は高本だけ |\n| K385-API-005 | 守り | 受け箱の行の中身 | payload の鍵は message_id・number・ticket_id・title・url だけ・message_id は書き込みの id・url は /tickets/<id>・本文の字が無い・dedupe_key は ticket.message:<書き込み>:<人> |\n| K385-API-006 | 入力 | @ に見られない人・別の会社・抜けた・止められた人・存在しない人（ランダム uuid） | どれも 404・E-PAGE-001・欄も明細も無い。存在しない人の答えの本文全体（状態・JSON）が選べない人と一致する（無い物と選べない物は同じ答え・控え帳 01:30）。書き込み 0・受け箱 0 |\n| K385-API-007 | 入力 | 知らせる人に別の会社の人・存在しない人（ランダム uuid）・グループの外の担当者 | 前の 2 つは 404・E-PAGE-001・書き込み 0・存在しない人の答えの本文全体が別の会社の人と一致。担当者（グループの外）は 201・受け箱はその人 |\n| K385-API-008 | 入力 | 引用元 | 同じチケットの書き込みは 201・quote { id: 元, excerpt: 頭の 2 行 }。元を消しても quote_text は残る。消した書き込み・別のチケットの書き込み・仕組みの行・存在しない書き込み（ランダム uuid）は 404・E-PAGE-001・欄なし。存在しない書き込みの答えの本文全体が別のチケットの書き込みと一致。書き込みは元と最初の返事の 2 つだけ |\n| K385-API-009 | 入力 | 本文が無い・空・空白・全角の空白・改行だけ | どれも 422・E-VAL-027・欄 body。書き込み 0 |\n| K385-API-010 | 入力 | 90 万字・1MB を超える | 201 で 90 万字のまま残る。1MB を超えると 413・書き込みは前の 1 つのまま |\n| K385-API-011 | 守り | 入れさせない欄（author_member_id・kind・reactions・changes・title） | どれも 422・書き込み 0 |\n| K385-API-012 | 対象の状態 | 完了・承認待ちのチケット | どちらも 201・段は完了・承認待ちのまま |\n| K385-API-013 | 操作の揺れ | 同じ冪等キーで同時に 2 回・同じキーで違う本文・キー無しで 2 回 | 201・201 で同じ id・書き込み 1。違う本文は 409。キー無しは 2 行増えて 3 |\n| K385-API-014 | 守り | 見えない人・別の会社・取引先・消したチケット | 404・404・403・404。どれも書き込み 0 |\n| K385-API-015 | 利用者の状態 | ログインしていない・上限 | 401。上限 2 で 3 回目が 429・retry_after_sec は整数 |\n| K385-API-016 | 失敗 | 守りの判定で例外 | 503・E-PAGE-003・書き込み 0・受け箱 0 |\n| K385-API-017 | 失敗 | S1 の失敗（受け箱の行を書く所で DB が落ちた） | 503・E-PAGE-003・例外の文を返さない・書き込みも残らない（1 つの取引） |\n| K385-API-018 | 時間の流れ | 書いた後にほかの人が読む | 読む口に本文と @ が出て、ほかの人には is_new true |\n| K385-API-019 | 入力 | 本文に対にならないサロゲート（片割れの字）がある | 201・本文の片割れは U+FFFD に直して書く（jsonb に入らず 503 にしない・K-387 の口と同じ置き換え・F6/well-formed.ts） |\n\n### テストの型の受け（分類 CRUD・PERM）\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-CRUD-01 2 人が同時に直す | 要らない: 書くたびに新しい行（同じ行を 2 人が直さない）。2 人が同時に書けば 2 行になるのが正しい |\n| TP-CRUD-02 消したものを古いリンクで | K385-API-014（消したチケット 404）・008（消した書き込みは引用できない） |\n| TP-CRUD-03 消す → 戻す・子 | 要らない: この口は書くだけ（消すは K-386） |\n| TP-CRUD-04 2 回押し | K385-API-013 |\n| TP-CRUD-05 保存の途中で失敗 | K385-API-017 |\n| TP-CRUD-06 書きかけで戻る | 要らない: 書きかけは画面の端末が残す（⑮5・K-393）。口は送られた物だけを受ける |\n| TP-PERM-01 役が合わない | K385-API-014（取引先の役は 403） |\n| TP-PERM-02 権限を外した直後 | K385-API-006（抜けた・止められた人は選べない）・014（見えない人は 404・口が毎回見る） |\n| TP-PERM-03 他の会社の ID | K385-API-006・007（別の会社の人を @・知らせる人に）・014・k144 の K144-API-720 |\n| TP-PERM-04 一覧・数に混ざらない | K385-API-005（受け箱の行に本文を入れない）・004（自分に知らせない） |\n| TP-PERM-05 権限を付けた直後 | 要らない: 入口と関数が要求ごとに見る（入り直しは要らない） |",
+    "速さ（今の値と目標の値）": "| 項目 | 今 | 目標 |\n|---|---|---|\n| 画面ごとの口の数 | — | 送るたびに 1 本。答えの 1 件をそのまま一覧に足す（読み直さない） |\n| 口ごとの文の数・取引の数 | — | 1 取引・文 2 つ（見えるかを引く・関数 1 回）。受け箱の行は関数の中で 1 文（宛先の数に依らない） |\n| 認証の要る答えの Cache-Control | — | private, no-store（K385-API-001） |\n| 新しい住所 | — | 増えない（/api/v1/tickets/:id/messages は契約に在る） |",
+    "前からの試験を替えた所": "入口の言葉を write → read に替え、入力の形を替える。この口・道・エラーの番号を読む前からの試験を探した（自分の試験・生成の試験・k144 の葉のファイル・ほかの段 7 の葉の新しい試験と画面の道具は外した）。\n\n```search\ngit grep -l \"createTicketMessage\\|tickets/:id/messages\\|E-VAL-027\" -- 'apps/*/test*/*' 'apps/api/src/*.test.ts' 'packages/*/test/*' 'scripts/ci/*_test.py' 'scripts/ci/*.test.mjs' ':!apps/api/test/generated/*' ':!apps/api/test/features/F6/*' ':!apps/api/test/features/contract/k144.d/*' ':!apps/web/tests/k/k38*' ':!apps/web/tests/k/k39*' ':!apps/web/tests/k/thread-mock.ts'\n0\n```\n\n- apps/api/src/contract/authz.test.ts: 替えない — 全部の口を ENDPOINTS から回す（hooks の無い app での 501・言葉ごとの守り・:id の口の perm.row）。read に替えても同じ回し方で入る（row_rules.mjs の read は \"true\"）。段 4 の K-364 が替える行（除外の一覧）とも重ならない\n- packages/db/test/ticket_around.test.ts: 替えない — 行の守り（ticket_messages_post）は変えない（読める人は本人として書ける守りのまま・口の言葉を守りに合わせた）\n- scripts/ci/contract_shape_test.py: 替えない — 断片 contract_shape.d/K-385.py の REQUIRED_INPUTS・VALUE_RANGES を足すだけ（UNEXPRESSIBLE_422 は空）\n- apps/api/test/k326-api-registry.test.ts・scripts/ci/fuzz_targets_test.py・scripts/ci/ci_scope_test.py・scripts/ci/k327_migrations_gen_test.py: 替えない — 断片と register を足して作り手で作り直す",
+    "成果物": "- migration 1 本（関数 4 つ）・口 `apps/api/src/features/F6/thread/`（post.ts・input.ts）・hooks のファイル ticket-message-post.ts・契約の形と生成物・エラー 1 つ・文書の 1 行\n- 単体の試験 `thread-post.test.ts`・k144 の葉のファイル `K-385.ts`（切る段が書いた）",
+    "決定": "1. 入口の言葉を read にする（⑧ 読める人は書ける）。書く関数でも見えるかを確かめる（守りの 2 層）。行の守り（ticket_messages_post）はもともと「読める人は本人として書ける」なので変えない\n2. 知らせは 1 人 1 通で、@ が勝つ（@ された人は ticket.mentioned）。自分には知らせない（⑮7）。知らせる人の並びから自分を外して残す\n3. @・知らせる人・引用元のどれかが選べなければ、全部を断って何も書かない（書いた字は画面に残る）。黙って外して送らない\n4. 引用の字は元の頭の 2 行（改行で分けた最初の 2 行）。元を消しても残す（⑮3）。行の中は切らない（D-130.4）\n5. 受け箱の行は書き込みと同じ取引で DB の関数が書く（K-60 と同じ形・関門 C2 の中で C6 の受け箱の行）。メールは送らない（D-125.130）。payload に本文を入れない",
+    "決定ログ": "- 2026-11-20 代表の答え answer=eaa451436670（⑧ 読める人は書ける・⑨ 知らせる人の欄・候補はそのチケットを見られる人だけ）・56812da22008（⑭ 完了にも書ける・⑮ の 3・7）\n- 2026-11-20 切る段の決め：上の「決定」の 1〜5",
+    "申し送り": "- K-386：直して新しく @ した人の確かめと知らせは app.ticket_message_people と app.ticket_message_notify を使う（app.ticket_message_notify は同じ dedupe_key の行が受け箱に在る人には書かないので、前に知らせた人に 2 通目は出ない）。本文が空は E-VAL-027\n- K-389：app.ticket_message_post を作り直す（p に段の欄・K-387 の関数を同じ取引で）。答えの形は同じ（changes が付く）\n- K-393（画面）：送る体は `{ body, mention_member_ids, notify_member_ids, quote_of_id }`。候補は K-383 の meta.people。404 の E-PAGE-001 は欄を指さないので、画面は「選べない人がいます」と出して候補を引き直す（どの欄かは言えない）"
+   },
+   "file": "11_tickets/K-385.md"
+  },
+  {
    "id": "K-387",
    "title": "段・実績・保留を変える口（updateTicket の段と実績の分）と、詳細（getTicket）の「変えられるか」と AI の分の時間（K-66 の葉）",
    "kind": "タスク",
@@ -19587,6 +19693,279 @@
     "申し送り": "- K-391：答えは app.ticket_decision_json、知らせは app.ticket_decision_notify(…, 'revise'|'cancel')。取り消しの列はこの葉が足した\n- K-397（画面）：区画は listTicketDecisions を詳細を開くときに同時に始める。「＋ 決定を足す」は meta.can_write。送る体は text・reason・decided_by_member_id・decided_note（K-397.md の表のまま）。見出しの数は cancelled が null かつ superseded_by_id が null の数。source.deleted が true なら「元の書き込みは消されました」、false なら source.at で「元：やり取り MM/DD HH:MM →」"
    },
    "file": "11_tickets/K-390.md"
+  },
+  {
+   "id": "K-395",
+   "title": "チケットの詳細で、頭の段の札から段を変える（未着手・作業中・保留・完了の小窓へ・開き直す）・保留の小窓と題名の下の保留の帯・右の属性の実績（人が使った時間）を入れる。閲覧のみと仕組みの段の間は変えられない形（K-66 の葉・S7-W4）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-66",
+   "milestone": "F6",
+   "area": "画面",
+   "assignee": "実装",
+   "due": "2026-11-26",
+   "estimate_hours": "1",
+   "estimate_basis": "実測なし・仮。形の近い段 4 の K-356（部品に値と押す関数を渡す口を足して契約の口につなぐ・29 行・見込み 1 時間）と段 2 の K-318（外枠の中の画面を口につなぐ・30 行・1 時間）から引いた：部品に押す関数と押せない間の口を足す 10 分（views.tsx は形を変えない）・区画の入れ物（slot.tsx）で詳細の答えから値を作り、段を変える口と完了の小窓につなぐ 20 分・保留の小窓と帯と「理由を見る」10 分・実績の入力と確かめ（全角の数字・分は 0〜59）10 分・見た目の突き合わせと幅の確かめ 10 分。行が 27 で上限に近い。超えそうなら実績の入力（K395-UI-016〜018）を別の葉に分ける案（報告に書いた・番号は増やさない）",
+   "decisions": [
+    "D-125.33",
+    "D-125.38",
+    "D-125.39",
+    "D-125.68",
+    "D-128.95",
+    "D-128.178",
+    "D-128.125",
+    "D-145.9",
+    "D-144.7",
+    "D-127.8",
+    "D-136.1"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "画面だけ。段・実績・保留を書くのは口の葉 K-387（updateTicket・関門 C2 と担当者への知らせの受け箱 C6）と K-388（開き直す）、完了は前からの F5 の completeTicket。画面は契約の口を呼ぶだけで、外には何も出さない",
+   "tests": [
+    "apps/web/tests/k/k395-progress.spec.ts"
+   ],
+   "carry": [],
+   "depends_on": [
+    "K-382",
+    "K-387",
+    "K-388"
+   ],
+   "acts": [
+    "A17"
+   ],
+   "screens": [
+    "tickets"
+   ],
+   "apis": [],
+   "mock": [
+    "prog-menu",
+    "prog-hold-dialog",
+    "prog-hold-band",
+    "prog-locked",
+    "prog-time",
+    "prog-readonly",
+    "prog-reopen",
+    "prog-hold-reason"
+   ],
+   "affects": [
+    "@kaname/web",
+    "@kaname/errors"
+   ],
+   "ci_wide": [
+    "shared"
+   ],
+   "changes": [
+    "apps/web/features/F6/progress/",
+    "07_qa/test-specs/errors.d/K-395.json",
+    "11_tickets/K-66.md"
+   ],
+   "flow": "自分でやるチケットを、作業中にして、止めて（保留）、戻して、時間を入れて、終える",
+   "sections": {
+    "目的": "チケットの詳細（`/tickets/[id]`・画面 tickets）で、人が自分で作業の段を動かせるようにする（行為 A17・用事 J1）。今は人が段を動かす手が無く、**自分でやるチケットは作業中にできないので完了まで行けない**（完了は作業中だけ・E-CONF-019）。\n\n- 頭の行の段の札を押すとメニュー（代表の答え ① a）。選ぶ物は頭の札と同じ色つきの札で並べる（下絵の直し 3・部品 StageTag・STAGES）\n- メニューの「完了」は今の完了の小窓（`features/F5/approve-complete/complete-dialog.tsx`）を開く。未着手・保留では押せない形で訳「作業中にしてから」（③ a）\n- 保留にする小窓（理由と再開の条件が必須・D-125.33・文は ㉒）と、題名の下の保留の帯（④ a）。帯は 1 つだけで、承認と実行の帯（F5）が何かを出している間は保留の帯を譲り、段の札の横に「理由を見る」（㉓ a）\n- 完了のチケットは「完了 ✓」と「作業中（開き直す）」（⑤ a・下絵の直し 3）。仕組みの段（確認中・承認待ち・実行中）の間は押せない鍵の札で訳（㉒・D-125.38）\n- 右の属性の「実績」は合計と内訳「1 時間 12 分（AI 12 分・人 1 時間）」。人の分は「時間」と「分」で書き直す（⑥ a）。予定は出すだけ（K-380 の予定の差し込み口 `F6.EstimateSlot` の先で「30 分」を出す・まとめ役の決め）\n- 閲覧のみの人は段も実績も変えられない（② a）：字の札・「直す」が無い・帯に「作業中に戻す」が無い。段は `can.progress`、実績は `can.actual`（どちらも getTicket・K-387）で決める。仕組みの段（確認中・承認待ち・実行中）の間は段は変えられないが、書ける人なら実績は入れられる（`can.actual` は true・口も 200 で受ける K387-API-014。まとめ役の決め）\n\n正の絵はモック `/dev/mock/f6/<状態>`（本番と同じ部品 `features/F6/progress/views.tsx`・K-382 が本線に入れる）の prog-menu・prog-hold-dialog・prog-hold-band・prog-locked・prog-time・prog-readonly・prog-reopen。見た目はモックの画面と本番の画面の写しを同じ幅（375・768・1440）で比べる（共通の道具 `apps/web/tests/k/stage2-match.ts` の matchMock・base は /dev/mock/f6）。\n書く欄の「状態 ▾」で書き込みと一緒に段を変えるのは K-396、やり取りに残る 1 行を読むのは K-392、通しは K-399。",
+    "完了の条件": "- [ ] 下の表の行（K395-UI-001〜027）が緑：`apps/web/tests/k/k395-progress.spec.ts`\n- [ ] 前からの試験 4 本（下の「## 前からの試験を替えた所」・どれも替えない）が替えずに緑\n- [ ] 見た目の検査（design_gate の D1〜D8・`--raw-lengths`）が緑。新しい生の値を画面に書かない（足す CSS は正本のトークンだけ）\n- [ ] 手元の CI（このチケットの範囲・画面の試験は鎖の終わりの ci.py web）が緑",
+    "前提と制約": "分類: CRUD, XSS\n\n- 部品（views.tsx の StageMenu・HoldDialog・HoldBand・ActualTime・ActualTimeEdit・StageTag・STAGES・LOCKED_TEXT・hm）は K-382 が下絵のまま本線に入れる。この葉が部品に足すのは「押したときの関数・送っている間・小窓の欄の値を受ける口」だけで、形・クラス・字は変えない（新しい口は全部あってもなくてもよい形にし、モック mocks.tsx は変えずに今のまま描ける）\n- 値と口を結ぶのは区画の入れ物 `features/F6/progress/slot.tsx` の 4 つ（K-382 が「まだ」の形で置き、K-380 の差し込み口につないである）：`StageSlot({ ticket, children })`（頭の行の段の札・children は今の字の札）・`HoldBandSlot({ ticket, yieldTo, onWant })`（題名の下の帯・帯の順は K-380 の useBandOrder）・`ActualTimeSlot({ ticket, children })`（属性の実績の値）・`EstimateSlot({ ticket, children })`（属性の予定の値・出すだけ）。ticket は K-380 の `SlotTicket`（id・layout・me・detail＝getTicket の答え・bands＝いま出ている帯・reload＝詳細を読み直す）。この葉は slot.tsx の中身だけを作る。detail-slots.tsx・F4 の詳細のファイル・見た目の台帳は触らない（切り方.md 3 章）\n- 段を選べるのは人が動かせる 4 つ（未着手 todo・作業中 doing・保留 hold・完了 done）だけ。会社が足した段（鍵が空）は札に名前を出すが、メニューには出さない（段の一覧の口 listTicketStages は契約だけ・段の名前を変える・足すのは F9）\n- 仕組みの段（確認中 checking・承認待ち awaiting_approval・実行中 running）は鍵の札（`LOCKED_TEXT`「AI が動いている間と承認待ちの間は、状態を変えられません」・㉒・口の E-CONF-030 と同じ文）。押せない・メニューを開かない。鍵の札にするかは段の鍵で決める（その間 can.progress は false になる・K387-API-026。字の札にしない）\n- 一覧の右に開く詳細（ticket.layout が \"side\"・K-252）は変えない（機能分解.md 2.3）：StageSlot は children（字の札）のまま・HoldBandSlot は onWant(false) で何も描かない・「理由を見る」は出さない・実績はパネルが無いので出ない\n- 完了は前からの完了の小窓をそのまま開く（作り直さない）。口 completeTicket の断り（422 は小窓の中・409 などは閉じて知らせ）は小窓の決まりのまま\n- 送る値：理由・再開の条件は、NFKC で直した字で空かを決め、送るのは**元の字の前後の空白（全角の空白も）を除いた字**（中の字は直さない・NFKC で直した字は送らない）。hold-fields.ts の checkHold が 1 か所でこうし、K-396 も同じ物を使う（まとめ役の決め）。HTML は文字として出す（TP-XSS-L01）\n- 画面に出す文は正本（errors.json）か決めた文（㉒）。口の断りの文は前からの `features/F5/approve-complete/message.ts` の messageOf（正本から引く。409 E-CONF-030・E-CONF-032・422 の欄の断りは口の文）。口を呼ぶ前の確かめの文：保留の小窓の欄の下は「保留の理由を書いてください」（E-VAL-041）「再開の条件を書いてください」（E-VAL-047）。正のモック prog-hold-dialog の欄ごとの文と 1 字ずつ同じで、K-387 が欄ごとの 2 つの番号で正本に足す（口の 422 の明細の文も同じ）。この確かめと文は 1 つの部品 `features/F6/progress/hold-fields.ts`（この葉が作る）に置き、書く欄の保留の欄（K-396）も同じ物を使う。実績の入力の確かめの文「時間と分は 0 以上の整数で入れてください（分は 0〜59）」はこの葉の errors.d/K-395.json に足す（番号は仮に E-VAL-046・取り込む時点で空いていなければ次の空きに付け替え、試験の文はそのまま）\n- 知らせ（担当者でない人が段を変えたら担当者へ・⑦）は口の葉 K-387 がする。画面は何もしない\n- 口の失敗の知らせ（段・保留・実績・完了の断り）の置き場は**帯の入れ物の中（F5 の帯の後・HoldBandSlot の場所）**。段の札（StageSlot）・実績（ActualTimeSlot）・帯（HoldBandSlot）は別々の差し込み口なので、知らせは progress/ の中の小さな共有の器 `features/F6/progress/notice.ts`（チケットの id ごとに 1 つの知らせ・react の useSyncExternalStore で読む）で分け合い、HoldBandSlot が描く。知らせは帯ではないので onWant を呼ばず（data-shown に出さない）、yieldTo に関わらず描く（まとめ役の決め）\n- 送っている間に段の札を押せなくするのは、メニューの型の開くボタン `MenuTrigger` の `disabled?`（K-381 が足す・aria-disabled=\"true\" で焦点は落とさず、押しても開かない）。StageMenu の busy をそのまま渡す（views.tsx の中で別のボタンを描き分けない）",
+    "画面が読む値・送る値（正は口の葉 K-387・K-388。仮・名前は口の葉に合わせる）": "詳細の口 getTicket（`GET /api/v1/tickets/{id}`）の答えに K-387 が足す物：\n\n| 欄 | 形 | 画面の使い方 |\n|---|---|---|\n| can.progress | boolean | 段を変えられるか（書ける人＝true・閲覧のみ＝false・仕組みの段の間も false・消したチケットは 404）。true のときだけ札がメニューになり、帯に「作業中に戻す」が出る |\n| can.actual | boolean | 実績を書けるか（書ける人＝true・閲覧のみ＝false。仕組みの段の間でも書ける人なら true）。true のときだけ実績に「直す」が出る |\n| stage.key・stage.name | string \\| null・string | 札の色と名前。鍵が checking・awaiting_approval・running なら鍵の札 |\n| hold | { reason, resume, at, by } \\| null | 保留中のときだけ値。帯の「理由：」「再開の条件：」と「MM/DD HH:MM 〈by〉 が保留にした」（日本時間・by が null なら「MM/DD HH:MM に保留にした」） |\n| time | { estimate_minutes: number \\| null, human_minutes: number, ai_minutes: number } | 予定（null なら空）・実績の合計と内訳 |\n| can.complete・completed | 前からの物（K-165） | メニューの「完了」を押せるか（作業中・can.complete）・完了の帯 |\n\n段・実績・保留を変える口 updateTicket（`PATCH /api/v1/tickets/{id}`・K-387。開き直す done → doing は K-388）：\n\n| 操作 | 送る体 | 受けたら |\n|---|---|---|\n| 段を未着手・作業中にする・開き直す・作業中に戻す | { stage_key: \"todo\" \\| \"doing\" } | 200 → 詳細を 1 回読み直す（ticketKey・同じ問い合わせの器） |\n| 保留にする | { stage_key: \"hold\", hold_reason, resume_condition } | 同じ |\n| 実績を書き直す | { actual_minutes: 人の分（分の整数） } | 同じ |\n\n答え：200 `{ changed, message_id, stage, ticket }`（K-387）。画面はこれを読まず、ticket.reload() で詳細を 1 回読み直す。断り（K-387・K-388 の md）：409 E-CONF-030（仕組みの段・走っている実行・承認待ちの間）／409 E-CONF-032（完了から作業中以外へ。完了 → 作業中は開き直す・K-388）／422 E-VAL-041（保留の理由が空）・E-VAL-047（再開の条件だけが空）・E-VAL-040（この段へは変えられない）・欄 actual_minutes（負の数・小数・100000 分を超える）／403／404／401。送る段は stage_key（todo・doing・hold）。会社が足した段へは送らない（stage_id は K-387 が受けるが、段 7 の画面は 4 つの段だけ）",
+    "目録で探した結果": "| 使う物 | どこ | 使い方 |\n|---|---|---|\n| 見た目の部品 | `features/F6/progress/views.tsx`（K-382） | 値と押す関数を渡す |\n| メニューの型 | `components/k/menu.tsx`（K-369・置き場の重なりの順と開くボタンの `disabled?` は K-381） | StageMenu の中で使う（部品のまま）。送っている間は MenuTrigger に disabled を渡す |\n| 完了の小窓 | `features/F5/approve-complete/complete-dialog.tsx` の CompleteDialog・`band.tsx` の canCompleteNow・targetLine・ticketKey・readTicket | メニューの「完了」から開く。作り直さない |\n| 口の断りの文 | `features/F5/approve-complete/message.ts` の messageOf・catalogMessage | 知らせの文 |\n| 口を呼ぶ | `lib/api/call.ts` の call（\"updateTicket\"） | 段・保留・実績 |\n| 知らせの箱 | `components/k` の NoticeBox（F5 の帯と同じ部品） | 断りの文。帯の入れ物の中（F5 の帯の後）に HoldBandSlot が描く |\n| 時刻の書き方 | `features/F4/create-ticket/detail-head.tsx` の mmddTime | 「MM/DD HH:MM」 |\n| 探したが無かった物 | 人が段を動かす入れ物・時間と分の入力を分に直す関数・保留の確かめ・区画をまたぐ知らせの器 | `slot.tsx` の中身・`use-progress.ts`（口と読み直し）・`to-minutes.ts`（純粋な関数）・`hold-fields.ts`（保留の確かめと文・純粋な関数・K-396 も使う）・`notice.ts`（知らせの共有の器）を作る |",
+    "依存の理由": "- K-382: 要る — 部品 views.tsx・モック（見た目の突き合わせの正）と、区画の入れ物 progress/slot.tsx を本線に入れる葉。同じフォルダ features/F6/progress/ を変える。K-382 越しに K-380（予定の差し込み口 F6.EstimateSlot・帯の順）と K-381（MenuTrigger の disabled?）も先に入る\n- K-387: 要る — 契約の口 updateTicket と getTicket の答え（can.progress・hold・time）を決める葉。画面は call(\"updateTicket\") と getTicket の型で口に合わせる。口が入る前に作ると型が無く CI が止まる\n- K-388: 要る — 開き直す（完了 → 作業中）の口の振る舞い（K395-UI-014 が本物の口の形を使う）\n- （依存にしない）K-392・K-393・K-394：やり取りのファイルを触らない。段を変えたときにやり取りに残る 1 行は K-399 が通しで見る\n- （後に入る葉）K-396：書く欄の「状態 ▾」が、この葉の段の選び方と保留の欄を使う（K-396 がこの葉に依存する）",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| 部品に押す口を足す | `features/F6/progress/views.tsx`：StageMenu に `onPick?: (key: \"todo\" \\| \"doing\" \\| \"hold\" \\| \"complete\" \\| \"reopen\") => void` と `busy?: boolean`（送っている間は札を押せない：MenuTrigger に `disabled={busy}` を渡す・K-381）。HoldDialog に `onCancel?`・`onSubmit?(reason, resume)`・`busy?`。HoldBand に `onResume?`・`busy?`。ActualTime に `onEdit?`。ActualTimeEdit に `onCancel?`・`onSave?(hours, minutes)`・`busy?`。どれもあってもなくてもよい（モックは今のまま描ける）。形・クラス・字は変えない。新しい見た目は足さない（「理由を見る」の HoldReason と CSS `.k-prog-reason*` は K-382 が運ぶ） |\n| 理由を見る | 部品は views.tsx の `HoldReason({ reason, resume, by })`（K-382 が運ぶ・切る段で足した。正のモック prog-hold-reason）：段の札の横の「理由を見る」と、押すと開く小さな箱（理由・再開の条件・保留にした人と時刻）。メニューの型（components/k/menu.tsx）の箱（押す・Enter で開き、Esc で閉じる）。この葉は形を変えず、slot.tsx の StageSlot から値を渡して置くだけ |\n| 区画の入れ物 | `features/F6/progress/slot.tsx`（K-382 が置いた 4 つの名前（Stage・HoldBand・ActualTime・Estimate）のまま中身を作る。slot.tsx には口も `lib/api` の import（型も）も書かない（K382-SL-001 が見続ける。口と型は use-progress.ts に置く））：ticket.detail（can.progress・can.actual・stage・hold・time・can.complete・completed）から、札・帯・実績・予定の値を作る。HoldBandSlot は段が保留のとき onWant(true)・ほかは onWant(false)。帯を描くのは yieldTo が null のとき（前の帯に譲る・K-380 の帯の順：承認と実行 → 渡し → 保留・㉓）。HoldBandSlot は帯とは別に、notice.ts に知らせがあれば NoticeBox（role=alert）を描く（段がどれでも・yieldTo に関わらず・onWant は呼ばない）。EstimateSlot は time.estimate_minutes を hm の形（「30 分」）で出し、null なら children（空）。ActualTimeSlot の「直す」は can.actual が true のときだけ。StageSlot は、段が保留で `bandYieldTo(\"hold\", ticket.bands)` が null でない（帯が譲っている）とき、札の横に「理由を見る」 |\n| 口と読み直し | `features/F6/progress/use-progress.ts`：call(\"updateTicket\", { params: { id }, body }) を 1 回。送っている間は 2 本目を送らない（押せない形・同じ押しの 2 回目は捨てる）。200 なら ticket.reload() で詳細を 1 回読み直す（詳細と同じ問い合わせの器 ticketKey）。422 の欄の断り（actual_minutes・hold_reason・resume_condition）は入力・小窓の欄の下に口の文。断りは notice.ts に messageOf の文を置き（HoldBandSlot が帯の入れ物の中に描く）、409・403・404 は詳細を読み直す。401 は前からの共通の扱い（入り直し・戻る先にこのチケット）。網が切れたら E-PAGE-007 の文（messageOf が網の切れ status 0 を E-PAGE-007 に直す・この画面は送り直しをしないので E-PAGE-008 は使わない）。次に押したときと、200 のときに知らせを消す |\n| 保留の確かめと文（1 つの部品） | 新しい `features/F6/progress/hold-fields.ts`（純粋な関数・口を呼ばない・react を読まない）：`checkHold(reason: string, resume: string)` は、字を NFKC で直し前後の空白（全角も）を除いてから空かを欄ごとに見て、足りなければ `{ ok: false, errors: { reason?: string; resume?: string } }`（文は正本 `packages/errors` の E-VAL-041「保留の理由を書いてください」・E-VAL-047「再開の条件を書いてください」）、通れば `{ ok: true, body: { hold_reason, resume_condition } }`（元の字の前後の空白を除いた字。NFKC で直した字は送らない）。`holdErrorsOf(details)`：口の 422 の明細（欄 hold_reason・resume_condition）を同じ `{ reason?, resume? }` に直す（欄の下に口の文）。保留の小窓（HoldDialog の errors）と、書く欄の保留の欄（K-396 の holdSlot）の両方がこの 2 つだけを使う（同じ確かめを 2 つ作らない）。欄の見た目はそれぞれの正の絵のまま（小窓は prog-hold-dialog・書く欄の中は talk-compose-stage・どちらも代表 OK 済み） |\n| 完了 | メニューの「完了」（作業中・can.complete のときだけ押せる）で CompleteDialog を開く（target は targetLine）。終わったら詳細と実行を読み直す（前からの帯と同じ onChanged）。小窓の断りは前からの onFailed と同じ知らせ |\n| 実績の入力 | `features/F6/progress/to-minutes.ts`（純粋な関数）：時間と分の字を NFKC で直し前後の空白を除いてから、0 以上の整数か・分は 0〜59 かを見る。空は 0。合わなければ口を呼ばずに欄の下に文（この葉が errors.d/K-395.json に足す正本の文・仮に E-VAL-046）。合えば 時間 × 60 ＋ 分 を送る |\n| 正本の文 | `07_qa/test-specs/errors.d/K-395.json`：画面の確かめの文 1 つ（E-VAL-046・仮の番号：実績の入力「時間と分は 0 以上の整数で入れてください（分は 0〜59）」・class validation・where tickets・layers [UI]。取り込む時点で E-VAL-046 が空いていなければ次の空きに付け替える）。`python3 scripts/ci/build_registries.py` で errors.json（生成物）に足し合わせる |\n| 親 | 11_tickets/K-66.md から screens の分とこの葉の分の行を外す（overlap_ok） |",
+    "外に影響する手順": "画面は口を呼ぶだけ（書くのは K-387・K-388・F5 の completeTicket）。呼んだ口が失敗したときの画面：\n\n- S1: 段を変える口（updateTicket）を呼ぶ。失敗したら札は前の段のまま・帯の入れ物の中（F5 の帯の後）に知らせ（K395-UI-019〜022）\n- S2: 保留にする口を呼ぶ。失敗したら小窓は開いたまま・書いた理由と再開の条件は残る（K395-UI-021）\n- S3: 実績を書き直す口を呼ぶ。失敗したら入力は開いたまま・入れた時間と分は残る（K395-UI-021）\n- S4: 完了の口（completeTicket）を呼ぶ。失敗したら前からの小窓の決まり（422 は小窓の中・ほかは閉じて知らせ）（K395-UI-023）",
+    "テスト仕様と確認の結果": "`apps/web/tests/k/k395-progress.spec.ts`（実 Chrome・前からの土台 `tests/features/F5/approve-complete.harness.ts` の mockApi で詳細の口を網の手前で差し替え、updateTicket だけをこの試験の差し替えで受ける。本人の Bridge 38617 には届かせない。固定の待ちは使わない）\n\n### 状態 × 入口 × 利用者の状態\n\n| 対象の状態（段） | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| 未着手・作業中 | 頭の段の札 | 書ける人 | 札がメニュー。選んだ段に変わる | このチケット | K395-UI-002〜004 |\n| 作業中 | 段のメニューの「完了」 | 書ける人 | 完了の小窓が開く | このチケット | K395-UI-005 |\n| 未着手・保留 | 段のメニューの「完了」 | 書ける人 | 押せない形「作業中にしてから」 | このチケット | K395-UI-006 |\n| 作業中 → 保留 | 段のメニューの「保留」 | 書ける人 | 保留の小窓 → 帯 | このチケット | K395-UI-007〜009 |\n| 保留 | 題名の下の帯 | 書ける人 | 帯の「作業中に戻す」 | このチケット | K395-UI-010 |\n| 保留 ＋ 承認と実行の帯が出ている | 頭の段の札 | 書ける人 | 帯は出さず「理由を見る」 | このチケット | K395-UI-011 |\n| 確認中・承認待ち・実行中 | 頭の段の札 | 書ける人 | 鍵の札・訳・メニューを開かない | このチケット | K395-UI-012 |\n| どれでも | 頭の段の札・実績・帯 | 閲覧のみ | 字の札・「直す」「作業中に戻す」が無い | このチケット | K395-UI-013 |\n| 完了 | 頭の段の札 | 書ける人 | 「完了 ✓」と「作業中（開き直す）」 | このチケット | K395-UI-014 |\n| どれでも | 右の属性の実績 | 書ける人 | 実績を書き直す | このチケット | K395-UI-015〜018 |\n| 会社が足した段（鍵が空） | 頭の段の札 | 書ける人 | 札は名前・メニューは 4 つ（どれにも ✓ なし） | このチケット | K395-UI-025 |\n| どれでも | 一覧の右に開く詳細（幅 1024 以上） | 書ける人 | 字の札のまま・保留の帯なし | このチケット | K395-UI-026 |\n| どれでも | 道を直に | ログインが切れた | /login?next=… | このチケット | K395-UI-022 |\n| どれでも | 道を直に | 入っていない | /login?next=…（口を呼ばない） | 前からの試験 | K-60 の詳細の試験（features/F4/create-ticket.spec.ts） |\n| 消した | 道を直に | どれでも | 見つからない（404） | 前からの試験 | K-60 の詳細の試験（features/F4/create-ticket.spec.ts の「見つかりませんでした」） |\n\n### 入力・失敗・操作の揺れ・守り\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K395-UI-001 | 入口 | 幅 375・768・1440 × prog-menu・prog-hold-dialog・prog-hold-band・prog-locked・prog-time・prog-readonly・prog-reopen・prog-hold-reason | モックと本番で、段の札（形・色・字）・メニューの箱と項目（色つきの札・✓・訳の字）・保留の小窓（題・対象の行・欄・字・ボタン・欄の下の文）・保留の帯（題・小さな字・理由・再開の条件・ボタン）・「理由を見る」のボタンと開いた箱（字・幅・色）・実績（合計・内訳・直す・時間と分の欄）の値が同じ（px ±2。流れの中の物は y を比べない：頭の行の字の長さがモックと違うため） |\n| K395-UI-002 | 入口 | 未着手・書ける人が札を押す（マウス）→ Esc／Esc で焦点が札に戻り、そこから Enter・↓・Esc（キーボード） | メニューが開き、項目は「未着手 ✓」「作業中」「保留 理由を書く」「完了 作業中にしてから」の順。どの項目も中に色つきの札（.k-detail-stage[data-stage] が todo・doing・hold・done）。Esc で閉じ、焦点は札に戻る。開いただけでは口を呼ばない |\n| K395-UI-003 | 対象の状態 | 未着手で「作業中」を選ぶ | updateTicket が { stage_key: \"doing\" } でちょうど 1 回・詳細の読み直しが 1 回。札は「作業中」。知らせは出ない |\n| K395-UI-004 | 対象の状態 | 作業中で札を押す | 項目は「未着手」「作業中 ✓」「保留 理由を書く」「完了 確かめて完了にする…」。「未着手」を選ぶと { stage_key: \"todo\" } が 1 回・札は「未着手」 |\n| K395-UI-005 | 入口 | 作業中・can.complete のとき「完了 確かめて完了にする…」を選ぶ → 小窓のチェックを全部入れて「確かめて完了にする」 | 小窓「完了にする」が開き、対象の行「EG-133 11 月分の請求書を送る」。updateTicket は呼ばない。completeTicket が 1 回・詳細の読み直しの後に札は「完了」・題名の下に「完了しました（…）」 |\n| K395-UI-006 | 対象の状態 | 未着手・保留で「完了 作業中にしてから」を押す | 項目は押せない（aria-disabled）。小窓は開かない・口は 0 回 |\n| K395-UI-007 | 対象の状態 | 作業中で「保留 理由を書く」→ 理由「先方の検収待ち」・再開の条件「検収の連絡が来たら」→「保留にする」 | 小窓「保留にします」（対象の行・「保留の間も、やり取りと決定は書けます」）。updateTicket が { stage_key: \"hold\", hold_reason: \"先方の検収待ち\", resume_condition: \"検収の連絡が来たら\" } で 1 回。小窓が閉じ、札は「保留」・題名の下に帯「保留中です」・「理由：先方の検収待ち」・「再開の条件：検収の連絡が来たら」。理由に `<img src=x onerror=alert(1)>` を入れたときは、送る体は書いたとおりで、帯に字のまま出て img は 0 個 |\n| K395-UI-008 | 入力 | 保留の小窓で 理由も条件も空／理由だけ／空白だけ（全角の空白も）を入れて「保留にする」 | 口は 0 回。空の欄の下に「保留の理由を書いてください」「再開の条件を書いてください」。小窓は開いたまま。入れ直すと文が消え、送れる |\n| K395-UI-009 | 操作の揺れ | 保留の小窓で書いてから「やめる」・Esc・×／開き直す | 小窓が閉じ、口は 0 回・札は「作業中」のまま。開き直すと欄は空 |\n| K395-UI-010 | 対象の状態 | 保留中（hold あり）を開く → 帯の「作業中に戻す」 | 帯の小さな字「11/01 10:41 佐藤 が保留にした」（日本時間）・by が null なら「11/01 10:41 に保留にした」。押すと { stage_key: \"doing\" } が 1 回・帯は消え、札は「作業中」 |\n| K395-UI-011 | 対象の状態 | 保留 ＋ 実行の段の今の実行が動いている（running・PC が開いている。承認と実行の帯が「実行中」を出している。止まった帯は保留の帯と並べて出すので、保留の帯が譲るのは動いている間だけ・K-620） | 保留の帯は出ない（題名の下の帯は 1 つ）。段の札の横に「理由を見る」。押すと箱に「理由：…」「再開の条件：…」「11/01 10:41 佐藤 が保留にした」。Esc で閉じる。保留でない段・帯が出ている保留では「理由を見る」は出ない |\n| K395-UI-012 | 対象の状態 | 確認中・承認待ち・実行中 × 書ける人 | 札は鍵の印つきで押せない（button ではない）・title と読み上げに「AI が動いている間と承認待ちの間は、状態を変えられません」。押してもメニューは開かず口は 0 回。承認待ち（can.progress false・can.actual true）でも実績に「直す」が出る |\n| K395-UI-013 | 守り | 閲覧のみ（can.progress・can.actual false）× 作業中・保留 | 札は字だけ（button ではない）。実績に「直す」が無い。保留の帯に「作業中に戻す」が無い。口は 0 回 |\n| K395-UI-014 | 対象の状態 | 完了のチケットで札を押す → 「作業中 開き直す」 | 項目は「完了 ✓」と、線の下に「作業中 開き直す」の 2 つだけ。押すと { stage_key: \"doing\" } が 1 回・札は「作業中」・「完了しました（…）」の帯は消える |\n| K395-UI-015 | 対象の状態 | 実績の読む形：人 60・AI 12／人 60・AI 0／人 0・AI 0、予定 30／null | 「1 時間 12 分（AI 12 分・人 1 時間）」／「1 時間」（内訳なし）／「0 分」。予定（EstimateSlot）は「30 分」／空 |\n| K395-UI-016 | 対象の状態 | 実績の「直す」→ 時間「1」分「30」→「保存」 | 欄は今の人の分（1 と 0）で開き、「AI が動いた時間（12 分）は自動で足されます」。updateTicket が { actual_minutes: 90 } で 1 回・読み直しの後「1 時間 42 分（AI 12 分・人 1 時間 30 分）」。「やめる」なら口は 0 回で元の字 |\n| K395-UI-017 | 入力 | 時間・分に「-1」「abc」「1.5」・分「60」／全角「１」「３０」・前後の空白／両方空 | 合わない字では口は 0 回・欄の下に「時間と分は 0 以上の整数で入れてください（分は 0〜59）」。全角と空白はそろえて { actual_minutes: 90 }。両方空は { actual_minutes: 0 } |\n| K395-UI-018 | 入力 | 時間に大きな数「9999」→ 口が 422（欄 actual_minutes・上限 100000 分は K-387） | 画面は削らずに { actual_minutes: 599940 } を送る（上限を画面で二重に持たない）。口の欄の文を入力の下に出し、入れた「9999」は残る |\n| K395-UI-019 | 失敗 | 手順 S1 の失敗：409 E-CONF-030（開いている間にほかの人が AI に任せた） | 帯の入れ物の中（F5 の帯の後）の知らせ（role=alert）に「AI が動いている間と承認待ちの間は、状態を変えられません」。詳細を 1 回読み直すと鍵の札「実行中」に替わる |\n| K395-UI-020 | 守り | 手順 S1 の失敗：403（開いている間に書く権限が外れた）・404（消された） | 知らせに正本の文。詳細を読み直す（403 は字の札に替わる・404 は前からの「見つかりませんでした」の画面） |\n| K395-UI-021 | 失敗 | 手順 S1・S2・S3 の失敗：503・網の切れ | 知らせに正本の文（503 は E-PAGE-004・網の切れは E-PAGE-007）。札は前の段のまま。保留の小窓・実績の入力は開いたままで、書いた字は残る。もう一度押すと送れる |\n| K395-UI-022 | 利用者の状態 | 手順 S1 の失敗：401 | /login?next=%2Ftickets%2F<id> へ |\n| K395-UI-023 | 失敗 | 手順 S4 の失敗：完了の小窓で 409（E-CONF-019・その間に保留にされた） | 小窓は閉じ、知らせに「完了にできるのは作業中のチケットだけです」（E-CONF-019）。詳細を読み直し、札は「保留」 |\n| K395-UI-024 | 操作の揺れ | 口の答えを止めたまま、段の項目・「保留にする」・「保存」・「作業中に戻す」を 2 回押す | どれも口はちょうど 1 回。送っている間は札（MenuTrigger の disabled で aria-disabled=\"true\"・押してもメニューは開かない）・ボタン（disabled）が押せない。答えが来たら押せる |\n| K395-UI-025 | 対象の状態 | 会社が足した段（stage.key が null・名前「見積中」）× 書ける人 | 札は「見積中」。押すとメニューは 4 つの段（どれにも ✓ なし・完了は「作業中にしてから」で押せない）。「作業中」を選ぶと { stage_key: \"doing\" } |\n| K395-UI-026 | 入口 | 一覧の右に開く詳細（/tickets?view=…・幅 1440・K-252）× 保留・書ける人 | 段の札は字の札（button ではない）・保留の帯も「理由を見る」も出ない（今の横の詳細のまま） |\n| K395-UI-027 | 入口 | 幅 320・375・768・1024・1440 でメニュー・保留の小窓・帯・実績の入力を開く | 横溢れ 0（scrollWidth − clientWidth）。メニューの項目の真ん中の点は、本文の道具の帯（上に貼り付く帯）の下に潜らない（その点の一番上の要素が項目） |\n\n### テストの型の受け（分類 CRUD・XSS）\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-CRUD-01 2 人が同時に直す | K395-UI-019（ほかの人が先に変えた 409 → 知らせて読み直し、どちらも失わない） |\n| TP-CRUD-02 消したもの | K395-UI-020（404 → 見つからない画面） |\n| 子の扱い | 要らない: TP-CRUD-03 消す・戻す操作が無い（段と実績を変えるだけ・子のチケットの完了の決まりは完了の小窓の 422 で前から持つ） |\n| TP-CRUD-04 2 回押し | K395-UI-024 |\n| TP-CRUD-05 途中で失敗 | K395-UI-021（503・網の切れで札は前のまま。書くのは 1 つの口 1 回で、途中まで残る形が無い） |\n| TP-CRUD-06 書きかけ | K395-UI-021（失敗しても小窓と入力の字は残る）・K395-UI-009（やめたら空に戻す：書きかけを残さない形を決めた・仮） |\n| TP-XSS-L01 HTML やスクリプト | K395-UI-007（理由に `<img src=x onerror=alert(1)>` を入れても帯に字のまま出て img は 0 個・送る体は書いたとおり） |",
+    "前からの試験を替えた所": "この葉の changes:（features/F6/progress/）を import する前からの試験は無い（画面の試験は道で開く）。段の札・実績・保留の字を見る前からの試験を検索で出した（段 7 のほかの葉の試験は除く）。\n\n```search\ngit grep -ln 'data-part=\"stage\"\\|k-detail-stage\\|\"stage\")\\|実績\\|保留中です\\|保留にします' -- 'apps/web/tests/**' 'apps/e2e/**' ':!apps/web/tests/k/k3[89]*' ':!apps/web/tests/skeleton/k399*'\n4\n```\n\n- apps/web/tests/k/k226-ticket-detail.spec.ts: 替えない — 段の札の色・字（K226-UI-002・004）と「予定・実績は空」（K226-UI-015）を見る。前からの土台の詳細の答えには can.progress も time も無いので、この葉の後も札は字の札・実績と予定は空のまま（この葉は can.progress が true のときだけメニューにし、time が無ければ空にする）\n- apps/web/tests/_lib/fidelity-states.ts: 替えない — 承認待ちの札の字（`[data-part=\"stage\"]` が「承認待ち」）を見る。承認待ちは鍵の札で、字は「承認待ち」のまま（鍵の印は svg で字に入らない）\n- apps/web/tests/k/k251-ticket-list-mine.spec.ts: 替えない — 一覧の列「予定・実績」の見出しと空の値だけ（一覧の口は変えない）\n- apps/web/tests/k/k252-ticket-list-all.spec.ts: 替えない — 同じ（一覧の列）。右に開く詳細の段の札は字の札のまま（K395-UI-026）\n\n上の検索は段 7 のほかの葉の試験（k38*・k39*）を除いた。そのうち、この葉の changes:（features/F6/progress/）を読む段 7 の前からの試験（K-382 が先に本線に入れる・切る段の前からの試験の検査が出す物）：\n\n```search\ngit grep -ln 'features/F6/progress\\|k-prog-' -- 'apps/web/tests/k/k38*'\n1\n```\n\n- apps/web/tests/k/k382-stage7-mock.spec.ts: 替えない — K382-MK-003 は progress/views.tsx・progress.css の字に生の大きさと色が無いかを見る（この葉は views.tsx に押す口だけを足し、CSS に生の値を書かないので緑のまま）。K382-UI-008（本番の詳細は今のまま）は前からの土台 mockApi の答えで段の札が字の札（SPAN）・実績が空・題名の下に帯が無いことを見る。土台の答えには can.progress・can.actual・time が無いので、この葉の後も札は字の札（can.progress が true のときだけメニュー）・実績と予定は空（time が無ければ空）のまま。この葉は土台（approve-complete.harness.ts）に欄を足さない（足すと K382-UI-008 が赤になる）",
+    "速さ（今の値と目標の値）": "| 項目 | 今 | 目標（この葉） |\n|---|---|---|\n| 開いたときの口の数（この区画の分） | 0 | 0（段・保留・実績は詳細の口 getTicket の答えに入る・K-387。口を増やさない） |\n| 段を変えたときの口 | — | updateTicket 1 回 ＋ 詳細の読み直し 1 回（直列 2 段。読み直しは同じ問い合わせの器で、同時に 2 回読んでも 1 回） |\n| 同じ口の二重 | — | 無い（2 回押しも 1 回・K395-UI-024） |\n| 新しい住所 | — | 増えない（同じ /tickets/[id]） |\n| 認証の要る答えの Cache-Control | 口の葉が持つ（private, no-store） | 同じ（K-387 が確かめる） |\n| staging での答えの時間 | 測っていない | 締めで ci.py web の後に測って残す（人の確認の表） |",
+    "受け持ちをまたぐ名前": "- 区画の入れ物：K-382 が置いた `StageSlot`・`HoldBandSlot`・`ActualTimeSlot`・`EstimateSlot`（progress/slot.tsx）と、K-380 の `SlotTicket`・`BandSlotProps`・`bandYieldTo`（features/F4/create-ticket/detail-slots.ts）のまま。名前も受ける物も変えない\n- 口の答えの欄（can.progress・can.actual・hold・time）と送る体（stage_key・hold_reason・resume_condition・actual_minutes）・断りの番号（E-CONF-030・E-CONF-032・E-VAL-040・E-VAL-041・E-VAL-047）は K-387・K-388 の md に合わせた（2026-11-20 切る段で読み合わせた）\n- 保留の欄ごとの文は、K-387 が E-VAL-041（保留の理由）と E-VAL-047（再開の条件）の 2 つに分けた（正のモック prog-hold-dialog の欄ごとの文と 1 字ずつ同じ・まとめ役が切る段でそろえた）\n- 保留の確かめと文の部品：`features/F6/progress/hold-fields.ts` の `checkHold`・`holdErrorsOf`（この葉が作る・K-396 が使う）\n- 知らせの共有の器：`features/F6/progress/notice.ts`（この葉が作る。progress/ の中だけで使う）\n- メニューの型の開くボタンの `disabled?`：K-381 が `components/k/menu.tsx` の MenuTrigger に足す（名前は disabled）\n- K-396 は、この葉の `hold-fields.ts` の `checkHold`・`holdErrorsOf`（理由と再開の条件の空の判定と文）を使う。保留の欄は書く欄の中に出す（正の絵 talk-compose-stage・代表 OK 済み）ので、保留の小窓 HoldDialog は開かない",
+    "決定ログ": "- 2026-11-20 代表の答え（answer=eaa451436670・f5cd1647389f・56812da22008）：① 札を押すと選べる＋書く欄の状態 ▾ ／② 書ける人が変えられる／③ メニューの「完了にする…」は今の完了の小窓・未着手と保留は押せない形で訳／④ 保留は題名の下の帯／⑤ 開き直すを入れる／⑥ 実績は合計を書き直す（時間と分）・AI の分は自動で足す・入れられるのは書ける人・予定は出すだけ／⑦ 担当者でない人が段を変えたときだけ担当者に知らせる（口の葉）／㉒ 仮の文はそのまま／㉓ 帯は 1 つ・保留の帯が譲っている間は札の横に「理由を見る」\n- 2026-11-20 下絵の直し（answer=fabd031f9b37）：③ 段のメニューの選ぶ物は頭の札と同じ色つきの札・完了のチケットは「完了 ✓」と「作業中（開き直す）」。④ 767 以下の頭の行の直しは K-380\n- 段 7 の決定ログの節は §149（D-149.1〜.27・K-382 が運ぶ）。この葉の頭の欄 decisions には、K-382 が本線に入るまで足さない（本線に無い決定を指すと T3 で赤）。K-382 が入った後、作る段で関係する行を足す\n- 切る段の仮（代表に聞くことに書いた）：保留の小窓を「やめる」と書いた字は消える／会社が足した段はメニューに出さない／実績の入力の文「時間と分は 0 以上の整数で入れてください（分は 0〜59）」",
+    "リスクと懸念": "- 口の答えの欄の名前が K-387 と違うと、作る段の型の検査で止まる（作る段の始めに K-387 の md を読み直す）\n- 「理由を見る」の正のモック prog-hold-reason は切る段で足した物で、代表は下絵で見ていない（ほかの 25 の状態は代表 OK 済み）。K-382 の「代表に聞くこと」に写しで見せる項目として入れた。答えで形が変わったら、K-382 の部品とモックとこの葉の行を切る段で直す",
+    "申し送り": "- K-396：書く欄の「状態 ▾」は、この葉の段の選び方（4 つの段・鍵の段は押せない）を使う。保留を選んだときの欄は書く欄の中（正の絵 talk-compose-stage・代表 OK 済み）に出し、確かめと文はこの葉の `hold-fields.ts`（`checkHold`・`holdErrorsOf`）をそのまま使う（小窓は開かない）\n- K-399：段を変えたときのやり取りの 1 行（「高本 が状態を 未着手 → 作業中 に変えた」）と、担当者への知らせ（⑦）は通しで見る\n- 止まった実行（stopped）の帯と保留の帯を並べて出すことは K-620 が受け持つ（K-620 の試験）。この葉は、保留の帯が譲る動いている間（running）だけを確かめる（UI-001 の prog-hold-reason・UI-011）"
+   },
+   "file": "11_tickets/K-395.md"
+  },
+  {
+   "id": "K-400",
+   "title": "段 9 の部品とモック（/dev/mock/f8 の 37 の状態）・探す欄の型・招くの部品を本線に入れ、K-380 の差し込み口の先に「まだ何も出さない」区画のファイルをつなぐ（K-68 の葉・9-W0）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-68",
+   "milestone": "F8",
+   "area": "画面",
+   "assignee": "実装",
+   "due": "2026-11-23",
+   "estimate_hours": "1",
+   "estimate_basis": "実測なし・仮。形の近い段 4 の K-350（切る段の枝で作り終えた部品とモックを carry で運ぶ・決定ログに節を足す・見込み 1）と K-369（運ぶだけ・見込み 0.5）から引いた：写す 5 分・mocks.tsx の古い注と leaf の欄を消す 5 分・差し込み口の先の区画のファイル 11 個（どれも空の形）と detail-slots.tsx の配り分け 15 分・部品に値と動きを受ける口（任意の props）を足す 15 分・正本の 1 部品と検査の訳 1 行 5 分・CI の範囲の地図 3 分・試験を流して直す 10 分。キャンバスの絵は足さない（正の絵は /dev/mock/f8・D-146.1）",
+   "decisions": [
+    "D-070",
+    "D-125.14",
+    "D-128.125",
+    "D-145.9",
+    "D-146.1",
+    "D-148.1",
+    "D-148.2",
+    "D-148.3",
+    "D-148.4",
+    "D-148.5",
+    "D-148.6",
+    "D-148.7",
+    "D-148.8",
+    "D-148.9",
+    "D-148.10",
+    "D-148.11",
+    "D-148.12",
+    "D-148.13",
+    "D-148.14",
+    "D-148.15",
+    "D-148.16",
+    "D-148.17",
+    "D-148.18",
+    "D-148.19",
+    "D-148.20",
+    "D-148.21",
+    "D-148.22",
+    "D-148.23",
+    "D-148.24",
+    "D-148.25",
+    "D-148.26",
+    "D-148.27",
+    "D-148.28",
+    "D-148.29",
+    "D-148.30",
+    "D-148.31",
+    "D-148.32",
+    "D-148.33",
+    "D-148.34",
+    "D-148.35",
+    "D-148.36",
+    "D-148.37",
+    "D-148.38",
+    "D-148.39",
+    "D-148.40",
+    "D-148.41",
+    "D-148.42",
+    "D-148.43",
+    "D-148.44",
+    "D-148.45",
+    "D-148.46",
+    "D-148.47",
+    "D-148.48",
+    "D-148.49",
+    "D-148.50",
+    "D-148.51"
+   ],
+   "split": "",
+   "prior_impl": "c/段9（fb0451b8・4f93e820。部品先行の下絵。代表の OK は 2026-11-20 の下絵を見た会話・answer=fabd031f9b37）",
+   "choke_points": [],
+   "choke_none": "画面の見た目の部品・開発用のモックの置き場・差し込み口の先の空の区画（まだ何も出さず口も呼ばない）・正本の 1 部品と検査の訳・下ごしらえの文書だけ（決定ログと答えの記録は K-425）。口・DB・外への送り出し・秘密に触らない",
+   "tests": [
+    "apps/web/tests/k/k400-stage9-mock.spec.ts"
+   ],
+   "carry": [
+    "apps/web/features/F8/handover/views.tsx",
+    "apps/web/features/F8/handover/handover.css",
+    "apps/web/features/F10/invite/views.tsx",
+    "apps/web/features/F10/invite/invite.css",
+    "apps/web/components/k/search-field.tsx",
+    "apps/web/components/k/search-field.css",
+    "apps/web/app/(dev)/dev/mock/f8/mocks.tsx",
+    "apps/web/app/(dev)/dev/mock/f8/page.tsx",
+    "apps/web/app/(dev)/dev/mock/f8/[id]/page.tsx",
+    "07_functional/段9-F8/範囲.md",
+    "07_functional/段9-F8/切り方.md",
+    "07_functional/段9-F8/決定ログに足す行.md",
+    "07_functional/段9-F8/代表に聞くこと.md",
+    "07_functional/段9-F8/mock-shots.mjs",
+    "07_functional/段9-F8/下絵の頁を作る.py",
+    "07_functional/段9-F8/下絵の作り手.py",
+    "07_functional/段9-F8/下絵-手描き.html",
+    "apps/web/tests/k/handover-mock.ts"
+   ],
+   "depends_on": [
+    "K-380",
+    "K-425"
+   ],
+   "acts": [
+    "A51",
+    "A110",
+    "A48",
+    "A111",
+    "A36"
+   ],
+   "screens": [
+    "tickets",
+    "approvals",
+    "members"
+   ],
+   "apis": [],
+   "mock": [
+    "f8-detail-owner",
+    "f8-pick",
+    "f8-pick-search",
+    "f8-pick-none",
+    "f8-pass",
+    "f8-pass-error",
+    "f8-pass-refused",
+    "f8-blocked",
+    "f8-waiting-sender",
+    "f8-reminded",
+    "f8-withdraw",
+    "f8-overdue",
+    "f8-declined-sender",
+    "f8-taken-sender",
+    "f8-queue",
+    "f8-waiting-recipient",
+    "f8-decline",
+    "f8-accepted",
+    "f8-gone",
+    "f8-offer-entry",
+    "f8-offer",
+    "f8-offer-answer",
+    "f8-offer-band",
+    "f8-pick-manager",
+    "f8-distribute",
+    "f8-distribute-group",
+    "f8-distributed",
+    "f8-group-waiting",
+    "f8-group",
+    "f8-noperm",
+    "f8-failed",
+    "inv-members",
+    "inv-dialog",
+    "inv-error",
+    "inv-link",
+    "inv-stepup",
+    "inv-sent"
+   ],
+   "flow": "仕事を人に渡して、受けてもらう",
+   "affects": [
+    "@kaname/web"
+   ],
+   "ci_wide": [],
+   "changes": [
+    "apps/web/features/F8/handover/",
+    "apps/web/features/F10/invite/",
+    "apps/web/components/k/search-field.tsx",
+    "apps/web/components/k/search-field.css",
+    "apps/web/components/k/index.ts",
+    "apps/web/app/(dev)/dev/mock/f8/",
+    "04_design/DESIGN-kaname.md",
+    "design-gate.json",
+    "07_functional/段9-F8/",
+    "scripts/ci/ci_scope.d/K-400.json"
+   ],
+   "sections": {
+    "目的": "段 9（K-68・F8 渡す・配る）の切る段の枝 `c/段9` で作り終えた物を本線に入れ、後ろの画面の葉（K-411〜K-415・K-420）が「自分の区画のファイルだけ」を触れば済む置き場を作る（切り方.md 0 章・1 章）。中身は 4 つ：\n\n1. **部品とモック**：渡す・配るの部品 `features/F8/handover/views.tsx`（見た目だけ・値を受けて描く・口を呼ばない）・招くの部品 `features/F10/invite/views.tsx`・探す欄の型 `components/k/search-field.tsx`（焦点の輪は虫眼鏡ごと枠全体・D-148.25）と、それを並べた開発用の置き場 `/dev/mock/f8`（37 の状態・代表の OK は 2026-11-20 の下絵を見た会話）。後ろの画面の葉はこのモックを正の絵にして本番をつなぐ\n2. **差し込み口の先**：段 7 の K-380 が詳細と承認待ちに置く差し込み口の先のファイル（`features/F8/handover/detail-slots.tsx`・名前は K-380 の書き置き `段7-段9-共通の差し込み口.md` のとおり）を、配り分けのファイル `slot-dispatch.tsx` からの書き出しに書き直し、区画ごとのファイル 10 個に配る。帯・担当者の欄・入口（▾／申し出）を決める純な関数を `use-handovers.ts` に置く（値は getTicket の今の渡し `handover` と見ている人ができる種類 `handover_kinds`・K-405）。区画のファイルは、この葉では **まだ何も出さない・口も呼ばない**（今の詳細と承認待ちの見た目のまま）\n3. **決定ログ**：段 9 の決定 D-148.1〜51 と答えの記録は、新しい葉 K-425 が先に本線へ入れる（PM の決め 2026-11-20・始める時点の本線に §148 が無いと持ち込みの作り手 build_index.py の K4 が止まるため）。この葉は K-425 に依存する\n4. **正本**：探す欄の部品 `search-focus` を正本に（`04_design/DESIGN-kaname.md`・トークンの生成物・`design-gate.json` の訳 1 行）",
+    "完了の条件": "- [ ] /dev/mock/f8 の 37 の状態が幅 375・768・1440 で描け、横のはみ出し 0。状態の持ち主は画面の葉（K-411・K-412・K-413・K-414・K-415・K-420）だけ\n- [ ] 区画のファイル 10 個と use-handovers.ts が在り、detail-slots.tsx（書き出しだけ）→ slot-dispatch.tsx から配り分けている。この葉ではどれもまだ何も出さず、詳細と承認待ちの口の数は今のまま（読む口・下見の口を呼ばない・作る段の手元で確かめる）\n- [ ] 正本の値の検査（design_gate の D1〜D8）が緑\n- [ ] 行の表の全部の行が緑（人が確かめる 1 行を除く）",
+    "前提と制約": "- **K-380 に依存**：詳細の 3 ファイル（`detail-panel.tsx`・`ticket-detail.tsx`・`detail-head.tsx`）と承認待ちの `queue-table.tsx` に差し込み口を入れ、差し込み口の先 `features/F8/handover/detail-slots.tsx` を置くのは K-380（段 7・案 A・PM の決め）。この葉はその 4 つと `ticket-detail.css` を触らない。スマホの詳細の頭を横に並べる直し（D-148.27＝D-149.19 と同じ・段 7 の K-380 が持つ）も K-380\n- **K-380 の書き置き（`.ticket-flow/side-notes/段7-段9-共通の差し込み口.md`）に名前を合わせた**（2026-11-20 の直し）：器は `features/F4/create-ticket/detail-slots.ts`（`BAND_ORDER`・`bandYieldTo`・`SlotTicket`（`detail` に getTicket の答え）・`BandSlotProps`）、段 9 の差し込み口は `DetailScope`・`AssigneeSlot`・`HandoverBandSlot`・`QueueRowSlot` の 4 つ。帯は BAND_ORDER の順で 1 つだけ（`yieldTo` が null でなければ描かない）\n- **詳細の口の数は 6 のまま（PM の決め 2026-11-20）**：帯・担当者の欄・入口は getTicket の答えの `handover`（今の渡し 1 件・K-405 の TicketHandover の 1 件と同じ形）と `handover_kinds`（見ている人ができる種類・下見の kinds と同じ `app.handover_kinds`）だけで決める。読む口 listTicketHandovers は記録を開いたときだけ（詳細を開いただけでは呼ばない）。`handover` は「待っている渡しが在ればそれ、無ければ最後に決まった渡し 1 件」が要る（1 回だけの帯 accepted・taken・断られた帯・取り消された帯は決まった渡しから出す・D-148.34〜36）。`handover_kinds` と、`handover` が決まった渡しも返すことは K-405 の getTicket に頼む（まとめ役に頼む）\n- **画面は役の名前で出し分けない（PM の決め 2026-11-20）**：▾ を出すか・申し出を出すか・何も出さないかは `handover_kinds` で決める（下の entryOf）。会社を作った人（/me の role_id が null）が配れるかも DB（K-401 の app.handover_kinds・app.manages_scope）が決める。閲覧のみ・取引先（D-148.18）は DB が [] を返すので何も出ない\n- 部品とモックは c/段9 の版のまま carry で運ぶ。モックの下絵の頭の横並びの決まり（`handover.css` の `.k-hnd-head .k-detail-meta-side`）は、K-380 の本番の決まりと 2 つ持たないように、この葉で消す（切り方.md 0 章）\n- **決定ログ（§148・D-148.1〜51）と答えの記録は K-425 が持つ**（PM の決め 2026-11-20）。この葉の decisions: の D-148.x は、K-425 が先に本線へ入れた §148 を指す\n- 正本に足すのは `search-focus` だけ（c/段9 で足して D1〜D8 は緑）。ほかの値は足さない（下絵は今ある帯・小窓・表の部品だけで組んだ）",
+    "確かめたこと（切る段・2026-11-20）": "- c/段9 の今の物で、canvas_field_gate（G68）は緑（`--no-base`）。mocks.tsx の 37 の状態の持ち主は K-411（10）・K-412（6）・K-413（5）・K-414（4）・K-415（6）・K-420（6）\n- c/段9 の部品とモックは、tsc・eslint・prettier・design_gate（D1〜D7 と D8 生の長さ）・class_gate（G67）が緑（`.ticket-flow/side-notes/段9-切る段-途中.md`）\n- 本線の詳細と承認待ちには、まだ F8 の物が何も無い（`git grep -n \"features/F8\" -- apps/web` は 0 件）。前からの試験で F8 の部品を読む物は無い\n\n```search\ngit grep -n \"features/F8\" -- apps/web ':!apps/web/app/(dev)/dev/mock/f8' ':!apps/web/tests/k/handover-mock.ts'\n0\n```",
+    "依存の理由": "- K-425: 要る — この葉の decisions: の D-148.x は、K-425 が本線に入れる決定ログ §148 を指す（無いと持ち込みの作り手 build_index.py の K4 で止まる）\n- K-380: 要る — 差し込み口の先のファイル `features/F8/handover/detail-slots.tsx` は K-380 が置く。この葉はそれを配り分けの形に書き直す（同じファイル）。K-380 が先に入らないと、区画のファイルがどこからも呼ばれない",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| 切る段の枝で作り終えた物を写す | carry: の全部（start --cut が写す）。写しの置き場（PNG）は運ばない（下絵の頁 `.ticket-flow/side-notes/段9-下絵.html` は版に入らない置き場） |\n| 1 行の直し（carry で運ばない・本線の版に足す） | `components/k/index.ts` に `export { SearchField, type SearchFieldProps } from \"./search-field\";` の 1 行。`04_design/DESIGN-kaname.md` の components の `dialog-select` の下に `search-focus`（`border: \"2px solid {colors.primary}\"`・注は c/段9 の字のまま）。作り手 `python3 04_design/gen_tokens.py --web` で `apps/web/styles/k-tokens.css` に `--k-c-search-focus-border` を出す（生成物）。`design-gate.json` の component_exempt に `search-focus` の訳 1 行（c/段9 の字のまま：outline で使い D5 が比べない性質）。`apps/web/lib/built-routes.ts` は作り手で作り直す（/dev/mock/f8・/dev/mock/f8/:id・生成物で ticket-flow.yaml の changes_ignore に在るので changes: に書かない） |\n| モックの持ち主の欄を片付ける | `apps/web/app/(dev)/dev/mock/f8/mocks.tsx`：`MockEntry` の `leaf` の欄と各行の `leaf: \"K-…\"` を消す（ticket と同じ字で要らない）。頭の注の「K-0（まだ無いチケット）」「PM が枠を決めたら」を今の形（持ち主は画面の葉の番号）に直す。状態と ticket の字は変えない（K400-MK-001・002） |\n| 帯の種類を部品に足す（申し出） | `views.tsx` の `HandoverBandKind` に `offering`（申し出た人の待っている帯「〇〇さんに引き継ぎを申し出ています」・取り消す）・`offer-accepted`（「担当者になりました」・「〇〇さんから引き継ぎ ・ 時刻」）・`offer-declined`（「〇〇さんに断られました」・理由・ボタンなし）を足す（字は D-148.45 で決まった・代表の答え answer=3d444fc8d59f）。K-414 が views.tsx を触らずに済む。モックの状態は足さない |\n| 部品に値と動きを受ける口を足す（前へ移す） | 後ろの画面の葉が `views.tsx` を触らずに本物の値と動きをつなげるように、F8 の部品に **任意の props** を足す。モックは渡さないので見た目は変わらない（K400-UI-002〜004 と下絵の写し）。足す物：`AssigneeValue` に `onOpen`／`PickDialog` に `onQueryChange`・`onPick(memberId)`・`onPickGroup(groupId)`・`onClose`（探す欄は `value`＋`onChange`、無ければ今の readOnly）／`HandoverDialog` に `onChange(patch)`・`onCarryChange(index, checked)`・`onNotifyChange`・`onChangeTo`・`onSubmit`・`onClose`・`busy`・`dueType`（返事の期限の欄の type。既定は今の text）／`DistributeDialog`・`DeclineDialog`・`OfferDialog` に `onChange`・`onSubmit`・`onClose`・`busy`・`notice`／`WithdrawConfirm` に `onConfirm`・`onOpenChange`・`busy`（今の空の関数を置き換える）／`OfferEntry` に `onClick`／`HandoverBand` に `acts`（既定のボタンの並びを置き換える）・`notice`（帯の中の NoticeBox）／`HandoverRow`・`QueueCardMobile` に `onAct(label)`・`busy`・`href`（題名と番号の行き先）・`acts`（既定の 2 つのボタンを置き換える。AI の成果物の行の「中身を見る」のリンクなど・K-412）・`error`（行・カードの中の赤い字 role=alert）。どれも渡されなければ今と同じ描き方（ボタンは押しても何もしない）。各部品の props の型は export する。あわせて `matchesQuery` は探す字と名前・メールの両方を NFKC で正規化してから比べる（全角・半角の表記ゆらぎ・test-ladder §4。今は前後の空白と大文字小文字だけ） |\n| AI が動いているときの ▾（D-148.24） | `AssigneeValue` の `mode=\"blocked\"` は、ボタンを押せる形のまま（aria-disabled・tabIndex -1 を付けない）にし、名前の下の訳の 1 行は残す。押すと相手を選ぶ小窓に訳が出る（K-411）。モック f8-blocked と views.tsx の blocked はまとめの直し（2026-11-20）で切る段の枝のうちにこの形にした（下絵は撮り直す）。当たらなくなる `handover.css` の `.k-hnd-assignee-btn[aria-disabled=\"true\"]` の決まりは、この葉で消す |\n| 下絵の頭の横並びを消す | `features/F8/handover/handover.css` の末尾の `@media (max-width: 767px) { .k-hnd-head .k-detail-meta-side { … } }` と、その上の注を消す（K-380 の本番の決まりが受け持つ）。モックの `Detail` の `article.k-detail-card k-hnd-head` の `k-hnd-head` は残してよい（当たる決まりが無くなるだけ） |\n| 差し込み口の先を配り分ける | 下の「差し込み口の先の形」のとおり `features/F8/handover/detail-slots.tsx` を書き出しだけに書き直し、配り分けの `slot-dispatch.tsx`・区画のファイル 10 個・`use-handovers.ts` を作る |\n| モックの 2 か所（まとめの直し 2026-11-20） | `mocks.tsx` の f8-group-waiting の担当者の欄に「→ グループ「受託開発」（返事待ち）」（グループに配った渡しの返事待ちの字・PM の決め）・f8-taken-sender の注に「見ている人は配る権限の無い人（handover_kinds が offer だけ）」。切る段の枝で直した（K415-UI-009・K412-UI-018 の突き合わせの正） |\n| CI の範囲の地図 | `scripts/ci/ci_scope.d/K-400.json`：data_links に `{\"paths\": [\"07_functional/段9-F8/mock-shots.mjs\", \"04_design/DESIGN-kaname.md\", \"design-gate.json\", \"scripts/ci/design_gate.py\"], \"tests\": [\"apps/web/tests/k/k400-stage9-mock.spec.ts\"]}`、reads_ok に試験が読む物（モックの置き場・部品・差し込み口の先・写しの台本・DESIGN・design-gate.json・k-tokens.css）と子プロセスの 3 本を書く（K-350 の行と同じ形）。`python3 scripts/ci/build_registries.py` で足し合わせる |\n| 試験を流して緑にする | 画面の試験は手元のブラウザで（モックの立ち上げは KANAME_DEV_PAGES=1） |\n\n### 差し込み口の先の形（K-380 の書き置き `段7-段9-共通の差し込み口.md` に合わせた）\n\nK-380 が置く器（`features/F4/create-ticket/detail-slots.ts`）と、段 9 の差し込み口の先 `features/F8/handover/detail-slots.tsx`（K-380 は 4 つの名前を「何も出さない」で書き出す）：\n\n```ts\n// 器（K-380・触らない）\nexport const BAND_ORDER = [\"approve\", \"handover\", \"hold\"] as const;\nexport function bandYieldTo(key: BandKey, shown: ReadonlySet<BandKey>): BandKey | null;\nexport interface SlotTicket { id: string; layout: \"page\" | \"side\"; me: string /* 表示名 */; detail: SlotDetail /* getTicket の答え */; bands: ReadonlySet<BandKey>; reload: () => Promise<void> }\nexport interface BandSlotProps { ticket: SlotTicket; yieldTo: BandKey | null; onWant: (want: boolean) => void }\n// 段 9 の差し込み口（K-380 が名前を置き、この葉が中身を配る）\nDetailScope({ ticket, children })          // 詳細の中身全体（DOM を足さない）\nAssigneeSlot({ ticket, children })         // パネルの「担当者」の値（children＝今の顔と名前）\nHandoverBandSlot({ ticket, yieldTo, onWant }) // 帯の入れ物の中・F5 の 2 つの帯の後\nQueueRowSlot({ row, acts, children })      // 承認待ちの行の 1 つずつ（children＝今の Row）\n```\n\nこの葉で書き直す中身：\n\n- `detail-slots.tsx` は **書き出しだけ**（`export { AssigneeSlot, DetailScope, HandoverBandSlot, QueueRowSlot } from \"./slot-dispatch\";`）。K380-SL-002 は同じ 4 つの名前を数え、中身（export function の定義）は見ない形になる\n- `slot-dispatch.tsx`（新しい・\"use client\"）が配る。見ている人の member_id は外枠と同じ問い合わせの鍵 `[\"me\"]`（前からの `lib/auth` の me・もう読んである・口は増えない）から読む。AI が動いている・承認待ち（渡せない・D-148.6）は `ticket.bands.has(\"approve\")`（F5 の承認と実行の帯が出ている）で決める\n\n| 呼ばれる所 | 配る先（この葉で作る区画のファイル・中身は空の形） | 本物にする葉 |\n|---|---|---|\n| `DetailScope` | 何もしない（children を返す）。小窓の開け閉めをまたぐ状態が要る葉が後で足す | — |\n| `AssigneeSlot` | `entryOf(kinds, 担当者が自分か)` が `pass`・`distribute` なら `assignee-action.tsx` の `AssigneeAction({ ticket, entry, note, blocked, fallback })`、ほかは `fallback`（今の名前の表示）。この葉の `AssigneeAction` は `fallback` を返す | K-411（pass・▾・返事待ちの字）・K-415（distribute）|\n| `HandoverBandSlot` | `handoverOf(ticket.detail)` で今の渡しと種類を読み、`bandKindOf(handover, meId)` で帯の種類を決めて配る：`sending`・`read-failed` → `band-sender.tsx`／`overdue`・`declined` → `band-sender-actions.tsx`（`SenderFollowBand`。渡し中の帯のボタンは同じファイルの `SenderActions`）／`receiving`・`accepted`・`taken`・`gone` → `band-recipient.tsx`／`offered`・`offering`・`offer-accepted`・`offer-declined` → `band-offer.tsx`／`distributed`・`group` → `band-distributed.tsx`。帯の種類が無く `entryOf` が `offer` なら `offer-action.tsx` の `OfferAction`（題名の下の申し出のボタン・帯の場所・D-148.12）。`yieldTo` が null でなければ何も描かない。`onWant(true)` は「その種類を本物にした区画のファイルの `READY`（下）に種類が在る」ときだけ呼び、ほかは `onWant(false)`（空の区画が保留の帯を譲らせない） | K-411（sending・read-failed）・K-413（overdue・declined・SenderActions）・K-412（receiving・accepted・taken・gone）・K-414（offered・offering・offer-accepted・offer-declined・OfferAction）・K-415（distributed・group）|\n| `QueueRowSlot` | 行の `kind` が `handover` のときだけ `handover_kind` で配る：`pass` → `queue-row-pass.tsx`（`QueueRowPass`）／`offer` → `queue-row-offer.tsx`（`QueueRowOffer`）／`distribute` → `queue-row-group.tsx`（`QueueRowGroup`）。どれも `{ row, acts, fallback }` を受け、この葉では `fallback`（今の行）を返す。ほかの種類の行は children のまま | K-412・K-414・K-415 |\n\n- **スマホのカードの区画は足さない（PM の決め 2026-11-20）**：幅 767 以下の承認待ちのカードは K-412 の `features/F5/approve-complete/queue-card.tsx` が、行の `kind`・`handover_kind`・`primary_action` で全部の種類（AI の成果物・渡された・申し出・グループに配られた）を描く。K-414・K-415 はカードを触らない\n- 区画のファイルの帯の部品は、どれも `export const READY: readonly HandoverBandKey[] = []`（この葉は空）と帯の部品（`{ handover, kind, ticket }` を受け、この葉では `return null`）を書き出す。帯を本物にする葉は、自分のファイルの帯の部品と `READY` に自分の種類を足すだけ（slot-dispatch.tsx と use-handovers.ts は触らない）\n- `band-sender-actions.tsx` の `SenderActions` は「催促する」「取り消す」「別の人にする」の 3 つを押せない形（aria-disabled・title「まだ使えません」）で書き出す（K-411 が渡し中の帯を出した時から、キャンバスに在る物を隠さない・D-145.9）。押せる形にするのは K-413。`SenderFollowBand` は null\n- `use-handovers.ts`（純な関数と型・口を呼ばない）：\n  - `HandoverView`（handover-mock.ts の `HView` と同じ形・K-405 の TicketHandover の 1 件）と `HandoverKind`（pass・offer・distribute）\n  - `handoverOf(detail): { handover: HandoverView | null; kinds: HandoverKind[]; invalid: boolean }`：getTicket の答えの `handover` と `handover_kinds` を読む。鍵が無ければ null・[]（前からの試験の土台の答えには無い＝渡しが無く何もできない詳細）。`handover` が在るのに形が違う（state・from が無い）ときだけ `invalid: true`（帯 `read-failed`・D-148.38）\n  - `entryOf(kinds, isAssignee): \"pass\" | \"distribute\" | \"offer\" | null`：担当者本人で kinds に pass → `pass`（▾・引き継いでもらう）／担当者でなく kinds に distribute → `distribute`（▾・配る・D-148.3）／担当者でなく kinds が offer だけ → `offer`（題名の下の申し出のボタン・D-148.12。別のグループの書ける人もここ）／ほか → null（何も出さない・閲覧のみ・取引先・止まっている人は DB が [] を返す・D-148.18）。**役の名前を見ない**\n  - `waitingNoteOf(handover, meId): string | null`：担当者の下の「→ 〇〇（返事待ち）」の〇〇（PM の決め 2026-11-20）。state が waiting で、kind pass か人宛ての distribute → 相手の名前（姓名・相手が見ている人なら「あなた」）／グループ宛ての distribute → 「グループ「<to_scope.name>」」／offer → null（申し出は担当者側に帯「〇〇さんが引き継ぎを申し出ています」だけで、下の行は出さない）／待っていない → null\n  - `bandKindOf(handover, meId)`（帯の種類を決める純な関数：state・kind・from・to・overdue と見ている人の member_id から）：pass と人宛ての distribute で待っている → 渡した人 `sending`（overdue なら `overdue`）・相手 `receiving`／受けた → 相手 `accepted`・渡した人 `taken`（1 回だけ）／断られた → 渡した人 `declined`（閉じるか別の人に渡すまで・`kaname.hnd.closed.<id>`・D-148.34）／取り消された → 相手 `gone`（その画面にいる間だけ・D-148.36）／人宛ての distribute を受けた（合意なしで決まった）→ 相手 `distributed`（1 回だけ）／グループ宛ての distribute で待っている → 配った人 `group`。**kind が offer（申し出）の分け方**：待っている申し出を担当者（答える人）が見る → `offered`・申し出た人（from）が見る → `offering`／受けてもらえた（accepted）を申し出た人が見る → `offer-accepted`（帯の字「担当者になりました」・「〇〇さんから引き継ぎ ・ 時刻」・1 回だけ）・担当者だった人が見る → `taken`（「〇〇さんが引き継ぎました」・1 回だけ）／断られた（declined）を申し出た人が見る → `offer-declined`（「〇〇さんに断られました」・理由・ボタンなし・1 回だけ。申し出た人には別の人にするが無いので、渡した人の断られた帯 D-148.34 と違い閉じるまで出さない）。字は D-148.45 で決まった（代表の答え answer=3d444fc8d59f・勧め (a)）。1 回だけの帯は手元の覚え（localStorage の `kaname.hnd.seen.<id>`・try/catch で包み、読めないときは出す）で 2 回目を出さない（D-148.35。**決まった（answer=3d444fc8d59f・D-148.41・問い 23 の勧め (a)）：端末ごとに 1 回**で、別の端末ではもう 1 回出る・読んだ印の列は足さない）。帯の種類の名前と覚えはこの葉が決め、本物の帯を書く葉はこれを使う（帯の種類を自分で決めない）\n- 区画のファイルは、どれも props の形だけ決め、中身は空の形（帯は `return null`・`AssigneeAction` と行は `fallback`）。後ろの葉は自分の区画のファイルと自分の小窓のファイルだけを触り、`detail-slots.tsx`・`slot-dispatch.tsx`・`use-handovers.ts` を触らない\n\n```search\ngit grep -n \"k-hnd-head\" -- apps/web\n2\n```\n\n（2 件：handover.css の決まり 1、mocks.tsx の `k-hnd-head` 1。この葉で handover.css の 1 件を注ごと消し、mocks.tsx の 1 件は残る・K400-SL-004）\n\n### 速さ（今の値と目標の値）\n\nこの葉は詳細と承認待ちに何も出さず、口を呼ばない。後ろの葉が帯を出しても、帯の値は getTicket の答え（K-405 が足す handover・handover_kinds）から読むので、詳細の口の数は 6 のまま（PM の決め 2026-11-20）。\n\n| 見る物 | 今の値 | 目標の値 |\n|---|---|---|\n| 詳細を開いたときの口の数（台帳 scripts/ci/perf_budget.json・/tickets/:id） | 6 | 6（増えない・K400-SL-002） |\n| 承認待ちを開いたときの口の数（/approvals） | 4 | 4（増えない） |\n| 直列の段・二重の要求 | 1 段・二重なし | 変わらない |\n| 新しい住所 | /dev/mock/f8・/dev/mock/f8/:id（開発用・本番では notFound） | 本番の住所は増えない |\n| 認証の要る答えの Cache-Control | 口を足さないので対象なし | 対象なし |",
+    "表の住所": "- **K-380 の書き置きと名前を合わせた**（2026-11-20 の直し）：`段7-段9-共通の差し込み口.md` の器（`detail-slots.ts` の `SlotTicket`・`BandSlotProps`・`BAND_ORDER`・`bandYieldTo`）と段 9 の 4 つの名前（`DetailScope`・`AssigneeSlot`・`HandoverBandSlot`・`QueueRowSlot`）。後ろの画面の葉（K-411〜K-415）も同じ字にした。K-380 の精査の後に名前が変わったら、この md・試験 K400-SL-001・後ろの画面の葉の字をそろえる（まとめ役）\n- **「まだ何も出さない」を確かめる行（SL-001・002・003・005）は、後ろの葉が入っても崩れない形にした（精査 2026-11-20・案 (a)）**：差し込み口の先が在って配っていること・渡しが無く何もできない詳細と渡しの行が無い承認待ちが今のままであること・字があることだけを見る。この葉の回だけの「まだ何も出さない」（区画が null・fallback を返す・3 つのボタンが押せない形）は作る段の手元の確かめにして試験に残さない。だから後ろの葉はこの試験を替えない（carry しない）\n- **スマホのカードの区画は足さない**：K-412 の queue-card.tsx が全部の種類を描く（PM の決め 2026-11-20）\n- 試験の道具 handover-mock.ts の役は本物の /me の値（null・admin・manager・member・viewer・requester）にした。\"owner\"・\"guest\" は使わない。画面は役で出し分けないので、試験は getTicket の `handover_kinds`（道具の `kinds`）で入口を作る\n- CI の範囲の地図は `scripts/ci/ci_scope.d/K-400.json`（K-325 の .d/）。新しい口・エラー・ears・契約の形は無いので、ほかの .d/ は足さない\n- 画面の葉の試験の道具 `apps/web/tests/k/handover-mock.ts`（口の差し替え・モックと同じ字の値・突き合わせの役 HND_PAIRS）はこの葉が carry で運ぶ（後ろの画面の葉 K-411〜K-415 が読むだけ・前へ移す）",
+    "外に影響する手順": "- なし — 画面の部品・開発用のモック・空の区画・正本の 1 部品・下ごしらえの文書だけ（決定ログと答えの記録は K-425）。DB に書かない・外を呼ばない・セッションや錠を作らない",
+    "テスト仕様と確認の結果": "`apps/web/tests/k/k400-stage9-mock.spec.ts`（実 Chrome と、ファイル・検査の道具を読む試験）。モックの置き場では口は網の手前で 599、本人の Bridge（127.0.0.1:38617）は 404。詳細と承認待ちは前からの土台 `tests/features/F5/approve-complete.harness.ts` の mockApi で開く。固定の待ちは使わない（移り終わりと要素を待つ）。\n\n### 状態 × 入口 × 利用者の状態\n\n| 対象の状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| モックの 37 の状態 | 索引・直に開く・幅 375／768／1440 | （開発用の置き場・ログインの前提なし） | どれも描け、横のはみ出し 0 | このチケット | K400-UI-001〜005 |\n| 詳細（渡しが無い・できる種類も無い） | 本番の /tickets/:id | ログイン中（担当者・ほかの人） | 今の詳細のまま（帯なし・担当者は名前だけ）・渡しの口を呼ばない（後ろの葉が入っても同じ） | このチケット | K400-SL-002 |\n| 詳細（待っている・受けた・断られた・取り消された・期限切れ・もう決まっていた） | 本番の /tickets/:id | ログイン中 | この葉では今の詳細のまま（作る段の手元で確かめる）。本物の帯は後ろの葉 | K-411・K-412・K-413・K-414・K-415 | — |\n| 承認待ち（渡しの行が無い） | 本番の /approvals | ログイン中 | 今の行のまま（後ろの葉が入っても同じ） | このチケット | K400-SL-003 |\n| 承認待ち（渡しの行が在る） | 本番の /approvals | ログイン中 | この葉では今の行のまま（fallback・作る段の手元で確かめる）。本物の行とカードは後ろの葉 | K-412・K-414・K-415 | — |\n| 探す欄 | 相手を選ぶ小窓のモック | — | 焦点が入ると枠全体に紺の輪 2px・入力に輪なし | このチケット | K400-UI-006 |\n\n### 行の表\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K400-MK-001 | 入力 | モックの状態の数 | mocks.tsx の MOCKS の状態が 37 個で重なり無し、画面の葉 K-411（10）・K-412（6）・K-413（5）・K-414（4）・K-415（6）・K-420（6）の和とちょうど同じ |\n| K400-MK-002 | 守り | 状態の持ち主 | 37 個のどれも ticket が上の画面の葉の K-<数> の字（口の葉 K-401〜K-410 を指さない）・screen は tickets／approvals／members のどれか。`leaf:` の欄と「K-0」の字が mocks.tsx に無い |\n| K400-MK-003 | 入力 | 写しを撮る台本 | mock-shots.mjs は f8 の mocks.tsx の状態を全部、幅 375・768・1440 で /dev/mock/f8 から撮る |\n| K400-MK-004 | 守り | 見た目だけの部品 | F8 の views.tsx・F10 の views.tsx・search-field.tsx に fetch・lib/api・useRouter・lib/auth の import・style=・#色・px が無い |\n| K400-MK-005 | 入口 | 道の一覧 | isBuilt(\"/dev/mock/f8\") と isBuilt(\"/dev/mock/f8/f8-pick\") が true |\n| K400-MK-006 | 入力 | 部品の動きを受ける口 | views.tsx の部品が任意の props（AssigneeValue の onOpen・PickDialog の onPick と onQueryChange・HandoverDialog の onSubmit と onChange と dueType・DeclineDialog／OfferDialog／DistributeDialog の onSubmit・WithdrawConfirm の onConfirm・OfferEntry の onClick・HandoverBand の acts と notice・HandoverRow／QueueCardMobile の onAct）を持ち、`onOpenChange={() => undefined}` と `onConfirm={() => undefined}` の空の関数が無い。blocked の AssigneeValue は aria-disabled を付けない。matchesQuery は NFKC で正規化する |\n| K400-SL-001 | 入力 | 差し込み口の先と区画のファイル | detail-slots.tsx が書き出すのはちょうど AssigneeSlot・DetailScope・HandoverBandSlot・QueueRowSlot の 4 つで、どれも `./slot-dispatch` から（export function を持たない）。slot-dispatch.tsx は区画のファイル 10 個（assignee-action・band-sender・band-sender-actions・band-recipient・queue-row-pass・offer-action・band-offer・queue-row-offer・band-distributed・queue-row-group）を全部 import する。use-handovers.ts は handoverOf・bandKindOf・entryOf・waitingNoteOf を書き出し、帯の種類の字（sending・receiving・taken・gone・offered・offering・offer-accepted・offer-declined・group）を持ち、役の名前（role_id・\"owner\"・\"guest\"・\"manager\"）を持たない。後ろの葉が区画を本物にしても変わらない形 |\n| K400-SL-002 | 守り | 渡しが無く何もできない詳細は今のまま | getTicket の handover が null・handover_kinds が [] のチケットの詳細（/tickets/:id・幅 1440）で、渡しの帯（.k-hnd-*・「渡し中」「頼まれています」「申し出」）も ▾（.k-hnd-assignee-btn）も申し出のボタン（.k-hnd-offer）も 0 個、担当者の欄は名前「高本 聖斗」だけ、帯の入れ物の data-shown に handover が無い。開いている間に /handovers・/handover-preview の要求が 0 回（後ろの葉が入っても同じ） |\n| K400-SL-003 | 守り | 渡しの行が無い承認待ちは今のまま | AI の成果物の行だけの承認待ち（/approvals・幅 1440）で、tr.k-hnd-row は 0 個・見える .k-hnd-mcard は 0 個・前からの行「見積を出す」が見える（後ろの葉が入っても同じ） |\n| K400-SL-004 | 守り | 下絵の頭の決まり・当たらない決まり | handover.css に `.k-hnd-head`・`.k-detail-meta-side`・`.k-hnd-assignee-btn[aria-disabled` の字が無い |\n| K400-SL-005 | 守り | 渡し中の帯のボタン（隠さない） | band-sender-actions.tsx が SenderActions を書き出し、「催促する」「取り消す」「別の人にする」の 3 つの字を持つ（この葉では押せない形・押せる形にするのは K-413。押せるかは K-413 の試験が見る） |\n| K400-UI-001 | 入口 | 索引 | /dev/mock/f8 に 37 のリンク（/dev/mock/f8/<状態>）。「この状態はありません」が無い |\n| K400-UI-002 | 入力 | 幅 375 | 37 の状態が 200 で開き、「この状態はありません」が無く、横のはみ出し 0 |\n| K400-UI-003 | 入力 | 幅 768 | 同上 |\n| K400-UI-004 | 入力 | 幅 1440 | 同上 |\n| K400-UI-005 | 失敗 | 描き直し | 37 の状態で pageerror と hydration の知らせが 0 |\n| K400-UI-006 | 入力 | 探す欄の焦点 | f8-pick（幅 1440）で探す欄の入力に焦点を入れると、.k-search-field の outline が 2px solid rgb(34, 52, 92)、入力そのものの outline の幅は 0px |\n| K400-UI-007 | 入力 | 探す欄の字（幅 375） | f8-pick（幅 375）の探す欄の入力の字は 16px（D-144.7） |\n| K400-DS-001 | 守り | 正本の値 | design_gate.py（--part --scales --usage）の出力に FAIL が無い |\n| K400-DS-002 | 守り | 生の長さ（D8） | design_gate.py（--part --no-components --raw-lengths --no-base：手元・試験では台帳を分かれ目と比べない。分かれ目との比べは CI の v3-gate が持つ）の出力に FAIL が無い |\n| K400-DS-003 | 守り | 探す欄の部品 | DESIGN-kaname.md の components に search-focus（2px solid {colors.primary}）・k-tokens.css に --k-c-search-focus-border・design-gate.json の component_exempt に part search-focus（訳が空でない） |\n| K400-UI-008 | 利用者の状態 | 代表が下絵を見る | 人が確かめる：代表が `.ticket-flow/side-notes/段9-下絵.html`（37 の状態）を見て OK と言う（2026-11-20 の下絵を見た会話・「あとは OK」・PM の控え） |\n\n```judge-skip\n- K400-UI-008: 人が確かめる（代表が下絵を見て OK と言う。2026-11-20 10:20 ごろの会話と 11:09 の知らせの消え方の OK・PM が伝えた。下絵の問い合わせの答えの記録は answer=fabd031f9b37。K-369 の UI-017 と同じ書き方）\n```\n\n### テストの型の受け（分類 TOOL）\n\n段 2〜4 の部品とモックを運ぶ葉（K-300・K-330・K-350・K-369）と同じ分類にした。\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-TOOL-01 日本語の名前のファイル | K400-MK-003（07_functional/段9-F8/mock-shots.mjs） |\n| TP-TOOL-02 検査が何も見ていないのに緑 | K400-MK-001・002（ticket を持つ状態がちょうど 37 個でなければ赤）・K400-SL-001（区画のファイルがちょうど 10 個）・K400-MK-006（props の名前を 1 つずつ）・K400-SL-002（担当者の名前が見えてから数える） |\n| TP-TOOL-03 容れ物の中と手元で設定・版が違う | 要らない：この葉の試験は CI の web の組の容れ物でも手元でも同じ命令で、DS の検査は CI の static・spec の段と同じ引数 |\n\nほかの観点：入口（索引・幅）・失敗（描き直しの誤り）・守り（見た目だけ・今の詳細と承認待ちを変えない・正本の値・決定）・利用者の状態（代表の目）。時間の流れ・操作の揺れは見る物が無い（口も期限も無い）。本物の渡しの帯と行は画面の葉が受ける。",
+    "前からの試験を替えた所": "切る段の検査（cut_check.py prior）が出した、changes: を使う前からの試験 15 本（2026-11-20 に c/段9 で流した数・ci_scope.d/K-400.json はまだ無いので照らしていない）。替える物は無い。\n\n```search\npython3 scripts/ci/cut_check.py prior --files apps/web/features/F8/handover/ apps/web/features/F10/invite/ apps/web/components/k/search-field.tsx apps/web/components/k/search-field.css apps/web/components/k/index.ts apps/web/app/(dev)/dev/mock/f8/ apps/web/lib/built-routes.ts 04_design/DESIGN-kaname.md design-gate.json 01_hearing/決定ログ_進行中.md 07_functional/段9-F8/ 11_tickets/K-68.md scripts/ci/ci_scope.d/K-400.json\n15\n```\n\n- apps/web/tests/k/k138-shell.spec.ts: 替えない — built-routes.ts の isBuilt で外枠のナビの「準備中」を見るだけ。足す /dev/mock/f8 の 2 行は外枠のナビに無い\n- apps/web/tests/k/k225-create-sections.spec.ts: 替えない — DESIGN-kaname.md の作る画面の区画の部品の値を読むだけ。足す search-focus はその部品でない\n- apps/web/tests/k/k300-stage2-mock.spec.ts: 替えない — /dev/mock/f1 の状態と、段 2 の 17 部品が design-gate.json と DESIGN に在るかを見る。足すのは別の部品 1 つ。design_gate を components/k ごと流す行は c/段9 で緑\n- apps/web/tests/k/k315-help.spec.ts: 替えない — 手引きのリンクの先が built-routes.ts に在るかを見るだけ。開発用の置き場は手引きに出ない\n- apps/web/tests/k/k330-stage3-mock.spec.ts: 替えない — /dev/mock/f2 の状態と design_gate（components/k を含む）。置き場は別・design_gate は緑\n- apps/web/tests/k/k350-stage4-mock.spec.ts: 替えない — /dev/mock/f3 の 14 の状態と外枠。K350-MK-005（ShellBell・k-bell-inline・k-sheet-me が無い）は F8・F10・mock/f8 にも無い（検索 0 件・下）\n- apps/web/tests/k/k369-pc-row-mock.spec.ts: 替えない — /dev/mock/f3-pc の 31 の状態。置き場を分けたので数は変わらない\n- apps/web/tests/reachability.spec.ts: 替えない — built-routes.ts の道を全部開いて 404 が無いかを見る。/dev/mock/f8 は 200、/dev/mock/f8/:id は「この状態はありません」の 200（f3 と同じ）\n- scripts/ci/contract.test.mjs: 替えない — 作り物の決定ログ（D-900.1 の 1 行）を書いて、消す口の根拠の決定を探すだけ。本物の決定ログの節の数は見ない（足すのは末尾の新しい節 §148 で、§147 までは変えない）\n- scripts/ci/k191_regen_all_test.py: 替えない — 作り手を流し直して生成物が 1 字も変わらないかを見る。built-routes.ts・k-tokens.css は作り手で作り直す\n- scripts/ci/k218_design_canvas_test.py: 替えない — DESIGN の部品をキャンバスの値と突き合わせる作り物の木と、本物の design_gate の D5 の訳。search-focus は component_exempt に訳つき（c/段9 で緑）\n- scripts/ci/k219_canvas_states_test.py: 替えない — キャンバスの絵の押せない部品を見る。キャンバスの絵は足さない\n- scripts/ci/k245_g27_reach_test.py: 替えない — components/k/index.ts だけを変えた回で層の検査（G27）が流れることを見るだけ。この葉の回でもそのとおり流れる\n- scripts/ci/k261_raw_lengths_test.py: 替えない — 生の長さの検査の作り物の木と、class_gate の層の一覧。運ぶ CSS に生の長さは無い（c/段9 で D8 緑・K400-DS-002）\n- scripts/ci/ticket_process_test.py: 替えない — 聞くことの頁（01_hearing/聞くこと_K-146.md）の答えの決定が決定ログに在るかと CI の段の並びを読む。足すのは末尾の新しい節 §148 だけで、前の決定の行は変えない\n\n```search\ngrep -rlE \"ShellBell|k-bell-inline|k-sheet-me\" apps/web/features/F8 apps/web/features/F10 \"apps/web/app/(dev)/dev/mock/f8\"\n0\n```",
+    "成果物": "- 部品 `features/F8/handover/views.tsx`・`handover.css`・`features/F10/invite/views.tsx`・`invite.css`・型 `components/k/search-field.tsx`・`search-field.css`\n- 差し込み口の先 `features/F8/handover/detail-slots.tsx`（配り分け）と区画のファイル 10 個・`use-handovers.ts`（どれも空の形）\n- モックの置き場 `apps/web/app/(dev)/dev/mock/f8/`（37 の状態）・下ごしらえ `07_functional/段9-F8/`\n- 正本の 1 部品・CI の範囲の地図・画面の葉の試験の道具 `apps/web/tests/k/handover-mock.ts`",
+    "決定ログ": "- 2026-11-20 代表の答え（answer=56812da22008・eaa451436670・f5cd1647389f）と下絵を見た会話（answer=fabd031f9b37・「あとは OK」）と知らせの消え方の OK（11:09）→ D-148.1〜38、詳細を切って出た問い 21〜33 の答え（answer=3d444fc8d59f・2026-11-20 14:14）→ D-148.39〜51（07_functional/段9-F8/決定ログに足す行.md）\n- 2026-11-20 PM の決め：決定ログ §148 と答えの記録は新しい葉 K-425 に移した（DC の 4 行と試験も K-425 の K425-DC-001〜004）\n- 2026-11-20 PM の決め：番号の枠 K-400〜K-420・決定 D-148.1〜51（§148）・差し込み口は段 7 の K-380（案 A）・承認待ちのスマホのカードは K-412（全部の種類を K-412 が描く・カードの区画は足さない）\n- 2026-11-20 PM の決め（2 回目の直し）：詳細の口は 6 のまま・帯は getTicket の今の渡しから・記録の読む口は記録を開いたときだけ／画面は役の名前で出し分けない（DB が決める）／担当者の下の返事待ちの字は渡しの種類で分ける／K-400 の SL の行は後ろの葉が入っても崩れない形\n- 2026-11-20 切る段の決め（葉を書く人）：部品（views.tsx）に値と動きを受ける任意の props を先に足す（画面の葉 5 本が同じ views.tsx を直さないため・前へ移す）。AI が動いているときの ▾ は押せる形（D-148.24・モックを直す）\n- 2026-11-20 切る段の決め（葉を書く人）：区画のファイルは空の形で先に作り、帯の種類の決め（bandKindOf）・入口の決め（entryOf）・返事待ちの字（waitingNoteOf）と 1 回だけの覚えをこの葉が持つ（後ろの葉がそれぞれ決めると食い違うため・前へ移す）\n- 2026-11-20 代表の答え（問い 23・answer=3d444fc8d59f・D-148.41）：1 回だけの帯は端末ごとに 1 回（手元の localStorage の覚えのまま・列を足さない）\n- 2026-11-20 まとめの直し：入口は getTicket の handover_kinds で決める（役の名前を見ない）。handover_kinds と決まった渡しを getTicket に載せるのは K-405 に頼む",
+    "PM に確かめたいこと": "1. 決まった：§148（PM の決め・2026-11-20）。段 9 は決定ログの新しい節 §148（D-148.1〜51）にする。§147 の表には足さない。trace_gate は表の何行目かで番号を数えるので、表は D-148.1 から順に抜けなしで並べる（前提と制約・実施事項）\n2. 決まった：知らせの消え方（D-148.30〜38）は下絵の問い合わせ answer=fabd031f9b37 に結ぶ（PM の OK・2026-11-20）\n\n- 詳細のパネルの「業務の型」の行（空の値）はモックから消した（代表 2026-11-22 D-150.60「業務の型は物として無くす」・answer=08a63df0368c。本物の detail-panel.tsx と f6 のモックからは、その葉が消すときに一緒に消える）"
+   },
+   "file": "11_tickets/K-400.md"
   },
   {
    "id": "K-419",
@@ -20385,6 +20764,95 @@
     "表の住所": "- 共通の表に足す分は、チケットごとのファイル（`.d/K-468.*`）に書く（K-325）。errors.json・ears-elsewhere.json・ci_scope.json は `python3 scripts/ci/build_registries.py` が `.d/` から作る生成物なので、直に書かない\n- 口の登録は、この葉の hooks のファイル `apps/api/src/hooks/search.ts` の `export const register = defineHooks({…})` に書く（K-326）。server.ts と fuzz の的は直に書かない（作り手 `python3 scripts/ci/gen_ts_registries.py` が一覧 `apps/api/src/hooks/all.generated.ts` を作る・生成物）\n- migration は足さない"
    },
    "file": "11_tickets/K-468.md"
+  },
+  {
+   "id": "K-472",
+   "title": "一覧の絞り込みの受け皿（12 欄を欄ごとの表にして 1 回で作り直す）と、担当者・段・種別・完了で絞る（listTickets・K-67 の葉）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-67",
+   "milestone": "F7",
+   "area": "毎日見る・探す・片付ける",
+   "assignee": "実装",
+   "due": "2026-11-24",
+   "estimate_hours": "1",
+   "estimate_basis": "実測なし・仮。形の近い本線の葉 K-92（一覧の口・問い合わせの確かめ・keyset・1 本の select）の口の部分の改め（K-92 の口の半分以下の手入れ）と K-351（口の契約の形と登録先）から引いた：query.ts を欄ごとの表に作り直す（表の型・5 欄・NOT_YET を表から出す）25 分・hooks.ts の where を表から組む（番号つきの値の積み方）15 分・契約を .d に移して 8 欄にする 10 分・自分の確かめ 10 分。q の数え方と鍵の 409 と E-LST-001 と契約の直し 15 分を足した。試験 17 行と土台（list.harness.ts）・前からの試験 1 本の直しは切る段で書いた",
+   "decisions": [
+    "D-128.152",
+    "D-128.157",
+    "D-128.111",
+    "D-144.3",
+    "D-125.12",
+    "D-125.13",
+    "D-151.1",
+    "D-151.20",
+    "D-129.42"
+   ],
+   "split": "",
+   "choke_points": [
+    "C2"
+   ],
+   "tests": [
+    "apps/api/test/features/F7/list-filters.test.ts"
+   ],
+   "carry": [
+    "apps/api/test/generated/get_tickets.test.ts",
+    "apps/api/test/features/F4/ticket-list.test.ts",
+    "apps/api/test/features/F7/list.harness.ts",
+    "apps/api/test/features/contract/k144.d/K-472.ts"
+   ],
+   "depends_on": [
+    "K-601",
+    "K-468"
+   ],
+   "acts": [
+    "A58",
+    "A113"
+   ],
+   "screens": [],
+   "apis": [],
+   "canvas": [],
+   "canvas_none": "口だけで見た目を変えない（絞りの札・チップ・条件を組む小窓は画面の葉 K-478 が持つ。正の絵は /dev/mock/f7）。正の絵の組とモックの状態は持たない",
+   "affects": [
+    "@kaname/api",
+    "@kaname/contracts",
+    "@kaname/errors"
+   ],
+   "ci_wide": [
+    "shared"
+   ],
+   "changes": [
+    "apps/api/src/features/F4/ticket-list/query.ts",
+    "apps/api/src/features/F4/ticket-list/hooks.ts",
+    "05_flow/screen_api.py",
+    "05_flow/screen_api.d/K-472.py",
+    "07_qa/test-specs/errors.d/K-472.json",
+    "07_qa/test-specs/errors.d/_base.json",
+    "07_qa/test-plan/ears-elsewhere.d/_base.json",
+    "scripts/ci/ci_scope.d/K-472.json",
+    "scripts/ci/schemathesis.toml",
+    "08_api/phase1/01_チケット.md"
+   ],
+   "flow": "見え方を切り替えて絞る",
+   "sections": {
+    "目的": "一覧の口 `listTickets`（GET /api/v1/tickets・K-92 が作った）の「まだ使えない」12 欄（kind_id・stage_id・assignee_id・due_from・due_to・start_from・start_to・overdue・fire・parent・fields・sort）を、**欄ごとの表**にして受け皿を 1 回で作り直し、担当者（assignee_id）・段（stage_id）・種別（kind_id）で絞れるようにする。K-473・K-474 は、この葉が作る表に **1 行ずつ足すだけ**（query.ts と hooks.ts の持ち主はこの葉。K-473・K-474 はこの葉の後）。\n\nあわせて、一覧の「状態：完了以外」（下絵の List・D-151.20「完了のチケットは一覧の『完了以外』で隠せる」）を口で受けるため、12 欄の外に **`done`**（true＝完了だけ・false＝完了以外）を 1 つ足す（段 1 つ（stage_id）では「完了以外」が出せない）。\n\n- 受ける形：`assignee_id`・`stage_id`・`kind_id`（どれも uuid）・`done`（`true` か `false`）。空の値（`?kind_id=`）は指定なし。付けたものは全部 AND で、見える範囲（行の守り）・`view`・`q`・`scope_id` と重ねて使える\n- 無い・別の会社の人や段を指す正しい uuid は 200・0 件（あるかないかを答えない・404 にしない）\n- この葉は **K-92 の前からの試験 `ticket-list.test.ts` の 3 行（K92-API-001・009・024）を切る段で替えて運ぶ**（meta に足せる鍵 counts を許す・12 欄の「表にある／まだ」の分かれ方を表から見る形にする）。K-473・K-474 はこの試験を替えない\n- 画面は K-478・K-479。期限・開始日・親・並び・見せる欄は K-473、数の札は K-474\n- あわせて、**前からある一覧の 422 のうち契約に書けなかった 2 つを、契約に書ける形に直す**（PM 2026-11-21 05:30・控え帳 2026-11-20 16:51「422 は契約に書ける形の誤りだけ」）：①探す言葉 `q` は「送られたままの文字で 100 文字まで」（契約の `maxLength: 100`・そろえた後の数えをやめる）②続きの鍵（cursor）は形（base64url・200 字）に合うのに読めないとき 422 でなく **409・E-LST-001**（欄なし・「最初から読み直してください」）。これで listTickets に契約に書けず残る 422 は 0 になる",
+    "完了の条件": "- [ ] 下の表の 17 行（K472-API-001〜017）が緑：`apps/api/test/features/F7/list-filters.test.ts`（土台 `list.harness.ts`）\n- [ ] 運ぶ前からの試験 `apps/api/test/features/F4/ticket-list.test.ts`（K92-API-001・009・024 を替えた版）が緑（ほかの K92 の行は替えずに緑）\n- [ ] 共有の試験の回で K144-API-871〜875 が緑（`k144.d/K-472.ts`）\n- [ ] 契約（`screen_api.d/K-472.py`）で listTickets の問い合わせが view・q・scope_id・kind_id・stage_id・assignee_id・done（＋ cursor・limit）になり、view は `enum: [\"mine\", \"all\"]`・done は `enum: [\"true\", \"false\"]`・q は `maxLength: 100` を契約の問い合わせの欄に持つ（`QUERY_RANGES`・K-468 が作る仕組み）。cursor の `pattern`（base64url・200 字）は作り手が持つ。契約の 4xx に 409（E-LST-001）が入る。生成物の差が無い\n- [ ] **契約に書けない決まりの例外の表を使わない**：`screen_api.d/K-472.py` にその表の行が無く、契約の `listTickets` の 422 に `x-unexpressible-422` の印が付かない。`scripts/ci/contract_shape_test.py` の K144_SHAPE_028（K-468 が足す）・K144_SHAPE_024 が緑。`scripts/ci/schemathesis.toml` から listTickets の例外（422 を受け付けとして数える行）を消しても契約の fuzz（G36）が緑\n- [ ] 手元の CI（このチケットの範囲）が緑",
+    "前提と制約": "分類: LIST, PERM\n\n- **query.ts が出すもの（K-473・K-474 がこの形に足す）**：\n  - `export interface FilterDef { name: string; parse(raw: string): { ok: true; value: unknown } | { ok: false; message: string }; sql(value: unknown, add: (v: unknown) => string): string | null }`（`add` は値を params に積んで `$n` を返す。`sql` は `page` の where に `and` で足す 1 つの条件を返す。tickets の別名は `t`。where に使わない欄（K-473 の `sort`・`fields`）は null を返し、値は `ListQuery` の別の欄が使う）\n  - `export const FILTERS: readonly FilterDef[]`（この葉の 4 行：`kind_id`・`stage_id`・`assignee_id`・`done`）\n  - `export const LIST_FIELDS = [kind_id, stage_id, assignee_id, due_from, due_to, start_from, start_to, overdue, fire, parent, fields, sort] as const`（契約が 12 欄として持つ名前。`done` は入れない）\n  - `export const NOT_YET: ReadonlySet<string>`（LIST_FIELDS のうち FILTERS に無いもの＝まだ使えない欄）。**表に行を足すと自動で縮む**（K-473 が 9 行足すと空になる）\n  - `parseListQuery(raw)` の外向きの形は変えない。`ListQuery` に `filters: readonly { def: FilterDef; value: unknown }[]` を足す。空の値は指定なしとして飛ばす（全部の欄で同じ）。まだの欄は **値が空でも付いていれば** 422・E-VAL-018（K-92 のまま）。知らない名前は 422・VALIDATION_ERROR\n  - `normalizeQ`・`escapeLike`・`normalizeNumber`・`Q_MAX`・`encodeCursor`・`decodeCursor` の名前と形は変えない（K-468 の探すが import して使う）\n- **契約に書く（PM 2026-11-21・控え帳 2026-11-20 16:51）**：口が 422 にする値は、契約の問い合わせの欄に書ける形の誤りだけにする。`done` は `true`／`false` の 2 つだけ（`enum`）、`view` は `mine`／`all` の 2 つだけ（`enum`）。`*_id` は契約で uuid。例外の表と `schemathesis.toml` の例外は足さない\n- **`q` の数え方（PM 2026-11-21 05:30）**：K-92 は「全角半角をそろえ前後の空白を除いた後」に 100 文字を超えると 422・E-VAL-017 だった。そろえた後の長さは契約に書けないので、K-468（探す）と同じ **「送られたままの文字（コードポイント）で 100 文字まで」** に直す（前後の空白も数える・全角も 1 文字・正規化で伸びる字〔㌔など〕も送られた字の数で数え、伸びても断らない）。契約は `q` に `maxLength: 100`（`QUERY_RANGES`）。`pattern` は書かない（100 文字以内なら何の字でも受ける＝形の決まりが他に無い）。NUL（U+0000）は、控え帳 `.ticket-flow/drift.md` の 2026-11-20 17:46 の決め（どの口でも入口で 422）で K-427 が入れる。今の本線のコードには q の NUL を断る所がまだ無い（`git grep` で探しても各口が除くだけ）ので、この葉は q の NUL を断る確かめを足さず、K-427 の入口の確かめを待つ（それまで q に NUL が来る道は K-92 の前からのまま・この葉で変えない）。探すときの全角半角・大文字小文字・前後の空白は今までどおり同じ扱い。`Q_MAX`・`normalizeQ`・`escapeLike`・`normalizeNumber` の名前と形は変えない（K-468 が使う）。E-VAL-017 の文は変わらず、`_base.json` の「出る条件」だけを直す\n- **続きの鍵（cursor）の 409（PM 2026-11-21 05:30）**：契約の cursor の形（`pattern: ^[A-Za-z0-9_-]{1,200}$`）は作り手が `KEY_CURSOR_OPS`（K-92 から）で書いてあり、形に合わない鍵は入口が 422（欄 cursor）で断る。**形に合うのに今の状態では読めない鍵（JSON でない・中身が合わない・古い形・別の view の鍵）は 409・E-LST-001（欄なし・本文は `new KanameError(\"E-LST-001\").toJSON()`）**。画面（K-478 ほか）は 409 のとき続きを足さず最初の分から読み直す。K-473 が鍵に sort を足すとき、別の sort の鍵も同じ E-LST-001（新しい番号を足さない）\n- 確かめる順（一覧の口）：①まだの欄（E-VAL-018・422）→ ②形の誤り（知らない名前・view・limit・scope_id・各欄の値・cursor の形・422 VALIDATION_ERROR）→ ③`q` の長さ（E-VAL-017・422）→ ④鍵の中身（409・E-LST-001）。422 の誤りと鍵の 409 が同時なら 422 を先に返す\n- 値の決まり：`*_id` は uuid（形でないものは 422・VALIDATION_ERROR・欄の名前つき。契約でも uuid なので入口が先に断る）。`done` は `true`／`false` 以外は 422・VALIDATION_ERROR・欄 done。条件は、種別 `t.kind_id = $n`・段 `t.stage_id = $n`・担当者 `t.assignee_member_id = $n`・完了 `exists (select 1 from ticket_stages s where s.id = t.stage_id and s.key is not distinct from 'done')`（false は `not exists …`）\n- hooks.ts：select は **1 本のまま**（K-92 の 9 つの固定の値の後に、表が積む値を $10 から足す）。並び・keyset・見える範囲の条件・`const page = rows.slice(0, q.limit);` の 1 行（`scripts/ci/contract_shape_test.py` の SLICE_ALLOWED がこの字を指す）は変えない\n- 新しいエラーは **E-LST-001（409・続きの鍵が読めない）の 1 つだけ**（形の誤りは VALIDATION_ERROR・欄ごとの理由。まだの欄は前からの E-VAL-018。E-LST-002〜019 は使わず残す）\n- 見える範囲・消したもの・他の人の下書きは K-92 のとおり（口と行の守りの 2 重・絞り込みで外れない）\n- 関門：C2（DB を読む）だけ。外への送信・ファイル・プロセスに触らない。ログに題名と q を出さない（K-92 のまま）\n- 試験を書いた後は変えない（D-128.125）。実装の前に試験を流して赤を確かめない（D-128.143）",
+    "依存の理由": "- K-601: 要る — この葉の decisions: は D-151.x を持つ。切る段の持ち込みの作り手 build_index.py の K4（決定が決定ログに無い）は始める時点の本線の決定ログを見るので、決定ログだけを運ぶ K-601（依存なし・文書だけ）が先に取り込まれること（段 9 の K-425 と同じ形）\n\n- K-468: 要る — 問い合わせの値域を契約に書く仕組み（`05_flow/screen_api.py` の `QUERY_RANGES`・`05_flow/build_api.py` の `qparams`・`contract_shape_test.py` の K144_SHAPE_028）を K-468 が作る。この葉の断片 `screen_api.d/K-472.py` の `QUERY_RANGES` はその仕組みを使う（先に取り込まれていないと作り手が表を読まず、K144_SHAPE_028 もない）。K-468 の `query.ts` の import は引き続き「触らない」\n- K-473・K-474 がこの葉に依存する（種類「要る」：query.ts の表・hooks.ts の where の組み方・契約の断片 `screen_api.d/K-472.py` の行・運ぶ試験を使い、同じ行を直す）\n- `05_flow/screen_api.py`（本体）の listTickets の 3 行（QUERIES・META・LIST_DETAILS）は、この葉が本体から消して `screen_api.d/K-472.py` に移す（同じ鍵を 2 つの断片が持てないので、前からの行を直す葉はこの葉だけ。K-473・K-474 は断片の行を直す）。`05_flow/screen_api.py`・`08_api/phase1/01_チケット.md` は段 8・段 9 のほかの葉も別の行を直すが、どちらも `.ticket-flow/local.yaml` の overlap_ok に既に入っている（別々の行）\n- K-468（探す）は query.ts を import して使うだけで、この葉と変えるファイルは重ならない（query.ts・hooks.ts の向きは「K-468 が使う側・この葉が直す側」で、K-468 はこの葉に依存しない）。この葉が K-468 に依存するのは上の仕組みのためだけ",
+    "目録で探した結果": "- 使う：K-92 の一覧の口（`features/F4/ticket-list/query.ts`・`hooks.ts`）・`isUuid`（@kaname/contracts）・`withTenant`・行の守りと `app.ticket_visible`（0102）・`approvals`・`ticket_stages`（段の鍵 `done`）。口の登録 `apps/api/src/hooks/tickets.ts`（ticketHooks）は変えない\n- 使う：試験の土台 `apps/api/test/features/fixture.ts`・K-92 の試験の作り方。この葉の土台 `list.harness.ts`（K-473・K-474 も使う）を切る段で書いた\n- 作る：欄の表 `FILTERS`・`NOT_YET` の導出・where を表から組む `buildSql`。探したが同じ形の物は無かった（K-92 の `NOT_YET` は名前の固定の集まりで、欄の値を読む部品を持たない）",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| 欄の表 | `apps/api/src/features/F4/ticket-list/query.ts`：上の「前提と制約」の `FilterDef`・`FILTERS`（5 行）・`LIST_FIELDS`・`NOT_YET`（導出）。`parseListQuery` は FILTERS を順に見て、付いている（空でない）欄の値を `parse` し、誤りを欄ごとに集めて 422・VALIDATION_ERROR にする。`ListQuery.filters` に有効な欄と値を入れる。`KNOWN`（知っている名前）は `view`・`q`・`scope_id`・`limit`・`cursor` と FILTERS の名前。**`parseListQuery` の数え方を 2 つ直す**：`q` は `normalizeQ` の前の `[...raw[\"q\"]].length > Q_MAX` で断る（そろえた後の長さで数えない・探す条件にはそろえた後の形を使う）。cursor は形（`CURSOR_MAX` 以内・`/^[A-Za-z0-9_-]+$/`）に合わなければ 422（欄 cursor・入口が先に断るので二重の守り）、形に合って `decodeCursor` が null なら、`Parsed` の新しい形 `{ ok: false; code: \"E-LST-001\"; details: [] }` を返す（確かめる順は前提のとおり）。`decodeCursor` の「形を確かめる」部分は parse 側に出し、`decodeCursor` は中身だけを見る |\n| where を表から組む | `apps/api/src/features/F4/ticket-list/hooks.ts`：`sqlFor(view)` を `buildSql(view, filters)` に作り直し、`page` の where の最後（`order by` の前）に、各欄の `def.sql(value, add)` を `and` で足す。`add` は params（K-92 の 9 つの後ろ）に値を積んで `$10`・`$11`… を返す。`params(q, today)` は 9 つの後ろに積んだ値をつなぐ。select は 1 本・取引は 1 つのまま。`const page = rows.slice(0, q.limit);` の行は字のまま残す。**`invalid(...)` の隣に 409 の返し方を足す**：`parsed.code === \"E-LST-001\"` なら `{ status: new KanameError(\"E-LST-001\").status（409）, body: new KanameError(\"E-LST-001\").toJSON() }`（`field`・`details` を付けない・DB に行かない） |\n| 契約 | `05_flow/screen_api.py`（本体）：`QUERIES`・`META`・`LIST_DETAILS` から `\"listTickets\"` の行を消す（3 行）。`05_flow/screen_api.d/K-472.py`：`QUERIES = {\"listTickets\": [\"view\", \"q\", \"scope_id\", \"kind_id\", \"stage_id\", \"assignee_id\", \"done\"]}`・`META = {\"listTickets\": {\"next_cursor\": {\"type\": \"string\", \"nullable\": True}}}`・`LIST_DETAILS = {\"listTickets\": {\"limit_max\": 100, \"sort\": False, \"desc\": \"取得（tickets）— チケットの一覧を見る（自分に関わるもの・すべて・グループ・題名か番号・担当者・段・種別・完了で絞る・期限切れの印）\", \"meta\": \"{ next_cursor }\"}}`（*_id は契約で uuid・入口が uuid でない値を口の前に断る）。**同じ断片に `QUERY_RANGES = {\"listTickets\": {\"view\": {\"enum\": [\"mine\", \"all\"]}, \"done\": {\"enum\": [\"true\", \"false\"]}, \"q\": {\"maxLength\": 100}}}`** を書く（問い合わせの値域を契約の欄に書く。空の値は指定なしで、`*_id` の uuid と同じく入口の形には含めない。cursor の `pattern` は作り手が `KEY_CURSOR_OPS` から書くので表に書かない）。**同じ断片に `ERRORS_4XX = {\"listTickets\": [{\"status\": 409, \"code\": \"CONFLICT\", \"body\": {\"error\": \"conflict\", \"code\": \"E-LST-001\"}, \"errors\": [\"E-LST-001\"], \"trigger\": \"続きの鍵が形（base64url の 1〜200 字）には合うが、今の状態では読めない（JSON でない・中身が合わない・古い形・別の view や並びの鍵）\", \"ears_form\": \"UNWANTED: IF 続きの鍵が形に合うのに今の状態では読めないなら、Kaname は 409 と E-LST-001 を返し、最初から読み直すよう促す\"}]}`**（汎用の 401・403・422・429 は残り 409 が足される。EARS の文に 409 の番号を入れる＝生成の試験の名前 `test_get_tickets_conflict` が決まる）→ `python3 05_flow/build_api.py` で作り直す。**この断片の行を K-473（QUERIES・LIST_DETAILS の sort・`QUERY_RANGES` の行）・K-474（META と meta）が直す**ので、行を 1 つのファイルに集めた。**この断片に例外の表を書かない** |\n| 契約の形の表 | 足さない。体を受けない口で、契約に書けない決まりの例外の表を使わないので、`scripts/ci/contract_shape.d/K-472.py` は作らない（`apis` は空で、登録先の決まりも求めない）。問い合わせの値域は K-468 が足す K144_SHAPE_028 が契約と照らす |\n| 文書 | `08_api/phase1/01_チケット.md` の 17 行（listTickets）に「`q` は送られたままの文字で 100 文字まで・続きの鍵が読めないときは 409・E-LST-001（最初から読み直す）」を足し、「kind・stage・assignee・client … は K-67 が作るまで 422」を、「kind_id・stage_id・assignee_id・done で絞れる（空は指定なし・全部 AND）。期限と開始の範囲・期限切れ・炎・parent・sort・fields は K-473 まで 422・E-VAL-018」に書き直す。**この葉が直すのはその所だけ**：同じ行の「答えの meta は next_cursor だけ」「総数と数は返さない（D-144.3）」は K-474 が、K-473 の分（範囲・並び）は K-473 が直す |\n| 運ぶ前からの試験 | `apps/api/test/features/F4/ticket-list.test.ts`（切る段で替えた版を carry で運ぶ）：K92-API-001（meta の足せる鍵に counts を許す）・K92-API-009（同じ）・K92-API-023（形に合わない鍵〔`%%%`〕は 422 のまま・形に合うのに読めない鍵〔中身が合わない・別の view の鍵〕は 409・E-LST-001 に替えた）・K92-API-024（12 欄が「表にある／まだ」のどちらか 1 つだけ・まだの欄は空の値でも 422・E-VAL-018・表にある欄は空の値で 200・知らない名前は 422）。K92-API-028（あ ×101 は 422・E-VAL-017・あ ×100 は 200）は **替えない**：「あ」は正規化で長さが変わらないので、送られたままで数えても同じ結果で通る。送られたままの数え方の新しい違い（前後の空白・正規化で伸びる字）は K472-API-017 が見る。ほかの K92 の行は替えない |\n| 共有の試験の行 | `apps/api/test/features/contract/k144.d/K-472.ts`（切る段で書いて carry で運ぶ）：listTickets の問い合わせ kind_id・stage_id・assignee_id・scope_id の uuid の行（K144-API-871〜874。scope_id は前からの欄だが、一覧の口が hooks.ts の作った口の拾い方に数えられると入口の行が要る・K144_SHAPE_017） |\n| エラー（errors.d/K-472.json）・前からの E-VAL-017 の文 | 新しい 1 つ **E-LST-001**（下の「足すエラー」）。`07_qa/test-specs/errors.d/_base.json` の E-VAL-017 は `when`・`false_when` だけを「送られたままの文字で 100 文字を超える（前後の空白も数える・全角も 1 文字）」「送られたままで 100 文字まで。空と空白だけは絞らない」に直す（`message`・`action`・`id` は変えない）。番号の枠は E-LST-001〜019（K-473 は新しい番号を足さず、鍵が読めない 409 は E-LST-001 を使う） |\n| 生成の試験の結び・範囲の地図 | 口は作り済み（K-92・ticketHooks）で新しい口ではないが、契約の 4xx に 409 が足されるので生成の試験 `apps/api/test/generated/get_tickets.test.ts`（この葉の `tests:` に入れた・K-461 の get_notifications.test.ts と同じ）に `test_get_tickets_conflict` が出る。`07_qa/test-plan/ears-elsewhere.d/_base.json` の listTickets の covers に `\"test_get_tickets_conflict\": {\"file\": \"apps/api/test/features/F7/list-filters.test.ts\", \"mark\": \"K472-API-016\"}` を足す（`file`・`reason` は前のまま）。生成の試験が `list-filters.test.ts` を読むので、`scripts/ci/ci_scope.d/K-472.json` に data_links `{\"paths\": [\"apps/api/test/features/F7/list-filters.test.ts\"], \"tests\": [\"apps/api/test/generated/get_tickets.test.ts\"]}` を 1 行足す（無いと ci_scope_test.py が赤・K-461 と同じ）。作り手の名前に合わせて covers を結ぶ（出た名前で 1 対 1・余る名前は na に理由）。口の登録・契約の形の表・k144 の葉のファイルは足さない（`apis` は空・touch_rules は新しい口にだけ要る）。試験は静的な import で hooks に届く |\n| 契約の fuzz の例外を消す | `scripts/ci/schemathesis.toml` の listTickets の `[[operations]]`（K-92 が足した「復号できない鍵の 422 を受け付けとして数える」行）を **消す**。鍵が読めない答えは 409（既定の受け付けの並びに入っている）、`q` の長さは契約の `maxLength` に書いたので、形どおりの入力を 422 で断る場面が無くなる。`listApprovalQueue` の行は別の葉の物なので触らない |\n\n### 足すエラー（errors.d/K-472.json・class と文）\n\n| id | class | 出る条件 | 文（message） | 一手（action） |\n|---|---|---|---|---|\n| E-LST-001 | conflict | チケットの一覧の続きの鍵が、形（base64url の 1〜200 字）には合うが今の状態では読めない（JSON でない・中身が合わない・古い形・別の view や並びの鍵） | 一覧の続きを読めませんでした。最初から読み直してください | 最初から読み直す（続きの鍵を付けずに開き直す） |\n\n`where: { screen: \"tickets\", state: \"list\" }`・layers は API・severity は low・source は D-151.1 と PM の決め 2026-11-21 05:30。形は errors.d/K-352.json と同じ（reproduce の steps は「続きの鍵に壊れた文字列を入れて GET /api/v1/tickets を呼ぶ」）。",
+    "外に影響する手順": "- なし — 一覧を絞るのは読むだけで、DB に書かず、知らせ・証跡・外のサービスを呼ばない。select は 1 本・取引は 1 つで、失敗したら何も残らない",
+    "テスト仕様と確認の結果": "`apps/api/test/features/F7/list-filters.test.ts`（本物の DB・本物の行の守り・口の入口は createApp と契約の op・偽の画面のログイン。土台 `list.harness.ts`）。運ぶ前からの試験 K92-API-001・009・024 は `ticket-list.test.ts` の中（替えた版）\n\n### 状態 × 入口 × 利用者の状態\n\n| 対象の状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| その人が担当 | 一覧の「担当者」で絞る | ログイン中 | 出る（ほかの人の担当は出ない） | このチケット | K472-API-001 |\n| 自分が承認する山田のチケット | 自分に関わるもの × 担当者 | ログイン中 | mine & assignee_id で出る・関わらないものは mine に出ない | このチケット | K472-API-002 |\n| その段・種別 | 絞りの札・欄 | ログイン中 | 出る（別の段・種別は出ない） | このチケット | K472-API-003・004 |\n| 完了／完了以外 | 状態「完了以外」 | ログイン中 | done=true は完了だけ・done=false は完了以外 | このチケット | K472-API-006 |\n| 値が空 | 欄を外した | ログイン中 | 指定なしと同じ | このチケット | K472-API-008 |\n| 値が uuid でない・true／false でない | 直に口を呼ぶ | ログイン中 | 422・欄の名前つき | このチケット | K472-API-007・009 |\n| 無い・別の会社の uuid | 直に口を呼ぶ | ログイン中 | 200・0 件 | このチケット | K472-API-010 |\n| 見えないグループ・消した・下書き | 絞り込み | 見る権限が無い人 | 絞っても出ない | このチケット | K472-API-012 |\n| 続きの鍵が形に合わない（base64url の 1〜200 字でない） | 直に API を叩く | ログイン中 | 422（欄 cursor・入口） | このチケット | K472-API-016 |\n| 続きの鍵が形に合うのに今の状態では読めない（中身が合わない・JSON でない・別の view の鍵） | 画面の古い「もっと見る」・直に API | ログイン中 | 409・E-LST-001（欄なし）。鍵を付けずに読み直せば 200 | このチケット | K472-API-016 |\n| 探す言葉が送られたままで 100 文字を超える・以内 | 探す欄 | ログイン中 | 101 は 422・E-VAL-017（欄 q）・100 は 200（前後の空白も数える・正規化で伸びる字は断らない） | このチケット | K472-API-017・K92-API-028 |\n| どれでも | 同じ | ログインしていない・ゲスト・同意し直し | K-92 のまま（401・403・E-AUTH-010） | K-92（K92-API-020） | ticket-list.test.ts |\n\n### 入力・失敗・操作の揺れ・守り\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K472-API-001 | 入力 | assignee_id（view=all）：自分・山田 | その人の担当のチケットだけ。付けなければ両方 |\n| K472-API-002 | 利用者の状態 | assignee_id × view=mine（承認するだけの人・山田だけの担当） | 自分が承認する経理の人の担当は mine & assignee_id=その人で出る。山田が担当で自分に関わらないものは mine & assignee_id=山田で 0 件・view=all で出る |\n| K472-API-003 | 入力 | stage_id：未着手の段・完了の段 | その段のチケットだけ |\n| K472-API-004 | 入力 | kind_id：種別が 2 つ以上ある会社 | その種別のチケットだけ |\n| K472-API-005 | 入力 | client_id（取引先で絞る）は無い（取引先を持たない・answer=4961f0280e9a） | 422・VALIDATION_ERROR・欄 client_id |\n| K472-API-006 | 入力 | done=false・done=true・付けない | 完了以外だけ・完了だけ・両方 |\n| K472-API-007 | 入力 | done が契約の形（true・false の 2 つだけ）に合わない：yes・1・True・完了 | 422・欄 done |\n| K472-API-008 | 入力 | 4 つの欄の空の値（`?kind_id=` など） | 付けない答えと同じ（指定なし） |\n| K472-API-009 | 入力 | 3 つの *_id に uuid でない値 | 422・欄の名前つき（404・500 にしない） |\n| K472-API-010 | 守り | 正しい uuid で、無い・別の会社の人・段・種別 | 200・0 件（あるかないかを答えない） |\n| K472-API-011 | 操作の揺れ | 担当者・段・題名・グループ（scope_id）を重ねる。完了（done）と段（stage_id）の組：done=false × 完了の段・done=true × 完了でない段・done=true × 完了の段 | 全部に合う 1 件だけ。done=false に完了の段の stage_id・done=true に完了でない段の stage_id は 0 件、組が合えば出る（K-478 の画面は重ねない前提だが、口は重ねても矛盾しない） |\n| K472-API-012 | 守り | 見えないグループ・消した・他の人の下書き × 担当者の指定 | 見えない人には出ない。見える人・取り込んだ本人には出る |\n| K472-API-013 | 操作の揺れ | 絞り込みを付けたまま 2 件ずつ読む | 合う 5 件が重ならず抜けず、付けずに読んだ並びと同じ |\n| K472-API-014 | 守り | 答えの形 | 絞り込みを付けても 1 件の鍵は K-92 の 12 個のまま |\n| K472-API-015 | 入力 | 題名・番号の探す（K-92）を絞り込みと重ねる | 全角の英字・番号のハイフンの種類は同じ。担当者が違えば 0 件 |\n| K472-API-016 | 入力 | 続きの鍵（形に合わない：`%%%`・201 字／形に合うが読めない：JSON でない・中身が合わない・`{\"x\":1}`・view=mine の鍵を view=all に） | 形に合わない鍵は 422（欄 cursor・入口）。形に合うのに読めない鍵は 409・E-LST-001・欄（field・details）なし・500 にしない。鍵を付けずに読み直せば 200 |\n| K472-API-017 | 入力 | q の長さは送られたままの文字で数える：あ ×101・前後の空白を足して 101・空白を含めて 100・㌔ ×60（正規化で 120 字になる） | 101（空白つきを含む）は 422・E-VAL-017・欄 q／空白を含めて 100 と ㌔ ×60 は 200（正規化で伸びても断らない）。探すときの全角半角・前後の空白は今までどおり同じ扱い |\n\n運ぶ前からの試験の行（`ticket-list.test.ts`・替えた版）：\n\n| 行 | 期待結果（替えた所） |\n|---|---|\n| K92-API-001 | 0 件：data は空・meta.next_cursor が null・meta の鍵は next_cursor（と counts だけ） |\n| K92-API-009 | 12 の鍵・meta は next_cursor を含み、足せる鍵は counts だけ（総数を返さない） |\n| K92-API-023 | view・limit は 422（欄ごと）・cursor は形に合わない鍵〔`%%%`〕だけ 422・欄 cursor。形に合うのに読めない鍵〔`{\"x\":1}`・view=mine の鍵を view=all に〕は 409・E-LST-001（K472-API-016 が同じ鍵を見る） |\n| K92-API-024 | 12 欄は「表にある／まだ」のどちらか 1 つ：まだは空の値でも 422・E-VAL-018、表にあるは空の値で 200。まだの欄は 12 欄の中だけ・kind_id・stage_id・assignee_id は表にある。知らない名前は 422・VALIDATION_ERROR |\n\n### テストの型の受け（分類 LIST・PERM）\n\n| 型 | 受ける行 |\n|---|---|\n| TP-LIST-01 0 件・1 件・ページの境目 | 001・010（0 件）・013（5 件を 2 件ずつ） |\n| TP-LIST-02 並びの値が同じものが多い | 013（絞った後の続きでも重ならない）。並びそのものは K92-API-003・018 が持つ |\n| TP-LIST-03 絞り込みを URL で開き直す・共有 | 口は同じ問い合わせで同じ答え（013 の読み直し）。古い続きの鍵を持った URL を開き直すと 409（016）。URL に載せる形は画面の K-478 |\n| TP-LIST-04 表記ゆれ・記号・とても長い語 | 015（題名・番号）・017（送られたままの 100 文字・正規化で伸びる字・前後の空白）。欄の値は uuid・true／false だけで表記ゆらぎが無い（007・009） |\n| TP-PERM-01 役が合わない人 | K92-API-020（前からの試験・替えない） |\n| TP-PERM-02 権限を外した直後 | K92-API-021（前からの試験）。絞り込みを付けても同じ守り（012） |\n| TP-PERM-03 他の会社の ID を直接 | 010（別の会社の人・段・種別を指しても 0 件） |\n| TP-PERM-04 一覧・数・検索 | 012・014（総数を返さない） |\n| TP-PERM-05 権限を付けた直後 | K92-API-021（前からの試験） |\n\n### 8 つの観点\n\n| 観点 | 判定 | 受ける行・要らない理由 |\n|---|---|---|\n| 入力 | 該当 | 001〜011・015〜017 |\n| 対象の状態 | 該当 | 003・006（段・完了） |\n| 時間の流れ | 要らない | 時間で決まる物を足さない（期限・開始日の範囲は K-473） |\n| 入口 | 該当 | 一覧の欄・直に口を呼ぶ（007・009・016）・共有の試験の入口の確かめ（K144-API-871〜875） |\n| 利用者の状態 | 該当 | 002・012 |\n| 失敗 | 該当 | 続きの鍵が読めない（409・016）。DB の失敗は入口の共通の 500／503（op.ts）が受ける。画面の「読めなかった」は K-478 |\n| 操作の揺れ | 該当 | 欄を重ねる（011）・絞ったまま次の分を読む（013） |\n| 守り | 該当 | 010・012・014 |\n\n### G-11〜G-16\n\n| 類型 | 判定 | 理由・受ける行 |\n|---|---|---|\n| G-11 外部リソースの実在 | N/A | 外部リソースを使わない・migration を足さない |\n| G-12 切り替わりの瞬間 | N/A | 時間・状態の切り替わりで答えが変わる物を足さない（完了にした直後の done の見え方は 006 の読み直し） |\n| G-13 機能の組み合わせ | 該当 | 欄 × 欄・欄 × view・欄 × q・欄 × scope_id（002・011・015）・絞る × 次の分（013） |\n| G-14 口座状態の波及 | 該当 | 権限を外した直後の見え方は K92-API-021 が持つ（前からの試験）。絞り込みで外れない（012） |\n| G-15 信号なし終了 | N/A | 外のプロセスを呼ばない |\n| G-16 有限資源の枯渇 | 該当 | select は 1 本・接続 1 本のまま。欄は 4 つ・値は uuid か真偽の 1 つずつで文は大きくならない。limit は 100 まで（K-92） |",
+    "速さ（今の値と目標の値）": "| 項目 | 今 | 目標 |\n|---|---|---|\n| 画面ごとの口の数 | 一覧は listTickets 1 本（絞り込みは同じ口） | 同じ（絞り込みを足しても口は増えない） |\n| 直列の段 | 1 | 1 |\n| 口ごとの文の数・取引の数 | 1 文・1 取引（K-92） | 1 文・1 取引のまま（where の条件が増えるだけ。K234-API-004 などの文の数を見る前からの試験が同じ） |\n| 認証の要る答えの Cache-Control | private, no-store（入口） | 同じ |\n| 新しい住所 | — | 増えない（問い合わせの名前が増えるだけ） |\n| staging での答えの時間（前後） | K-92 の記録 | 絞り込みを付けた形の記録を取り込んだ後に staging で測って書く。担当者・段・種別は tickets の列で、索引は K-92 が作った tenant 先頭の物のまま（絞りで遅くなるなら K-92 の索引の見直し） |",
+    "前からの試験を替えた所": "切る段の検査（cut_check.py prior）が出した物：`apps/api/test/features/F4/ticket-list.test.ts`（替える）・`scripts/ci/contract_shape_test.py`（替えない）。ほかに listTickets を叩く前からの試験を全文検索で洗い出した。\n\n```search\ngit grep -l \"listTickets\" -- apps/api/test scripts packages apps/web/tests\n10\ngit grep -l \"NOT_YET\" -- apps/api/test apps/api/src scripts\n2\n```\n\n（1 つ目の 10 は、本線の 7（試験 ticket-list.test.ts・画面の試験 create-ticket.spec.ts・生成物 packages/contracts/src/ops.ts・registry.ts・scripts の contract_shape_test.py・schemathesis.toml・scripts/tickets/cut_m1.py）と、この葉が運ぶ物 3 本（list-filters.test.ts・list.harness.ts・k144.d/K-472.ts）。2 つ目の 2 は、本線の query.ts と、この葉が運ぶ替えた版の ticket-list.test.ts）\n\n- apps/api/test/features/F4/ticket-list.test.ts: 替える — K92-API-001・009（meta の鍵に counts を許す）と K92-API-024（12 欄の表の分かれ方を `NOT_YET` から見る）。carry: に入れて切る段で替えた。K-473・K-474 は替えない（この版が表から見るので、欄が増えても通る）。ほかの K92 の行は替えない\n- scripts/ci/contract_shape_test.py: 替えない — K-468 が K144_SHAPE_028 を足して運ぶ（この葉は替えない）。SLICE_ALLOWED が hooks.ts の `const page = rows.slice(0, q.limit);` の字を指す。この葉はその行を字のまま残す（書き直しで字を変えると赤）。拾い方の見本（K144_SHAPE_015）は契約に残る欄のまま。契約の形の表は `contract_shape.d/K-472.py` の断片を足すだけで前からの行は変えない\n- scripts/ci/schemathesis.toml: 替える（設定）— listTickets の `[[operations]]`（K-92 の例外・422 を受け付けとして数える行）を消す。鍵が読めない答えは 409・`q` の長さは契約の `maxLength` に書いたので、例外に頼らない。`listApprovalQueue` の行などほかは触らない\n- apps/web/tests/features/F4/create-ticket.spec.ts: 替えない — 画面の試験が listTickets の答えを偽物で差し替える。口の問い合わせの欄が増えても答えの形は変わらない\n- scripts/tickets/cut_m1.py: 替えない — 道具の文字（口の名前を書いているだけ・中身を読まない）\n- apps/api/test/features/F4/create-ticket.test.ts・setup-tasks.test.ts: 替えない — 一覧の口を叩かない（作る口・初めの設定の確かめ）\n- scripts/ci/k144_*・apps/api/test/features/contract/k144-contract.test.ts: 替えない — 入口の uuid の行は k144.d/K-472.ts に足す（置き場）。本体は読むだけ",
+    "成果物": "- 欄の表 `apps/api/src/features/F4/ticket-list/query.ts`・where の組み方 `hooks.ts`・契約の断片 `screen_api.d/K-472.py`（本体からの移し・`QUERY_RANGES` の行）・文書の 1 行\n- 単体の試験 `list-filters.test.ts`・土台 `list.harness.ts`・替えた前からの試験 `ticket-list.test.ts`・共有の試験の行 `k144.d/K-472.ts`（切る段が書いた）",
+    "決定ログ": "- D-128.152・D-128.157：一覧の絞り込みはまだの欄を 422・E-VAL-018 で断る（黙って無視しない）。D-128.111・D-144.3：数は一覧の meta・総数を返さない。D-125.12：期限切れに炎。D-151.20：アーカイブは作らない・完了のチケットは「完了以外」で隠す\n- 切る段が決めたこと（2026-11-20・勧めと決定ログで決められた物）：\n  - 欄ごとの表（`FILTERS`）で受け皿を 1 回で作り、K-473・K-474 は行を足すだけにする。`NOT_YET` は表から導く\n  - 「完了以外」を口で受けるため、12 欄の外に `done`（true／false）を 1 つ足す（PM の欄の一覧にはない。stage_id 1 つでは出せないため）\n  - 無い・別の会社の uuid は 404 でなく 200・0 件（絞り込みの欄は存在を答えない）\n  - 欄の値の誤りは VALIDATION_ERROR（まだの欄は E-VAL-018 のまま。新しい E-LST 番号は鍵が読めない 409 の E-LST-001 だけ）\n  - 契約の listTickets の 3 行は本体から `screen_api.d/K-472.py` に移し、K-473・K-474 がその断片の行を直す\n  - **契約に書けない決まりの例外の表を使わない**（PM 2026-11-21）：`done`・`view` の値は契約の問い合わせの欄に `enum` で書く（`QUERY_RANGES`・K-468 が作る仕組み）\n  - **PM の決め 2026-11-21 05:30（契約に書けず 422 のまま残る物は残さない）**：①前からの `q`（そろえた後 100 文字で E-VAL-017）は **送られたままの 100 文字**に直し、契約の `maxLength: 100` に書く（`query.ts` の数えを正規化の前に・`_base.json` の E-VAL-017 の出る条件・K92-API-028 は替えずに通る・新しい違いは K472-API-017）②続きの鍵は形（base64url・200 字）を契約の `pattern`（作り手）に書き、**形に合うのに読めない鍵は 409・E-LST-001**（欄なし・「最初から読み直してください」。K92-API-023 の 2 つの鍵を 409 に替えて運ぶ・K472-API-016）③`schemathesis.toml` の listTickets の例外を消す\n  - `done` と `stage_id` は重ねても矛盾しない（done=false × 完了の段は 0 件）。K-478 の画面は重ねない（「完了以外」を押すと stage_id が外れる）が、口は重ねても答える（K472-API-011）",
+    "PM に確かめたいこと": "- 無い（前からの `q`・`cursor` の 2 つは PM の決め 2026-11-21 05:30 で契約に書ける形・409 に直した。`q` に `pattern` は書かなかった：100 文字以内なら何の字でも受けるので形の決まりが他に無い。必要なら PM が足す）\n- `done` は PM の 12 欄に無い 13 番目の欄（画面 K-478 の「完了以外」に要る）。置かないなら、K-478 は完了以外の全段の id を並べる口が要る（stage_id は 1 つしか受けない）\n- K144-API-871〜875 の番号は、段 8 の使っていない番号を借りた（876 は K-476 が使う）。ぶつかるなら空いている番号に付け替える\n- `07_qa/test-specs/errors.d/_base.json` の E-VAL-018 の「出る条件」の文（「まだ使えない絞り込み（期限と開始の範囲…）」）は、この葉と K-473 で古くなる。直すのは段 7 の K-387 が持つファイルなので、K-473 が入った後に PM が頼む（E-VAL-017 の出る条件はこの葉が同じファイルで直す）",
+    "リスクと懸念": "- `sql(value, add)` は `$n` の番号を値の積み方で決める。表の行が値を積まずに `$n` を書くと番号がずれる。試験（K472-API-011 の重ね使い）が全部の欄を同じ文に重ねて確かめる\n- K-473 が足す `sort`・`parent` は where だけでなく並び・cursor に響く。表は where を持つ欄の受け皿で、並びの表は K-473 が作る（この葉では作らない）",
+    "申し送り": "- K-473：表に 9 行（due_from・due_to・start_from・start_to・overdue・fire・parent・fields・sort）と 12 欄の外の 3 行を足す。fields は答えの鍵、sort は並びと cursor に響くので、where の表のほかに並びと答えの組み立ての表を K-473 が作る。`screen_api.d/K-472.py` の QUERIES・LIST_DETAILS（sort）・`QUERY_RANGES` の listTickets の行に足す（日付・真偽・parent・sort・fields の値域を契約に書く）\n- K-474：`screen_api.d/K-472.py` の META と LIST_DETAILS の meta を直す。counts は hooks.ts に 2 つ目の文として足す\n- K-478：状態「完了以外」は `done=false`。「完了」は `done=true`（またはその段の stage_id）\n- K-478：「もっと見る」が 409・E-LST-001 を受けたら、続きを足さずに鍵なしで最初の分から読み直す（口の答えの message「一覧の続きを読めませんでした。最初から読み直してください」）。探す欄は送られたままの 100 文字を超えたら 422・E-VAL-017（探す語の長さの数え方が前と変わる：正規化の前）",
+    "表の住所": "- 共通の表に足す分は、チケットごとのファイル（`.d/K-472.*`）に書く（K-325）。契約は `05_flow/screen_api.d/K-472.py`（契約の形の表 `contract_shape.d` の断片は作らない）。本体 `05_flow/screen_api.py` からは listTickets の 3 行（QUERIES・META・LIST_DETAILS）だけを消す\n- 共有の試験 k144-contract.test.ts に足す分は `apps/api/test/features/contract/k144.d/K-472.ts`（K-378・carry で運ぶ）\n- エラーは `07_qa/test-specs/errors.d/K-472.json`（E-LST-001 の 1 つ）・前からの E-VAL-017 の出る条件は `_base.json`（overlap_ok）・生成の試験の結びは `ears-elsewhere.d/_base.json` の listTickets の covers に 1 つ足す・範囲の地図は `scripts/ci/ci_scope.d/K-472.json`（K-325）。`python3 scripts/ci/build_registries.py`・`python3 05_flow/build_api.py`・`node scripts/ci/gen_ears_tests.mjs`（作り手の名前に合わせる）で生成物を作り直す\n- migration は足さない。口の登録（hooks のファイルの register）・契約の形の表の断片は足さない（口は K-92 の物・新しい口ではない）"
+   },
+   "file": "11_tickets/K-472.md"
   },
   {
    "id": "K-487",
@@ -21834,6 +22302,163 @@
     "見込み": "0.5 時間（実測なし・仮）。試験の行は 4 行（上限 30）。"
    },
    "file": "11_tickets/K-673.md"
+  },
+  {
+   "id": "K-780",
+   "title": "段 6 の決定ログ §153（D-153.1〜33）と答えの記録を本線に入れる（文書だけ・K-61 の葉・段 6 の最初・依存なし）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-61",
+   "milestone": "F5",
+   "area": "文書",
+   "assignee": "実装",
+   "due": "2026-11-27",
+   "estimate_hours": "0.25",
+   "estimate_basis": "実測なし・仮。形の近い段 8 の K-601・段 10 の K-673（決定ログの節と答えの記録を carry で写す・見込み 0.5 のうち、運ぶだけの部分）から引いた：決定ログの節と下ごしらえの文書と答えの記録を carry で写す 3 分・作り手（regen_all.py）で作り直す 5 分・試験 4 行を流す 2 分・CI 5 分（K-731 が運んでいた決定ログの試験 3 行を移しただけで、新しい仕事は無い）",
+   "decisions": [
+    "D-153.1",
+    "D-153.2",
+    "D-153.3",
+    "D-153.4",
+    "D-153.5",
+    "D-153.6",
+    "D-153.7",
+    "D-153.8",
+    "D-153.9",
+    "D-153.10",
+    "D-153.11",
+    "D-153.12",
+    "D-153.13",
+    "D-153.14",
+    "D-153.15",
+    "D-153.16",
+    "D-153.17",
+    "D-153.18",
+    "D-153.19",
+    "D-153.20",
+    "D-153.21",
+    "D-153.22",
+    "D-153.23",
+    "D-153.24",
+    "D-153.25",
+    "D-153.26",
+    "D-153.27",
+    "D-153.28",
+    "D-153.29",
+    "D-153.30",
+    "D-153.31",
+    "D-153.32",
+    "D-153.33"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "文書（決定ログ）と答えの記録と、それを読む試験だけ。口・DB・外への送り出し・秘密・画面に触らない",
+   "tests": [
+    "scripts/ci/k780_decision_log_test.py"
+   ],
+   "carry": [
+    "01_hearing/決定ログ_進行中.md",
+    "01_hearing/decider-answers.jsonl",
+    "07_functional/段6-F5/決定ログに足す行.md",
+    "scripts/ci/g65.d/K-780.txt"
+   ],
+   "depends_on": [],
+   "acts": [],
+   "screens": [],
+   "apis": [],
+   "canvas": [],
+   "canvas_none": "決定ログと下ごしらえの文書だけ。画面のコードを変えない",
+   "affects": [],
+   "ci_wide": [
+    "ci"
+   ],
+   "changes": [
+    "01_hearing/決定ログ_進行中.md",
+    "01_hearing/decider-answers.jsonl",
+    "07_functional/段6-F5/決定ログに足す行.md",
+    "scripts/ci/k780_decision_log_test.py",
+    "scripts/ci/g65.d/K-780.txt"
+   ],
+   "flow": "AI に任せて、確かめて、終える",
+   "sections": {
+    "目的": "段 6（K-61・F5 AI に任せて、確かめて、終える）の決定 D-153.1〜33（止める・取り下げる・自分で直す・差し戻しで次を選ぶ・承認待ちの残り・書き出しは作らない ほか）を、決定ログの新しい節 §153 として本線に入れる。\n\n段 6 のほかの葉は `decisions:` に D-153.n を持つ。切る段の持ち込みの作り手（`scripts/tickets/build_index.py` の K4）は、始める時点の本線の決定ログにその決定が無いと止まる。前は口と DB の最初の葉 K-731 が決定ログも運んでいたので、依存の無い葉（K-741・K-761 など）が先に始まると止まった。だから決定ログだけを先に本線へ入れる、この葉を分けた（段 5 の K-430・段 8 の K-601・段 10 の K-673 と同じ。PM の決め 2026-11-23）。K-731 は決定ログを運ばなくなり、この葉に依存する。\n\n- **決定ログ §153（切る段の枝 c/段6 で足した・carry で写す）**：D-153.1〜14・16・17・24・30・33＝代表の決め（問い合わせの答えの記録つき）／D-153.15＝代表の言葉（答えの記録の無い 2026-11-22 19:50）／ほか（26 を含む。26＝止められるのは承認する人だけ・2026-11-23 に根拠を「PM の決め（代表に朝に確かめる）」に直した）＝正本から導いた物と作り方の PM の決め\n- **答えの記録 `01_hearing/decider-answers.jsonl`**：§153 の代表の決めの行が持つ answer=<印> の答え（19 件）を枝に足してある。追記だけ・前の答えを消さない（id で和を取る）",
+    "完了の条件": "- [ ] 下の表の 4 行（K780-DC-001〜004）が緑：`scripts/ci/k780_decision_log_test.py`\n- [ ] 決定の検査（trace_gate・decision_source_gate）が緑（T1・T6・T8 は `tickets.json` にこの葉の decisions が載り、T7 は要件一覧を作り直して緑になる。作る段で `regen_all.py` を流してから）\n- [ ] 段 6 のほかの葉を始めるとき、build_index.py の K4（決定が決定ログに無い）が出ない\n- [ ] 手元の CI（このチケットの範囲）が緑",
+    "前提と制約": "分類: TOOL\n\n- 決定ログの §153 は切る段の枝 c/段6 で、もう実物を足した（`07_functional/段6-F5/決定ログに足す行.md` の 経緯・表 33 行のとおり）。この葉は carry でそれを写すだけ（start の持ち込みで先に写るので、この葉の K4 は通る）\n- 表は D-153.1 から順に 1 行ずつ・抜けなしで 33 行（trace_gate は「### 決めたこと」の表の何行目かで文の番号を数える）。代表の決めの行は 2026-11-22 高本さん・answer=<印>、D-153.15 は「2026-11-22 19:50 代表の言葉」、ほかは「PM の決め」（K780-DC-001 が行ごとに見る）。決める人の決定の行は、決める人への問い合わせの答えの記録と結びつく（decision_source_gate・K780-DC-004）。答えが変わって決定の行を直すのは、この葉ではなく変わった決定を持つ葉と一緒に PM が決める\n- 決定の検査 trace_gate の T1・T6・T8 と T7（要件一覧が正本より古い・`01_hearing/要件一覧.md` も同じ regen_all で作り直る）は、`11_tickets/tickets.json`（生成物・changes_ignore）にこの葉の decisions が載って初めて緑になる。切る段の枝では tickets.json を作り直していないので、今 K780-DC-002 を流すと T1・T6・T7・T8 で赤になることがある。作る段で `python3 scripts/tickets/regen_all.py` を流してから試験を流す。DC-001・003・004 は切る段の枝で緑\n- 決定ログの末尾に、段 9 の §148（K-425）・段 7 の §149（K-382）・段 5 の §150（K-430）・段 8 の §151（K-601）・段 10 の §152（K-673）も節を足す。末尾の足し合わせはぶつかる。取り込みの順は PM が決め、ぶつかったら**番号どおりに並べ直す**（この葉の §153 は字を変えない）。試験 DC-001 は「題が `## 153.` の節がちょうど 1 つ」を見るので、ほかの節が前後に在っても通る\n- K-731 は決定ログを運ばなくなった（K-731 の carry・本文から外し、depends_on にこの葉を足した）。K-731 の決定ログの試験（DC の 3 行）はこの葉の DC-001〜003 に移し、答えの記録の結びつきの行 DC-004 を足した\n- 控えの文書 `決定ログに足す行.md` は試験 DC-001 が行ごとに字を比べるので、carry で運ぶ（K-601 と同じ）",
+    "依存の理由": "- なし — 文書だけの葉。決定ログの末尾に新しい節を足すだけで、ほかの葉の物を使わない\n- K-731（決定ログの節 §153 が先に在ること・この葉の depends_on に足した）と、頭の `decisions:` に D-153.n を持つ段 6 のほかの葉（K-732〜K-779）が、この葉に依存する（種類「要る」：始める時点の本線の決定ログに D-153.n が在ること）。画面の葉は口の葉を通してこの葉に依存する",
+    "目録で探した結果": "- 使う：段 8 の K-601・段 10 の K-673（同じ形の葉・`git show c/段8:11_tickets/K-601.md`・`git show c/段10:11_tickets/K-673.md`）・`scripts/ci/trace_gate.py`・`scripts/ci/decision_source_gate.py`\n- 作る：決定ログの §153 と答えの記録は切る段の枝に在る物を写す。試験 `scripts/ci/k780_decision_log_test.py`（K-731 の `k731_decision_log_test.py` の DC の 3 行を移して番号を K780 に直し、答えの記録の結びつきの行を足した）",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| 作る段の最初 | `python3 scripts/tickets/regen_all.py` を**最初に**流して `11_tickets/tickets.json` と `01_hearing/要件一覧.md` を作り直す（生成物・changes_ignore）。流す前に試験 DC-002 を流すと T1・T6・T7・T8 で赤になる |\n| 決定ログ | `01_hearing/決定ログ_進行中.md` の末尾の `## 153. 段 6 AI に任せて、確かめて、終える：…（2026-11-22）`（切る段の枝で足した・carry で写す）。字を変えない |\n| 答えの記録 | `01_hearing/decider-answers.jsonl`（切る段の枝で 20 件足した・carry で写す・追記だけ）。同じ id の行は 1 つにする |\n| 下ごしらえの文書 | `07_functional/段6-F5/決定ログに足す行.md`（切る段の枝で書いた・carry で写す。試験 DC-001 が決定ログの行と 1 行ずつ字を比べる） |\n| 試験 | `scripts/ci/k780_decision_log_test.py`（K-731 の DC の 3 行を移した） |\n| G65 の置き場 | `scripts/ci/g65.d/K-780.txt`：1 行 `python3 scripts/ci/k780_decision_log_test.py`（自己試験の置き場・touch_rules） |\n| 範囲の地図 | 足さない（試験が読む決定ログ・下ごしらえの文書・trace_gate・decision_source_gate は試験のファイルから辿れる） |",
+    "外に影響する手順": "- なし — 文書だけ。DB・外・セッションに触らない",
+    "テスト仕様と確認の結果": "`scripts/ci/k780_decision_log_test.py`（python の unittest・ファイルと決定の検査の道具を読む）\n\n### 状態 × 入口 × 利用者の状態\n\n| 対象の状態 | 入口 | 利用者の状態 | 結果 | 受け持ち | テスト |\n|---|---|---|---|---|---|\n| 決定ログに §153 が在る | 決定の検査 | — | T3・T6・T8・G60 が緑 | このチケット | K780-DC-001〜004 |\n| 段 6 のほかの葉を始める | build_index.py の K4 | — | 止まらない | このチケット（依存は各葉） | — |\n\n### 行の表\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K780-DC-001 | 守り | 決定の行 | 決定ログの §153 の「### 決めたこと」の表に D-153.1〜D-153.33 が順にちょうど 1 回ずつ（33 行・表の n 行目が D-153.n）。代表の決めの行（1〜14・16・17・24・30・33）は 2026-11-22 高本さん・answer=<印>、15 は「2026-11-22 19:50 代表の言葉」、ほかは「PM の決め」で高本さん・answer= なし・「代表に確認中」の行は無い。決定ログに足す行.md と字が同じ |\n| K780-DC-002 | 守り | 決定の検査（T3・T6・T8） | trace_gate.py が 0 で終わり、出力に D-153.n の赤（T3・T8）が無い |\n| K780-DC-003 | 守り | この葉の decisions | K-780.md の頭の decisions: に D-153.1〜D-153.33 が全部在る（T8 の導出物） |\n| K780-DC-004 | 守り | 決める人の決定（G60） | decision_source_gate.py（--label 高本さん --since D-130）が 0 で終わる＝代表の決めの行の answer=<印> が答えの記録に在る |\n\n### テストの型の受け（分類 TOOL）\n\n| 型 | どこで受けるか |\n|---|---|\n| TP-TOOL-01 日本語の名前のファイル | K780-DC-001（決定ログ_進行中.md・決定ログに足す行.md） |\n| TP-TOOL-02 検査が何も見ていないのに緑 | K780-DC-001（行がちょうど 33 で並びが D-153.1〜33）・DC-003（decisions の被覆を数える） |\n| TP-TOOL-03 容れ物の中と手元で設定・版が違う | 要らない：CI の static の段と同じ引数で検査の道具を呼ぶ |",
+    "前からの試験を替えた所": "決定ログの末尾に新しい節を足すので、決定ログを読む前からの試験を探した。\n\n```search\ngit grep -l \"決定ログ_進行中\" -- 'scripts/ci/*_test.py' 'scripts/ci/*.test.mjs' 'apps/web/tests/**'\n12\n```\n\n- scripts/ci/k780_decision_log_test.py：この葉の試験（前の `k731_decision_log_test.py` を移した物。K-731 は `tests:` から外し、`git rm` する）\n- apps/web/tests/k/k350-stage4-mock.spec.ts・k382-stage7-mock.spec.ts：替えない — 段 4 の §147・段 7 の §149 の行を読むだけで、末尾の新しい節 §153 は両方を変えない\n- scripts/ci/k425_decision_log_test.py・k430_decision_log_test.py：替えない — 段 9 の §148・段 5 の §150 の行を数えるだけで、末尾に足す §153 は変えない\n- scripts/ci/contract.test.mjs：替えない — 作り物の決定ログ（D-900.1 の 1 行）を書いて読むだけ\n- scripts/ci/k210_gate_holes_test.py・k213_design_parent_test.py・k624_d6_mock_only_test.py：替えない — 検査の道具の穴・DESIGN の親・モックだけの決定を読むだけで、§153 の行を数えない\n- scripts/ci/k622_spec_sync_tools_test.py：替えない — 決定ログが正本の集まりに入っているかを見るだけ\n- scripts/ci/k623_decisions_registered_test.py：替えない — D-129〜D-148 の決定を数える（D-153 は数えない）\n- scripts/ci/ticket_process_test.py：替えない — 聞くことの頁の答えの決定が決定ログに在るかを見るだけ。前の決定の行は変えない",
+    "成果物": "- 決定ログの §153（33 行）・答えの記録 20 件・下ごしらえの文書 1 つ・試験 1 本",
+    "決定ログ": "- 2026-11-23 PM の決め：段 6 の決定ログ §153 は、K-731 から外して新しい葉 K-780（依存なし・文書だけ）で先に本線に入れる。段 6 のほかの葉はこの葉に依存する（段 5 の K-430・段 8 の K-601・段 10 の K-673 と同じ）。K-731 は flow.json の 2 行（A104・A106）だけを運ぶ"
+   },
+   "file": "11_tickets/K-780.md"
+  },
+  {
+   "id": "K-1100",
+   "title": "承認待ちの鍵の札が幅 375 で折り返さない（鍵の札を鍵の無い札と同じ幅にする）・キャンバスの突き合わせの「今」を止める（K-395 の直し）",
+   "kind": "タスク",
+   "stage": "未着手",
+   "parent": "K-66",
+   "milestone": "F6",
+   "area": "画面",
+   "assignee": "実装",
+   "due": "2026-11-23",
+   "estimate_hours": "0.5",
+   "estimate_basis": "実測なし・仮。CSS 1 規則と正本の部品 1 つ（余白と間）・突き合わせの準備に時計を止める 2 行・試験 1 本（4 行）。形の近い直しの葉は無いので、作業の内訳から引いた：正本と生成物 5 分・CSS 5 分・時計 5 分・実 Chrome で幅 375・1440 と /dev/mock/f6/prog-locked を見る 15 分",
+   "decisions": [
+    "D-125.38"
+   ],
+   "split": "",
+   "choke_points": [],
+   "choke_none": "画面の見た目（CSS とトークン）と試験の準備だけ。口も DB も外も触らない",
+   "tests": [
+    "apps/web/tests/k/k1100-stage-locked.spec.ts"
+   ],
+   "carry": [],
+   "depends_on": [
+    "K-395"
+   ],
+   "acts": [
+    "A17"
+   ],
+   "screens": [
+    "tickets"
+   ],
+   "apis": [],
+   "canvas": [
+    "全部の組"
+   ],
+   "affects": [
+    "@kaname/web"
+   ],
+   "ci_wide": [],
+   "changes": [
+    "apps/web/features/F6/progress/progress.css",
+    "apps/web/tests/_lib/fidelity-states.ts",
+    "04_design/DESIGN-kaname.md",
+    "apps/web/styles/k-tokens.css",
+    "design-gate.json",
+    "scripts/ci/ci_scope.d/K-1100.json",
+    "scripts/ci/ci_scope.json"
+   ],
+   "flow": "自分でやるチケットを、作業中にして、止めて（保留）、戻して、時間を入れて、終える",
+   "sections": {
+    "目的": "本線に入った K-395 が、仕組みの段（確認中・承認待ち・実行中）の段の札に鍵の印を足した（`features/F6/progress/views.tsx` の StageMenu の locked・`progress.css` の `.k-prog-stage-locked` の gap・`slot.tsx`）。印 11px と間 4px の分だけ札が広くなり、幅 375 のチケットの詳細で、頭の行の右（開始日・期限・段の札）の札が次の行へ落ち、見出しが 25px 下がった。\nキャンバスの突き合わせ G70 の `K238-VF-003 ticket-detail（TicketDetail）幅 375` が「見出し・y：キャンバス 139 ／ 画面 164」で赤（見出しの帯・y も 133→158）。K-395 の前の本線 b7959aa46 では緑。今は、列の後ろの葉が画面の範囲を流すたびにここで落ちる（K-470 が返された）。\n\nもう 1 つ：突き合わせの準備 `apps/web/tests/_lib/fidelity-states.ts` の ticket-detail は今日の日付を止めておらず、期限「11/01（N 日過ぎ）」の字が日ごとに長くなる。鍵が無くても、いずれ幅 375 で折り返して赤になる（キャンバスの字は「11/01（1 日過ぎ）」）。\n\nPM の決め（作り方・記録済み）：\n1. 画面の側で直す。鍵の印は残す（決まった見た目・K-395 ㉒・D-125.38・/dev/mock/f6 の prog-locked）。札の幅を鍵の無い頃と同じにする。キャンバスは変えない\n2. 突き合わせの準備の ticket-detail で「今」をキャンバスの字と同じになる日（日本時間の 11/02）に止める\n3. 試験は G70 の前からの突き合わせ（K238-VF-003 ticket-detail 375・1440）と band-* の組が受け、この葉の試験 1 本が札の幅と日付を受ける",
+    "完了の条件": "- [ ] 下の表の行（K1100-UI-001〜004）が緑：`apps/web/tests/k/k1100-stage-locked.spec.ts`\n- [ ] G70 の前からの突き合わせ `K238-VF-003 ticket-detail（TicketDetail）幅 375・1440` と `band-*`（approval・running・failed・before・confirm-done・done・delegated の 375・1440）が緑（`apps/web/tests/fidelity/fidelity.spec.ts`・替えない）\n- [ ] 前からの試験（下の「## 前からの試験を替えた所」）が緑\n- [ ] 見た目の検査（design_gate の D1〜D8・`--raw-lengths`・gen_tokens の check）が緑。CSS に生の長さを書かない\n- [ ] 手元の CI（このチケットの範囲）が緑",
+    "前提と制約": "分類: CRUD\n\n- 鍵の印（lucide の Lock・11px・字の後ろ）と札の色・字・角丸は変えない。変えるのは鍵の札の余白と、印と字の間だけ\n- 札の幅：鍵の無い札は 左 12・右 12 の余白（正本の部品 detail-stage の `2px 12px`）。鍵の札は 左 7・字・間 2・印 11・右 4（7＋2＋11＋4＝24＝12＋12）にして、同じ字の鍵の無い札と同じ幅にする\n- 値は正本の部品に足す：`04_design/DESIGN-kaname.md` の components に `detail-stage-locked`（padding `2px 4px 2px 7px`・gap `2px`）。作り手 `04_design/gen_tokens.py --web` で `apps/web/styles/k-tokens.css` に `--k-c-detail-stage-locked-pad`・`--k-c-detail-stage-locked-gap` を出し、CSS はこの 2 つだけを読む\n- 詳細の CSS（ticket-detail.css の `.k-detail-stage`）の余白に勝つよう、規則は `.k-detail-stage.k-prog-stage-locked` の 2 つの組で当てる（CSS の読み込みの順に頼らない）。見た目の検査の対応 `design-gate.json` の component_selectors に `detail-stage-locked` を足す\n- 正の欄は canvas: [全部の組]（G68）。鍵の札は K-395 の組（モック prog-locked・持ち主 K-395）と、詳細の突き合わせの組 ticket-detail（持ち主 K-226）の両方に出るほか、正本の部品と全部の画面が読む生成物 k-tokens.css を変えるため、ほかの持ち主の組を 1 つだけ指せない。見た目を確かめるのは G70 の ticket-detail・band-* と、この葉の試験 K1100-UI-002（モック prog-locked）\n- 突き合わせの準備は `page.clock.setFixedTime`（Date だけを止める。待ち・読み直しの時間の進みは止めない）で、日本時間 2026-11-02 12:00 に止める。ticket-detail の準備だけ（band-* はほかの土台 mockApi で、日付の字を突き合わせない）",
+    "目録で探した結果": "| 使う物 | どこ | 使い方 |\n|---|---|---|\n| 鍵の札 | `features/F6/progress/views.tsx` の StageMenu（locked） | 形は変えない |\n| 段の札の値 | 正本の部品 detail-stage（`--k-c-detail-stage-pad` など） | 鍵の札も同じ角丸・字・色。余白だけ別の部品 |\n| 突き合わせの準備 | `tests/_lib/fidelity-states.ts` の ticket-detail | 時計を止める 1 行を足す |\n| 探したが無かった物 | 鍵の札の余白と間のトークン | 正本に detail-stage-locked を足す |",
+    "依存の理由": "- K-395: 要る — 鍵の札（views.tsx の locked・progress.css の .k-prog-stage-locked・slot.tsx が詳細で鍵の札を出す）を本線に入れた葉。同じファイル progress.css を直す。本線に入っている",
+    "実施事項": "| 何を | どこ・どう |\n|---|---|\n| 正本の部品 | `04_design/DESIGN-kaname.md` の components の detail-stage の後に `detail-stage-locked`（padding・gap）。`python3 04_design/gen_tokens.py --web` と `python3 04_design/gen_preview.py` で出し直す |\n| 鍵の札の CSS | `features/F6/progress/progress.css` の `.k-prog-stage-locked` を `.k-detail-stage.k-prog-stage-locked` にし、gap と padding を `--k-c-detail-stage-locked-gap`・`--k-c-detail-stage-locked-pad` で読む |\n| 見た目の検査の対応 | `design-gate.json` の component_selectors に `\"detail-stage-locked\": \".k-detail-stage.k-prog-stage-locked\"` |\n| CI の範囲の地図 | `scripts/ci/ci_scope.d/K-1100.json`：data_links（progress.css・DESIGN-kaname.md・k-tokens.css → この葉の試験）と reads_ok（この試験が progress.css を読む理由）。`python3 scripts/ci/build_registries.py` で `scripts/ci/ci_scope.json` を作り直す |\n| 突き合わせの「今」 | `tests/_lib/fidelity-states.ts`：`DETAIL_NOW = new Date(\"2026-11-02T12:00:00+09:00\")`、ticket-detail の準備の頭で `page.clock.setFixedTime(DETAIL_NOW)` |",
+    "テスト仕様と確認の結果": "`apps/web/tests/k/k1100-stage-locked.spec.ts`（実 Chrome。詳細は突き合わせの準備の ticket-detail で口を網の手前で差し替え、モックは口を 599。本人の Bridge 38617 は 404。固定の待ちは使わない）\n\n| 行 | 観点 | 分岐 | 期待結果 |\n|---|---|---|---|\n| K1100-UI-001 | 入口 | チケットの詳細（承認待ち・鍵の札）を幅 375・1440 で開く | 頭の行の右の 3 つ（開始日・期限・段の札）の縦の真ん中が、段の札の縦の真ん中と ±2px でそろう（札が次の行へ落ちない） |\n| K1100-UI-002 | 入口 | モック /dev/mock/f6/prog-locked を幅 375・1440 で開く | 鍵の札「承認待ち」は鍵の印（svg）を持ち、印は札の箱の中。札の幅は、同じ字の鍵の無い札（.k-detail-stage）と ±0.5px で同じ |\n| K1100-UI-003 | 時間の流れ | 突き合わせの準備 ticket-detail で開く（今日の日付に依らない） | 頭の行に「期限 11/01（1 日過ぎ）」。頁の中の今日は 2026-11-02 |\n| K1100-UI-004 | 守り | progress.css の鍵の札の規則を読む | `.k-detail-stage.k-prog-stage-locked` が在り、padding と gap を `--k-c-detail-stage-locked-pad`・`-gap` で読み、生の px を書かない |\n\n前からの突き合わせ（替えない・同じ試験が受ける）：`apps/web/tests/fidelity/fidelity.spec.ts` の `K238-VF-003 ticket-detail` 幅 375・1440（見出し・見出しの帯の y がキャンバスと同じ）と `K238-VF-003 band-*` の 14 本。\n\n### テストの型の受け（分類 CRUD）\n\n| 型 | どこで受けるか |\n|---|---|\n| 2 人が同時に直す | 要らない: TP-CRUD-01 はこの葉に当たらない（見た目の余白と試験の時計だけを直し、書く・消す・送る操作を足さない。段を変える操作は K-395 の試験が受けたまま） |\n| 消したもの | 要らない: TP-CRUD-02 はこの葉に当たらない（見た目の余白と試験の時計だけを直し、書く・消す・送る操作を足さない。段を変える操作は K-395 の試験が受けたまま） |\n| 子の扱い | 要らない: TP-CRUD-03 はこの葉に当たらない（見た目の余白と試験の時計だけを直し、書く・消す・送る操作を足さない。段を変える操作は K-395 の試験が受けたまま） |\n| 2 回押し | 要らない: TP-CRUD-04 はこの葉に当たらない（見た目の余白と試験の時計だけを直し、書く・消す・送る操作を足さない。段を変える操作は K-395 の試験が受けたまま） |\n| 途中で失敗 | 要らない: TP-CRUD-05 はこの葉に当たらない（見た目の余白と試験の時計だけを直し、書く・消す・送る操作を足さない。段を変える操作は K-395 の試験が受けたまま） |\n| 書きかけ | 要らない: TP-CRUD-06 はこの葉に当たらない（見た目の余白と試験の時計だけを直し、書く・消す・送る操作を足さない。段を変える操作は K-395 の試験が受けたまま） |",
+    "前からの試験を替えた所": "changes: の 4 つ（progress.css・正本 DESIGN-kaname.md・生成物 k-tokens.css・design-gate.json）と、鍵の札・突き合わせの準備を読む・使う前からの試験を検索で出した（精査の指摘で 4 つ全部に広げた）。\n\n```search\ngit grep -ln 'progress\\.css\\|DESIGN-kaname\\|k-tokens\\.css\\|design-gate\\.json\\|k-prog-stage-locked\\|prog-locked\\|ticket-detail' -- 'apps/web/tests/**' 'scripts/ci/*test*'\n21\n```\n\n- apps/web/tests/_lib/fidelity-states.ts: 替える — ticket-detail の準備で「今」を止める（試験の道具なので changes: に入れた）\n- apps/web/tests/k/k1100-stage-locked.spec.ts: 替える — この葉の試験（新しい）\n- apps/web/tests/k/k382-stage7-mock.spec.ts: 替えない — K382-MK-003 は progress.css に生の px・色が無いことを見る（足す規則はトークンだけ）。prog-locked は 26 の状態の 1 つとして開くだけ\n- apps/web/tests/k/k395-progress.spec.ts: 替えない — モックと本番の鍵の札を同じ値で比べる（どちらも同じ部品と CSS）・字「承認待ち」「実行中」を見る（字は変えない）\n- apps/web/tests/k/k226-ticket-detail.spec.ts: 替えない — K226-UI-028 が ticket-detail の突き合わせを使う（「今」が止まり、キャンバスと同じ字になる）。ほかの行は自分の日付（jst(-1) など）で期限の字を見る\n- apps/web/tests/k/k380-detail-slots.spec.ts: 替えない — K380-UI-006（幅 375 で段の札「承認待ち」と期限「（12 日過ぎ）」が横に並ぶ）は、鍵の札が鍵の無い札と同じ幅に戻ることで、K-395 の前と同じ並びになる\n- apps/web/tests/k/k381-popup-layer.spec.ts: 替えない — 正本の popup-layer の zIndex を読み、design_gate を実の木で流す。足す部品 detail-stage-locked は design-gate.json の対応と CSS の規則がそろうので D5 が通る\n- apps/web/tests/k/k138-shell.spec.ts・k225-create-sections.spec.ts: 替えない — 正本の別の部品（使えない状態の不透明度・作る面の区画）の値を読むだけ。足す部品に触れない\n- apps/web/tests/k/k217-page-parts.spec.ts・k232-legal-page.spec.ts: 替えない — k-tokens.css の別のトークン（--k-c-page-*・文面の箱）を読むだけ。足すのは 2 行で、ほかの行は変わらない\n- apps/web/tests/k/k300-stage2-mock.spec.ts・k330-stage3-mock.spec.ts・k350-stage4-mock.spec.ts・k369-pc-row-mock.spec.ts: 替えない — 正本・生成物・design-gate.json を「その段の部品が在る」ことと検査の道具の一覧として読む。足す部品は正本の components と design-gate.json の両方に在る（K300-DS-004 と同じ形）\n- scripts/ci/k216_fidelity_config_test.py・k238_fidelity_ci_test.py: 替えない — 突き合わせの設定（ticket-detail の組・持ち主 K-226）と CI の読み方を見る。設定 fidelity.json は変えない\n- scripts/ci/k218_design_canvas_test.py・k219_canvas_states_test.py・k254_canvas_values_test.py: 替えない — 正本の部品・段とキャンバスの値の対応を見る。足す部品は余白と間だけで、色・字・段を足さない（手元で緑）\n- scripts/ci/k261_raw_lengths_test.py: 替えない — 生の長さの検査（D8）を作りものの木で確かめる。この葉の CSS は生の長さを書かない（G72 は手元で緑）",
+    "速さ（今の値と目標の値）": "| 項目 | 今 | 目標（この葉） |\n|---|---|---|\n| 口の数・直列の段・二重 | 変えない | 変えない（CSS とトークンだけ） |\n| 新しい住所 | — | 増えない |",
+    "決定ログ": "- 2026-11-23 PM の決め（作り方）：画面の側で直す・鍵の印は残す・札の幅を鍵の無い頃と同じにする（印を札の余白の中に収め、余白をその分詰める）・キャンバスは変えない・突き合わせの「今」をキャンバスの字の日に止める",
+    "リスクと懸念": "- 鍵の札の左右の余白が 7 と 4 で左右がそろわない（印の側を詰めた）。/dev/mock/f6/prog-locked を実 Chrome の 375・1440 で見て、印と字が離れて見え、箱の外へ出ないことを確かめる（K1100-UI-002）\n- 「今」を止めるのは突き合わせの準備の ticket-detail だけ。ほかの組で日付の字を突き合わせる物が増えたら、その準備も止める",
+    "申し送り": "- なし"
+   },
+   "file": "11_tickets/K-1100.md"
   }
  ]
 }

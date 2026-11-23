@@ -375,6 +375,8 @@ async function localBridgeOtherAccount(route: Route): Promise<void> {
 
 /** チケットの詳細（K-226・キャンバス TicketDetail）：外枠の口に、承認待ちのチケット 1 件と実行 1 件・承認の中身を足す（キャンバスと同じ人とデータ） */
 const DETAIL_ID = "0193c5a0-0000-7000-8000-00000000d226";
+/** チケットの詳細の「今」（キャンバスの「11/01（1 日過ぎ）」と同じ字になる日・日本時間の 11/02 の昼。K-1100） */
+const DETAIL_NOW = new Date("2026-11-02T12:00:00+09:00");
 const DETAIL_APPROVAL = "0193c5a0-0000-7000-8000-0000000ad226";
 async function detailApi(page: Page): Promise<string> {
   await shellApi(page, 2);
@@ -563,7 +565,10 @@ export const FIDELITY_STATES: Record<string, (page: Page, path: string) => Promi
     await expect(page.locator('button[data-act="switch-account"]')).toBeVisible();
   },
   // チケットの詳細（K-226・キャンバス TicketDetail）：承認待ちのチケットを開き、題名と右のパネルが描かれるまで待つ
+  //   「今」はキャンバスの字（期限 11/01（1 日過ぎ））と同じになる日本時間の 11/02 に止める。止めないと「何日過ぎ」の字が日ごとに長くなり、
+  //   幅 375 で頭の行が折り返す（K-1100）。止めるのは Date だけで、時間の進み（待ちや読み直し）はそのまま
   "ticket-detail": async (page, path) => {
+    await page.clock.setFixedTime(DETAIL_NOW);
     const id = await detailApi(page);
     await page.goto(path.replace("{ticket}", id));
     await expect(page.locator("header.k-page-head h1")).toHaveText("セイコー様へ 11月分の請求書を送る");
