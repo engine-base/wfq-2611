@@ -536,13 +536,13 @@ class ContractShapeTest(unittest.TestCase):
 
     def test_K144_SHAPE_010_every_status_a_hook_returns_is_in_the_contract(self) -> None:
         """今ある口の全部（apps/api/src/hooks に並ぶ口）の振る舞いが返しうる状態コードは、全部その口の契約の responses にある（機械で拾う）。
-        K-57・K-60 の口に限らない（同意の口の 500 E-PAGE-003 など・PM の続きの指示 2026-11-08）"""
+        K-57・K-60 の口に限らない（同意の口の 503 E-PAGE-003 など・PM の続きの指示 2026-11-08・K-1106）"""
         cat = catalog_status()
         regions = hook_regions()
         for op_id in ("createPairingCode", "downloadBridgeRelease", "createTicket", "consentToTerms", "getCurrentTerms",
                       "createSignup", "verifySignup", "stepUp", "createConversation"):
             self.assertIn(op_id, regions, f"{op_id} の振る舞いを拾えていない（拾い方が壊れた）")
-        self.assertIn(500, statuses_in(regions["consentToTerms"][0], cat, regions["consentToTerms"][1]), "同意の口の serverDown（500）を拾えていない")
+        self.assertIn(503, statuses_in(regions["consentToTerms"][0], cat, regions["consentToTerms"][1]), "同意の口の serverDown（503・K-1106）を拾えていない")
         # 口の振る舞いを足す所（本物のサーバーと fuzz の的が束ねる一覧 apps/api/src/hooks/all.generated.ts・K-326）は、
         #   全部 apps/api/src/hooks のファイルの register から来る（拾う対象の外に口を置かない）
         listed = (HOOKS_DIR / "all.generated.ts").read_text(encoding="utf-8")
