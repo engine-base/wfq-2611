@@ -22608,7 +22608,9 @@
    "canvas": [],
    "canvas_none": "見た目を変えないチケット（DB の表・関数・行の守りだけ）。口は K-675 以降、画面は K-682 以降が持つ（正は /dev/mock/f9）",
    "affects": [
-    "@kaname/db"
+    "@kaname/db",
+    "@kaname/api",
+    "@kaname/contracts"
    ],
    "ci_wide": [
     "db",
