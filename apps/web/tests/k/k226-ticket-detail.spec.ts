@@ -274,7 +274,7 @@ test("K226-UI-030 番号をコピーできない（クリップボードが断�
   await expect(page.getByText("番号をコピーしました")).toHaveCount(0);
 });
 
-test("K226-UI-008 まだ使えない操作（複製・ほかの操作・本文の道具 14 個・版と差分・パネルのやり取りと AI・子を足す・つながりを足す・AI と話す）：在る・aria-disabled・薄さ 0.55・押しても Enter でも何も起きない", async ({
+test("K226-UI-008 まだ使えない操作（複製・ほかの操作・本文の道具 14 個・版と差分・パネルの AI・子を足す・つながりを足す・AI と話す）：在る・aria-disabled・薄さ 0.55・押しても Enter でも何も起きない。パネルのやり取りは押せる（K-392）", async ({
   page,
 }) => {
   const writes = countWrites(page);
@@ -282,6 +282,12 @@ test("K226-UI-008 まだ使えない操作（複製・ほかの操作・本文�
   const main = page.locator(".k-detail");
   for (const n of [...DETAIL_INERT, "高本のAI と話す", "高本のAI"])
     await expectInert(page, main.getByRole("button", { name: n, exact: true }), n, writes);
+  // K-392：パネルのタブ「やり取り」は押せる形（aria-disabled が無い・tabIndex で飛ばさない）
+  const talk = panel(page)
+    .getByRole("navigation", { name: "パネルのタブ" })
+    .getByRole("button", { name: "やり取り", exact: true });
+  await expect(talk).not.toHaveAttribute("aria-disabled", "true");
+  await expect(talk).not.toHaveAttribute("tabindex", "-1");
 });
 
 test("K226-UI-009 本文の道具の帯：14 個がキャンバスの順に並び、右に「「/」で部品を入れる ・ 本文の版 4」（区画の版のいちばん大きい数）と 版と差分。帯の見た目（地・上下の線・左右 20px・上に貼り付く（幅 1440 は外枠の上の帯の下の top 48・幅 375 は top 0）・高さ 28 で幅 30 以上・中の字があふれない・押せないグレー）はキャンバスどおり（部品 DocTools が生まれるこのチケットで見る）", async ({

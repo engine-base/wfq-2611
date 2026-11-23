@@ -6638,6 +6638,38 @@
    "severity": "high"
   },
   {
+   "id": "E-VAL-027",
+   "class": "validation",
+   "where": {
+    "screen": "tickets",
+    "state": "talk"
+   },
+   "when": "やり取りに書くとき・直すときに、本文が空・空白だけ（全角の空白・改行も）",
+   "false_when": "1 文字以上の字を書いた",
+   "message": "書き込む文を書いてください",
+   "action": "文を書いてから送る",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "チケットの詳細のやり取りを開く",
+    "steps": [
+     "書く欄に空白だけを入れて送る"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-128.45",
+    "D-130.1"
+   ],
+   "support_code": "VAL-027"
+  },
+  {
    "id": "E-CONF-030",
    "class": "conflict",
    "where": {
@@ -7300,6 +7332,156 @@
    "source": [
     "D-125.62",
     "D-151.16"
+   ]
+  },
+  {
+   "id": "E-DEL-010",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "子・孫がいるチケットを、扱いを選ばずに消した（確かめた後に子が足された場合も）",
+   "false_when": "子・孫がいない、または扱い（別の親へ移す・一緒に消す・親を外して残す）を選んだ",
+   "message": "このチケットには子・孫がいます。別の親へ移す・一緒に消す・親を外して残す、のどれかを選んでください",
+   "action": "扱いを選ぶ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "子のチケットがあるチケットの詳細を開く",
+    "steps": [
+     "「…」から「消す」を選ぶ",
+     "扱いを選ばずに消す（確かめの後で別の人が子を足した状態）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.62",
+    "D-151.14"
+   ]
+  },
+  {
+   "id": "E-DEL-011",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "子の移し先に、消すチケット自身かその子・孫を選んだ",
+   "false_when": "移し先がそれ以外のチケット",
+   "message": "子の移し先に、消すチケット自身やその子・孫は選べません",
+   "action": "別の親を選ぶ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "子・孫のあるチケットの詳細を開く",
+    "steps": [
+     "「…」から「消す」を選ぶ",
+     "「別の親へ移す」で移し先に自分の子を選ぶ"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.51",
+    "D-125.62"
+   ]
+  },
+  {
+   "id": "E-DEL-012",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "子を移し先に移すと、親子が 3 段を超える",
+   "false_when": "移した後も親子が 3 段までに収まる",
+   "message": "その親に移すと、親子が 3 段を超えます",
+   "action": "浅い親を選ぶ",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "孫のいる子を持つチケットの詳細を開く",
+    "steps": [
+     "「…」から「消す」を選ぶ",
+     "「別の親へ移す」で 2 段目のチケットを移し先に選ぶ"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.51",
+    "D-125.62"
+   ]
+  },
+  {
+   "id": "E-DEL-013",
+   "class": "permission",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "一緒に消す子・孫に、自分が消せない物がある（別のグループで編集の権限が無く、作った人でもない）",
+   "false_when": "一緒に消す子・孫が全部、作った人か編集の権限のある物",
+   "message": "一緒に消す子・孫に、あなたが消せないチケットがあります",
+   "action": "別の扱いを選ぶか、そのグループの人に頼む",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "別のグループの子を持つチケットの詳細を開く",
+    "steps": [
+     "「…」から「消す」を選ぶ",
+     "「一緒に消す」を選ぶ"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.62",
+    "D-151.16"
+   ]
+  },
+  {
+   "id": "E-DEL-014",
+   "class": "not_found",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "子の移し先のチケットが見つからない（無い・消えている・見えない・別の会社・移し先を指していない）",
+   "false_when": "移し先が見える・消えていないチケット",
+   "message": "子の移し先のチケットが見つかりませんでした",
+   "action": "親を選び直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "子のチケットがあるチケットの詳細を開く",
+    "steps": [
+     "「…」から「消す」を選ぶ",
+     "「別の親へ移す」で移し先を選ばずに（または見えない物を指して）消す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-125.62",
+    "D-129.43"
    ]
   }
  ],
