@@ -31,7 +31,6 @@ function Ops({ screen, crumbs, children }: { screen: OpsScreen; crumbs: Crumb[];
   );
 }
 
-const SUPPORT: Crumb[] = [{ label: "問い合わせ" }];
 const NOTICES: Crumb[] = [{ label: "お知らせ", href: "/dev/mock/f12-ops2/oq-notices" }];
 const BILLS: Crumb[] = [{ label: "請求" }];
 const PLANS: Crumb[] = [
