@@ -26,8 +26,8 @@ describe("DELETE /api/v1/knowledge/folders/:id", () => {
   });
   it("test_delete_knowledge_folders_id_rejected_422", () => {
     // UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）
-    // 本物の試験：apps/api/test/features/contract/k144.d/K-675.ts の「K144-API-104」（同じ CI の G3 で流れる）
-    expect(readFileSync("apps/api/test/features/contract/k144.d/K-675.ts", "utf8")).toContain("K144-API-104");
+    // 本物の試験：apps/api/test/features/contract/k144.d/K-678.ts の「K144-API-104」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/contract/k144.d/K-678.ts", "utf8")).toContain("K144-API-104");
   });
   it("test_delete_knowledge_folders_id_conflict", () => {
     // UNWANTED: IF 中にページかフォルダがあるなら、Kaname は 409 と E-KNW-024 を返し、ページもフォルダも変えない

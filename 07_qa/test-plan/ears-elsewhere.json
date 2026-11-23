@@ -2019,7 +2019,7 @@
      "mark": "K144-API-032"
     },
     "test_delete_knowledge_folders_id_rejected_422": {
-     "file": "apps/api/test/features/contract/k144.d/K-675.ts",
+     "file": "apps/api/test/features/contract/k144.d/K-678.ts",
      "mark": "K144-API-104"
     },
     "test_delete_knowledge_folders_id_session_unresolved_2": {
