@@ -458,9 +458,9 @@
 
 /* ---- 狭い幅ではみ出さない：表は外側の箱だけで横に送る（ページ全体は動かさない） ---- */
 .k-op-shell,
-.k-op-shell .k-body,
-.k-op-shell .k-work,
-.k-op-shell .k-main,
+.k-op-shell .k-op-shell-body,
+.k-op-shell .k-op-shell-work,
+.k-op-shell .k-op-shell-main,
 .k-op-shell .k-page,
 .k-op-body,
 .k-op-main,
