@@ -193,14 +193,21 @@ export function op(deps: ContractDeps, operationId: string) {
     const hook = deps.hooks[operationId];
     const repo = c.get("repo");
     // 要求の取引を開けない repo（関門 C2 の本物でない差し替え）は今のまま（取引をまとめないだけで振る舞いは同じ）
-    if (
-      def.method === "GET" &&
-      ctx.role === "member" &&
-      (!hook || ONE_TX_HOOKS.has(operationId)) &&
-      typeof repo.inRequest === "function"
-    )
-      return repo.inRequest(ctx, () => handle(c));
-    return handle(c);
+    // 口の中で受けずに投げた DB の失敗は 503・E-PAGE-003（K-1106・D-136.1）。要求の取引の外で受ける（中の取引は例外で戻ってから）。
+    //   DB の決まり違反（422）と DB でない例外（500）は投げ直して onError に任せる
+    try {
+      if (
+        def.method === "GET" &&
+        ctx.role === "member" &&
+        (!hook || ONE_TX_HOOKS.has(operationId)) &&
+        typeof repo.inRequest === "function"
+      )
+        return await repo.inRequest(ctx, () => handle(c));
+      return await handle(c);
+    } catch (ex) {
+      if (dbDownFailure(ex)) return dbDown(c, operationId, ex);
+      throw ex;
+    }
   };
 }
 
@@ -399,6 +406,35 @@ export function dbInputFailure(ex: unknown): { code: string; constraint: string 
   const constraint = (ex as { constraint?: unknown }).constraint;
   return { code: code || "identifier", constraint: typeof constraint === "string" && constraint ? constraint : null };
 }
+/** DB に繋がらない・接続が切れたときの例外の code（node の通信の失敗） */
+const DB_CONN_CODES = new Set([
+  "ECONNREFUSED",
+  "ECONNRESET",
+  "ETIMEDOUT",
+  "EPIPE",
+  "ENOTFOUND",
+  "EHOSTUNREACH",
+  "EAI_AGAIN",
+]);
+/** 接続の取得・接続の途中の失敗の文（pg と pg-pool が投げる Error の文） */
+const DB_CONN_TEXT =
+  /Connection terminated|timeout exceeded when trying to connect|Client has encountered a connection error/;
+/** 例外が DB の失敗か（K-1106・D-136.1）：SQLSTATE（5 字）と severity を持つ DB の例外か、DB に繋がらない・接続が切れた・取得が時間切れ。
+ *  入力が DB の決まりに合わない例外（dbInputFailure・422）と、DB でない例外（プログラムの誤り・onError の 500）は外す */
+export function dbDownFailure(ex: unknown): boolean {
+  if (ex === null || typeof ex !== "object" || dbInputFailure(ex)) return false;
+  const code = pgCode(ex);
+  const sev = (ex as { severity?: unknown } | null)?.severity;
+  if (typeof sev === "string" && /^[0-9A-Z]{5}$/.test(code)) return true;
+  if (DB_CONN_CODES.has(code)) return true;
+  return ex instanceof Error && DB_CONN_TEXT.test(ex.message);
+}
+/** DB が失敗したときの答え（K-1106・D-136.1）：503・E-PAGE-003。中身を返さず、ログは口の名前と例外の種類だけ */
+const dbDown = (c: Ctx, operationId: string, e: unknown) => {
+  console.error(`[contract] ${operationId} で DB が失敗した：503 にした（${(e as Error)?.name ?? "Error"}）`);
+  const x = kanameError("E-PAGE-003").toJSON() as { message?: string; action?: string };
+  return c.json({ error: "unavailable", code: "E-PAGE-003", message: x.message ?? "", action: x.action ?? "" }, 503);
+};
 /** DB の決まりに合わないときの答え（D-130.2）：決まった文だけ。DB の文・送った値は出さない */
 export const DB_INPUT_REPLY = {
   error: "validation_failed",

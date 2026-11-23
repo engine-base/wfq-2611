@@ -2,7 +2,7 @@
 //   上限（1 分に 60 回・人ごと）・認証（PC の印だけは 403）・入力の形（空の体だけ・strict）は契約の入口（op.ts）が先に確かめる。
 //   閉じるのはその画面のセッションだけ：sessions の行を理由 logout で閉じてから認証側のセッションを消す（部品の signOut・この順なので半分だけ閉じない）。
 //   同じ人の別のブラウザと PC（Bridge）のセッションは閉じない（D-125.140・D-128.121）。
-//   入口で解けたのに部品のセッションがもう無い（同時に 2 回押した 2 つ目）は 401。閉じる所の失敗は 500（ログには種類だけ・印は出さない）
+//   入口で解けたのに部品のセッションがもう無い（同時に 2 回押した 2 つ目）は 401。閉じる所の失敗は 503（K-1106・ログには種類だけ・印は出さない）
 import { signOut } from "@kaname/auth/resolver";
 import { kanameError } from "@kaname/errors";
 import type { HookArgs, HookReply } from "../../../contract/deps.js";
@@ -31,7 +31,7 @@ export function signOutFeature(d: Pick<LoginDeps, "auth" | "appPool">) {
       // 同時に押したもう一方が先に閉じた：もう無いので 401（500 にしない）
       if (!(await alive(headers).catch(() => true))) return unauthenticated;
       console.error(`[login] ログアウトの途中で落ちた（${kindOf(e)}）`);
-      return reply(500, "E-PAGE-003");
+      return reply(503, "E-PAGE-003");
     }
   };
 

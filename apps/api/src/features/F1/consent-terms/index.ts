@@ -40,7 +40,7 @@ const invalid = (details: { field: string; message: string }[]): HookReply => ({
   status: 422,
   body: { error: "validation_failed", code: "VALIDATION_ERROR", details },
 });
-const serverDown = (): HookReply => fromCatalog(500, "E-PAGE-003", "internal");
+const serverDown = (): HookReply => fromCatalog(503, "E-PAGE-003", "unavailable"); // DB の失敗は 503（K-1106・D-136.1）
 /** 要求の送り元の IP（記録だけに使う。ログには出さない）。形が IP でなければ残さない */
 const ipOf = (a: HookArgs): string | null => {
   const v = a.c.req.header("x-forwarded-for")?.split(",")[0]?.trim() || a.c.req.header("x-real-ip") || "";

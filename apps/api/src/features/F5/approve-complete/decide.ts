@@ -1,7 +1,7 @@
 // 承認する（K-162）・差し戻す（K-163）の書く口：approveApproval（承認して実行の仕事を積む）・returnApproval（理由つきの作り直しを積む）。
 //   書くのは関門 C2 の app.approval_decide（承認の行・実行の記録と仕事・段・やり取りの 1 行・証跡を 1 つの処理で・0096）だけ。
 //   承認する人＝今の担当者（行の決まり OP_RULES.approveApproval と関数の中の判定の 2 層）。本人確認は取り直さない（D-128.177）。
-//   守りの判定で例外になったら止める側（503・E-PAGE-003・何も書かない）。書く所の DB の失敗は 500（何も残らない）。
+//   守りの判定で例外になったら止める側（503・E-PAGE-003・何も書かない）。書く所の DB の失敗も 503・E-PAGE-003（何も残らない・K-1106）。
 //   ログに成果物の中身・メールを出さない（承認の場所と言葉の種類だけ）
 import type pg from "pg";
 import { withTenant } from "@kaname/db/context";
@@ -52,7 +52,7 @@ export async function decide(
   } catch (e) {
     // 書く所の失敗（1 つの処理なので何も残らない）。中身を返さず、ログは場所と例外の種類だけ
     console.error(`[approve-complete] ${where}：書く所で失敗した（${(e as Error)?.name ?? "Error"}）`);
-    return fromCatalog("E-PAGE-003", 500);
+    return fromCatalog("E-PAGE-003", 503);
   }
   if (!r) return replyOf({ error: "empty" }, where);
   if (r.error === undefined) return decidedReply(r);

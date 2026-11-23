@@ -1,7 +1,7 @@
 // K-307 いまの様子（getServiceStatus・誰でも）：直っていない障害（運営が公開したお知らせに結んだもの）と、いま中のメンテナンスだけを返す。
 //   中身は DB の関数 app.public_service_status()（security definer・障害とお知らせの表の行の守りは変えない）が決める。口はそれをそのまま返す。
 //   ログイン中の頭が付いていても答えは同じ（誰の分も足さない）。上限（10 回／分／IP）と一覧の引数の形は契約の入口（op.ts）が先に確かめる。
-//   読めないときは「ふつう」（空）を返さず 500・E-PAGE-003（G-15）。答えに表の名前や中身を出さない
+//   読めないときは「ふつう」（空）を返さず 503・E-PAGE-003（G-15・K-1106）。答えに表の名前や中身を出さない
 import { withTenant } from "@kaname/db/context";
 import { kanameError } from "@kaname/errors";
 import type { HookArgs, HookReply } from "../../../contract/deps.js";
@@ -16,8 +16,8 @@ const errName = (e: unknown) => (e as Error)?.name ?? "Error";
 const serverDown = (): HookReply => {
   const e = kanameError("E-PAGE-003").toJSON() as { message?: string; action?: string };
   return {
-    status: 500,
-    body: { error: "internal", code: "E-PAGE-003", message: e.message ?? "", action: e.action ?? "" },
+    status: 503,
+    body: { error: "unavailable", code: "E-PAGE-003", message: e.message ?? "", action: e.action ?? "" },
   };
 };
 

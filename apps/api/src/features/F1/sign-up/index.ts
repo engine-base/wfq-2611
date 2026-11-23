@@ -109,7 +109,7 @@ export function signupFeature(d: SignupDeps) {
       console.error(
         "[signup] 規約の版が無いので登録を通さない（利用規約かプライバシーポリシーの今の版が無い・D-128.146）",
       );
-      return { status: 500, body: kanameError("E-PAGE-003").toJSON() };
+      return { status: 503, body: kanameError("E-PAGE-003").toJSON() };
     }
     const pwned = await checkPwned(d.actions, OPS_CTX, parsed.password);
     if (pwned.kind === "leaked") return fail("E-VAL-011", "password");

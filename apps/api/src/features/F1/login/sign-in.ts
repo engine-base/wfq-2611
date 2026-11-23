@@ -69,9 +69,9 @@ export function loginFeature(d: LoginDeps) {
       if (await memberGone(r.token, ua)) return reply(403, "E-AUTH-007", { detail: { ops_email: d.config.opsEmail } });
       return { status: 201, body: { data: { token: r.token, two_factor: false, pending: null } } };
     } catch (e) {
-      // DB が落ちた・セッションを写す所で失敗した：パスワードの失敗には数えず 500（部品の側で半分だけ入ったセッションは消してある）
+      // DB が落ちた・セッションを写す所で失敗した：パスワードの失敗には数えず 503（K-1106・部品の側で半分だけ入ったセッションは消してある）
       console.error(`[login] パスワードのログインの途中で落ちた（${kindOf(e)}）`);
-      return reply(500, "E-PAGE-003");
+      return reply(503, "E-PAGE-003");
     }
   };
 

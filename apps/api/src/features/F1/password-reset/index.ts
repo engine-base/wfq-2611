@@ -56,7 +56,7 @@ const missing = (field: string): HookReply => ({
   status: 422,
   body: { error: "validation_failed", code: "VALIDATION_ERROR", details: [{ field, message: `${field} が要る` }] },
 });
-/** 正本のエラーを答えにする。状態の番号は口が決める（410・409・500 は種類の既定と違うことがある） */
+/** 正本のエラーを答えにする。状態の番号は口が決める（410・409 は種類の既定と違うことがある） */
 const reply = (status: number, code: string, field?: string): HookReply => ({
   status,
   body: kanameError(code, field ? { field } : {}).toJSON(),
@@ -124,7 +124,7 @@ export function passwordResetFeature(d: PasswordResetDeps) {
       );
     } catch (e) {
       console.error(`[reset] 新しいパスワードを決められなかった（リンクを見る所）: ${errSummary(e)}`);
-      return reply(500, "E-PAGE-003");
+      return reply(503, "E-PAGE-003");
     }
     switch (r.result) {
       case "done":
@@ -147,7 +147,7 @@ export function passwordResetFeature(d: PasswordResetDeps) {
           `[reset] 端末を切る所かパスワードを変える所で落ちた（リンクは残す）: ${errSummary(r.error)}` +
             (r.restoreError ? `／リンクを戻せなかった: ${errSummary(r.restoreError)}` : ""),
         );
-        return reply(500, "E-PAGE-003");
+        return reply(503, "E-PAGE-003");
     }
   };
 
