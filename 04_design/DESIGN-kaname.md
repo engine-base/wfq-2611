@@ -504,6 +504,9 @@ components:
     lineHeight: 1.7
     rounded: "{rounded.full}"
     padding: "2px 12px"
+  detail-stage-locked:  # 鍵の印つきの段の札（仕組みの段の間）。印 11px と字の間 2px を左右の余白から引き、札の幅を鍵の無い札と同じにする（7＋2＋11＋4＝12＋12）
+    padding: "2px 4px 2px 7px"
+    gap: "2px"
   detail-copy:          # 番号をコピー（24 の四角・線）
     width: "24px"
     height: "24px"

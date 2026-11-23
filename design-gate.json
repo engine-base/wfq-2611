@@ -104,6 +104,7 @@
     "detail-meta-side": ".k-detail-meta-side",
     "detail-kind": ".k-detail-kind",
     "detail-stage": ".k-detail-stage",
+    "detail-stage-locked": ".k-detail-stage.k-prog-stage-locked",
     "detail-head": ".k-detail-card > .k-page-head",
     "detail-title": ".k-detail-card > .k-page-head h1",
     "detail-doc": ".k-detail-doc",

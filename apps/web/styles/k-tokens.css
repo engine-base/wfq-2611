@@ -404,6 +404,8 @@
   --k-c-detail-stage-lh: 1.7;
   --k-c-detail-stage-radius: var(--k-r-full);
   --k-c-detail-stage-pad: 2px 12px;
+  --k-c-detail-stage-locked-pad: 2px 4px 2px 7px;
+  --k-c-detail-stage-locked-gap: 2px;
   --k-c-detail-copy-width: 24px;
   --k-c-detail-copy-height: 24px;
   --k-c-detail-copy-border: 1px solid var(--k-line);
