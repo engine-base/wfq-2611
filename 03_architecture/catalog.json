@@ -6,13 +6,13 @@
  ],
  "counts": {
   "api": 370,
-  "api_built": 82,
+  "api_built": 84,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
   "db": 148,
-  "ui": 18,
+  "ui": 19,
   "packages": 13,
-  "errors": 231,
+  "errors": 237,
   "stack": 56,
   "env": 41
  },
@@ -1878,6 +1878,7 @@
    ],
    "status": "作った",
    "owner_tickets": [
+    "K-70",
     "K-419"
    ]
   },
@@ -1894,7 +1895,9 @@
     "invitations"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-70"
+   ]
   },
   {
    "op": "resendInvitation",
@@ -1909,7 +1912,9 @@
     "invitations"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-70"
+   ]
   },
   {
    "op": "createInvitationLink",
@@ -1924,7 +1929,9 @@
     "invitations"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-70"
+   ]
   },
   {
    "op": "downloadInvoicePdf",
@@ -3028,7 +3035,9 @@
     "notifications"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-70"
+   ]
   },
   {
    "op": "updateMemberPermissions",
@@ -3088,7 +3097,9 @@
     "members"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-70"
+   ]
   },
   {
    "op": "suspendMember",
@@ -4528,6 +4539,7 @@
    ],
    "status": "作った",
    "owner_tickets": [
+    "K-67",
     "K-468"
    ]
   },
@@ -4933,9 +4945,10 @@
    "tables": [
     "tickets"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-67"
+    "K-67",
+    "K-488"
    ]
   },
   {
@@ -5259,9 +5272,9 @@
    "tables": [
     "ticket_messages"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-66"
+    "K-385"
    ]
   },
   {
@@ -5819,6 +5832,7 @@
    ],
    "status": "作った",
    "owner_tickets": [
+    "K-70",
     "K-419"
    ]
   },
@@ -7544,6 +7558,13 @@
     "DOC_TOOL_ITEMS"
    ],
    "what": "本文の道具の帯（K-226・正本 components.doc-toolbar・doc-tool・キャンバス TicketDetail・Create）。"
+  },
+  {
+   "file": "apps/web/components/k/search-field",
+   "exports": [
+    "SearchField"
+   ],
+   "what": "探す欄の型（段 9・代表の直し 2026-11-20）。虫眼鏡と入力を 1 つの枠に入れ、焦点が中に入ったら枠全体に輪を出す（:focus-within）。"
   }
  ],
  "common": {

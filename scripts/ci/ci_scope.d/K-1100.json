@@ -1,0 +1,8 @@
+{
+ "data_links": [
+  {"paths": ["apps/web/features/F6/progress/progress.css", "04_design/DESIGN-kaname.md", "apps/web/styles/k-tokens.css"], "tests": ["apps/web/tests/k/k1100-stage-locked.spec.ts"]}
+ ],
+ "reads_ok": {
+  "apps/web/tests/k/k1100-stage-locked.spec.ts": "鍵の札の CSS apps/web/features/F6/progress/progress.css を読み、余白と間が正本のトークンだけを読むかを見る（K1100-UI-004）。正本と生成物の変更でも流れるよう data_links で結ぶ（K-1100）"
+ }
+}
