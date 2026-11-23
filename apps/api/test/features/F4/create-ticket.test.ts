@@ -403,7 +403,7 @@ describe("K-60 入力・失敗・操作の揺れ・守り", () => {
     const sec = await count("select count(*) as n from ticket_sections where tenant_id = $1", [T.tenantId]);
     const spy = vi.spyOn(console, "error").mockImplementation(() => undefined);
     try {
-      expect((await create(writer, body({ title: "途中で落ちる" }))).status).toBe(500);
+      expect((await create(writer, body({ title: "途中で落ちる" }))).status).toBe(503);
     } finally {
       spy.mockRestore();
       await f.admin.query("drop trigger k60_fail on notifications");

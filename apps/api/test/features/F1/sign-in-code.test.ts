@@ -296,7 +296,7 @@ describe("K-302 確認のコードで入る：会社の人・失敗・守り", (
     expect(await h.liveSessions(u.memberId), "6 けたの要求で生きたセッションが増えない").toBe(before);
   });
 
-  it("K302-API-017 セッションを写す所（sessions への書き込み）で失敗：500・E-PAGE-003。認証側のセッションも残さない", async () => {
+  it("K302-API-017 セッションを写す所（sessions への書き込み）で失敗：503・E-PAGE-003。認証側のセッションも残さない", async () => {
     const u = await h.makeUser("halfopen", { twoFactor: true });
     const p = await pendingOf(h, u, { ua: `${UA_MAC} K302-FAIL` });
     const authBefore = await h.authSessions(u.userId);
@@ -314,7 +314,7 @@ describe("K-302 確認のコードで入る：会社の人・失敗・守り", (
       await h.admin.query("drop trigger if exists k302_down on sessions");
       await h.admin.query("drop function if exists app.k302_down()");
     }
-    expect(r!.status).toBe(500);
+    expect(r!.status).toBe(503);
     expect((await h.json(r!))["code"]).toBe("E-PAGE-003");
     expect(await h.authSessions(u.userId)).toBe(authBefore);
   });

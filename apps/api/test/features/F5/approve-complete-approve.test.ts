@@ -208,7 +208,7 @@ describe("K-63 承認して完了する：承認・差し戻し（口・本物�
 });
 
 describe("K-63 承認して完了する：入力・失敗・守り（口・本物の DB）", () => {
-  it("K63-API-042 失敗 × 承認の途中で DB が落ちた（実行の記録を書く所）：500。承認・仕事・段・証跡は 1 つも残らない。戻ればもう一度押せる", async () => {
+  it("K63-API-042 失敗 × 承認の途中で DB が落ちた（実行の記録を書く所）：503。承認・仕事・段・証跡は 1 つも残らない。戻ればもう一度押せる", async () => {
     const t = await ticket({ title: "K63 壊れる 承認" });
     const d = await delegated(t, { irreversible: false });
     const before = await snapshot(t);
@@ -224,7 +224,7 @@ describe("K-63 承認して完了する：入力・失敗・守り（口・本�
     );
     try {
       const r = await approve(boss, d.approvalId);
-      expect(r.status).toBe(500);
+      expect(r.status).toBe(503);
       expect(await snapshot(t)).toEqual(before);
       expect((await approvalRow(d.approvalId))["decision"]).toBeNull();
     } finally {

@@ -851,7 +851,7 @@ describe("K-53 時間の流れ・失敗", () => {
     }
   });
 
-  it("K53-API-024 同意の行は入ったが、印を下ろす所で失敗：両方戻る（1 つのトランザクション）。500・E-PAGE-003。もう一度押せる", async () => {
+  it("K53-API-024 同意の行は入ったが、印を下ろす所で失敗：両方戻る（1 つのトランザクション）。503・E-PAGE-003。もう一度押せる", async () => {
     const p = await person("rollback");
     const v = await publishBoth("v2-rollback");
     const t = await login(p);
@@ -868,7 +868,7 @@ describe("K-53 時間の流れ・失敗", () => {
     const spy = vi.spyOn(console, "error").mockImplementation(() => undefined);
     try {
       const r = await consent(t, agreeTo(v));
-      expect(r.status).toBe(500);
+      expect(r.status).toBe(503);
       const text = await r.text();
       expect((JSON.parse(text) as Record<string, unknown>)["code"]).toBe("E-PAGE-003");
       expect(text).not.toContain("K-53 の試験");
@@ -1039,13 +1039,13 @@ describe("K-53 精査で足した行（DB が落ちた・2 段階の後のログ
     expect((await consentsOf(p.userId)).length, "何も書かない").toBe(before);
   });
 
-  it("K53-API-033 DB が落ちた（今の版が読めない）：今の版を読む口は 500・E-PAGE-003。中身（版・url）を返さない", async () => {
+  it("K53-API-033 DB が落ちた（今の版が読めない）：今の版を読む口は 503・E-PAGE-003。中身（版・url）を返さない", async () => {
     // 今の版の関数が読む表を読めなくする（関数を差し替えずに、表の読みを落とす。試験は直列・DB の排他の中なので他の試験に響かない）
     await admin.query("alter table terms_versions rename to terms_versions_k53_down");
     const spy = vi.spyOn(console, "error").mockImplementation(() => undefined);
     try {
       const r = await req("GET", CURRENT);
-      expect(r.status).toBe(500);
+      expect(r.status).toBe(503);
       const text = await r.text();
       expect((JSON.parse(text) as Record<string, unknown>)["code"]).toBe("E-PAGE-003");
       expect(text).not.toContain("terms_versions");

@@ -110,7 +110,7 @@ describe("K-322 確認のコードで入る：同じ 6 けたを同時に送る"
 });
 
 describe("K-322 確認のコードで入る：確かめの前後で DB が落ちる", () => {
-  it("K322-API-002 使った番号を覚える所（totp-used-<本人> の insert）で落ちる：500・E-PAGE-003。部品を呼ばず、セッションは増えず失敗の数は 0。直った後に同じ 6 けたを新しい待ちの印で送ると 201", async () => {
+  it("K322-API-002 使った番号を覚える所（totp-used-<本人> の insert）で落ちる：503・E-PAGE-003。部品を呼ばず、セッションは増えず失敗の数は 0。直った後に同じ 6 けたを新しい待ちの印で送ると 201", async () => {
     const u = await h.makeUser("claimdown", { twoFactor: true });
     const id = safeId(u.userId);
     const before = await counts(u);
@@ -123,7 +123,7 @@ describe("K-322 確認のコードで入る：確かめの前後で DB が落ち
       `new.identifier = 'totp-used-${id}'`,
       () => quiet(() => h.verifyCode({ pending: p1, code })),
     );
-    expect(r.status).toBe(500);
+    expect(r.status).toBe(503);
     expect((await h.json(r))["code"]).toBe("E-PAGE-003");
     expect(await counts(u), "セッションを作らない").toEqual(before);
     expect(await failures(u.userId), "部品を呼ばない").toBe(0);
@@ -131,7 +131,7 @@ describe("K-322 確認のコードで入る：確かめの前後で DB が落ち
     expect(again.status, await again.clone().text()).toBe(201);
   });
 
-  it("K322-API-003 部品が通った後、残りのバックアップコードを数える所で落ちる（backupCodes が読めない）：500・E-PAGE-003。生きたセッションも認証側のセッションも要求の前と同じ数。直った後に同じ 6 けた（同じ 30 秒）を新しい待ちの印で送ると 201", async () => {
+  it("K322-API-003 部品が通った後、残りのバックアップコードを数える所で落ちる（backupCodes が読めない）：503・E-PAGE-003。生きたセッションも認証側のセッションも要求の前と同じ数。直った後に同じ 6 けた（同じ 30 秒）を新しい待ちの印で送ると 201", async () => {
     const u = await h.makeUser("countdown", { twoFactor: true });
     const p1 = await pendingOf(h, u);
     const p2 = await pendingOf(h, u);
@@ -146,7 +146,7 @@ describe("K-322 確認のコードで入る：確かめの前後で DB が落ち
     await awayFromStepEdge();
     const code = totp(u.secret!);
     const r = await quiet(() => h.verifyCode({ pending: p1, code }));
-    expect(r.status).toBe(500);
+    expect(r.status).toBe(503);
     expect((await h.json(r))["code"]).toBe("E-PAGE-003");
     expect(await counts(u), "入った後に落ちたらその場で閉じる").toEqual(before);
     await h.admin.query('update kaname_auth."twoFactor" set "backupCodes" = $2 where "userId" = $1', [u.userId, saved]);
@@ -196,7 +196,7 @@ describe("K-322 確認のコードで入る：断られた番号は使ったこ�
     expect(ok.status, await ok.clone().text()).toBe(201);
   });
 
-  it("K322-API-006 部品の中（sessions に写す所）で落ちた 6 けた：500・E-PAGE-003。直った後に同じ 6 けた（同じ 30 秒）を新しい待ちの印で送ると 201", async () => {
+  it("K322-API-006 部品の中（sessions に写す所）で落ちた 6 けた：503・E-PAGE-003。直った後に同じ 6 けた（同じ 30 秒）を新しい待ちの印で送ると 201", async () => {
     const u = await h.makeUser("midfail", { twoFactor: true });
     const p1 = await pendingOf(h, u, { ua: `${UA_MAC} K322-FAIL` });
     const p2 = await pendingOf(h, u);
@@ -205,7 +205,7 @@ describe("K-322 確認のコードで入る：断られた番号は使ったこ�
     const r = await withFailingInsert("k322_copy_down", "sessions", "new.device_label like '%K322-FAIL%'", () =>
       quiet(() => h.verifyCode({ pending: p1, code }, { ua: `${UA_MAC} K322-FAIL` })),
     );
-    expect(r.status).toBe(500);
+    expect(r.status).toBe(503);
     expect((await h.json(r))["code"]).toBe("E-PAGE-003");
     const ok = await h.verifyCode({ pending: p2, code }, { ua: UA_MAC });
     expect(ok.status, await ok.clone().text()).toBe(201);

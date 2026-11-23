@@ -215,13 +215,13 @@ describe("K-234 振る舞いは今のまま", () => {
     expect(borrows).toBe(0);
   });
 
-  it("K234-API-012 読む口の中の問い合わせが例外：答えの番号は今と同じ 500・借りたままの接続 0・次の GET /scopes は 200 で begin 1", async () => {
+  it("K234-API-012 読む口の中の問い合わせが例外：答えの番号は 503（DB の失敗・K-1106）・借りたままの接続 0・次の GET /scopes は 200 で begin 1", async () => {
     await withHook(
       "listTicketKinds",
       { before: async (a) => withTenant(f.pool, a.ctx, async (c) => (await c.query("select 1 / 0 as v")).rows[0]) },
       async () => {
         const r = await f.req("GET", "/ticket_kinds", { headers: writer.auth });
-        expect(r.status).toBe(500);
+        expect(r.status).toBe(503);
       },
     );
     expect(checkedOut()).toBe(0);

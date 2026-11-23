@@ -755,7 +755,7 @@ describe("K-57 入力・失敗・操作の揺れ・守り", () => {
     const spy = vi.spyOn(console, "error").mockImplementation(() => undefined);
     try {
       const r = await claim(c.code);
-      expect(r.status).toBe(500);
+      expect(r.status).toBe(503);
     } finally {
       spy.mockRestore();
       await f.admin.query("drop trigger k57_fail on notifications");

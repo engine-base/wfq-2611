@@ -369,7 +369,7 @@ describe("K-307 いまの様子：入口・守り・失敗", () => {
     expect(Number(((await r.json()) as Record<string, unknown>)["retry_after_sec"])).toBeGreaterThan(0);
   });
 
-  it("K307-API-015 DB が落ちた（障害の表が読めない）：500・E-PAGE-003。中身（題・時刻）を返さない", async () => {
+  it("K307-API-015 DB が落ちた（障害の表が読めない）：503・E-PAGE-003。中身（題・時刻）を返さない", async () => {
     await incident(await notice("落ちた"));
     await admin.query("alter table status_incidents rename to status_incidents_k307_down");
     const read = async () => {
@@ -379,7 +379,7 @@ describe("K-307 いまの様子：入口・守り・失敗", () => {
     const { code, text } = await read().finally(() =>
       admin.query("alter table status_incidents_k307_down rename to status_incidents"),
     );
-    expect(code).toBe(500);
+    expect(code).toBe(503);
     expect((JSON.parse(text) as Record<string, unknown>)["code"]).toBe("E-PAGE-003");
     expect(text).not.toContain(RUN);
     expect(text).not.toContain("status_incidents");

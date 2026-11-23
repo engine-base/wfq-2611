@@ -632,7 +632,7 @@ describe("K-51 失敗", () => {
     }
   });
 
-  it("K51-API-021 DB が落ちた（申し込みの書き込みが失敗）：500・申し込みは途中まで残らない・メールも出ない", async () => {
+  it("K51-API-021 DB が落ちた（申し込みの書き込みが失敗）：503・申し込みは途中まで残らない・メールも出ない", async () => {
     const e = email("dbdown");
     await admin.query(`create or replace function kaname_auth.k51_fail() returns trigger language plpgsql as $$
       begin if new.email like '%-dbdown@example.com' then raise exception 'K-51 の試験：DB が落ちた'; end if; return new; end $$`);
@@ -642,7 +642,7 @@ describe("K-51 失敗", () => {
     const spy = vi.spyOn(console, "error").mockImplementation(() => undefined);
     try {
       const r = await signup(okBody("dbdown"));
-      expect(r.status).toBe(500);
+      expect(r.status).toBe(503);
       expect(await r.text()).not.toContain("K-51 の試験"); // 中の理由は応答に出さない
     } finally {
       spy.mockRestore();

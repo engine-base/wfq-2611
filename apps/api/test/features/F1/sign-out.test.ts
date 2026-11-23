@@ -145,7 +145,7 @@ describe("K-306 ログアウトする：入力・失敗・守り", () => {
     expect((await row(tokens[60]!.id))?.revoked_at ?? null).toBeNull();
   }, 60_000);
 
-  it("K306-API-010 閉じる所（sessions の書き換え）で失敗：500・E-PAGE-003（文は errors.json）。半分だけ閉じない（認証側のセッションも残り、その印でまだ入れる・押し直せば閉じる）", async () => {
+  it("K306-API-010 閉じる所（sessions の書き換え）で失敗：503・E-PAGE-003（文は errors.json）。半分だけ閉じない（認証側のセッションも残り、その印でまだ入れる・押し直せば閉じる）", async () => {
     const u = await h.makeUser("fail");
     const s = await session(u);
     await h.admin.query(`create or replace function app.k306_down() returns trigger language plpgsql as $$
@@ -162,7 +162,7 @@ describe("K-306 ログアウトする：入力・失敗・守り", () => {
       await h.admin.query("drop trigger if exists k306_down on sessions");
       await h.admin.query("drop function if exists app.k306_down()");
     }
-    expect(r!.status).toBe(500);
+    expect(r!.status).toBe(503);
     const j = await h.json(r!);
     expect(j["code"]).toBe("E-PAGE-003");
     expect(j["message"]).toBe(msg("E-PAGE-003"));

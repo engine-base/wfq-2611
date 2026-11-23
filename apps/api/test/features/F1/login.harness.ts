@@ -22,7 +22,7 @@
 //     401 E-AUTH-004（コードが違う）・E-AUTH-013（待ちの印が切れた／使った／でたらめ）
 //     429 E-AUTH-014（6 けたを 5 回違えた・retry_after_sec）／ 422 E-VAL-009（空・64 文字を超える）
 //   signOut             POST /api/v1/auth/sign-out            ← {}（ほかの欄は 422）・ログインの印（Bearer）
-//     201 { data: { signed_out: true } }／ 401 UNAUTHENTICATED ／ 429 RATE_LIMITED（1 分に 61 回・人ごと）／ 500 E-PAGE-003
+//     201 { data: { signed_out: true } }／ 401 UNAUTHENTICATED ／ 429 RATE_LIMITED（1 分に 61 回・人ごと）／ 503 E-PAGE-003
 // 足すエラーの番号は精査の後の決め 1 で決め打ちした（E-AUTH-013・014）。文は errors.json の目録（msg）と決めた文の両方で確かめる。
 import { afterAll, beforeAll, expect, vi } from "vitest";
 import { createHmac } from "node:crypto";

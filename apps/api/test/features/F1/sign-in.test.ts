@@ -305,7 +305,7 @@ describe("K-301 パスワードで入る：会社の人・セッション・知�
     expect(logs).toMatch(/送れなかった/);
   });
 
-  it("K301-API-019 セッションを写す所（app.open_session の sessions への書き込み）で失敗：500・E-PAGE-003。認証側のセッションも残さない（半分だけ入った状態を作らない）・パスワードの失敗に数えない", async () => {
+  it("K301-API-019 セッションを写す所（app.open_session の sessions への書き込み）で失敗：503・E-PAGE-003。認証側のセッションも残さない（半分だけ入った状態を作らない）・パスワードの失敗に数えない", async () => {
     const u = await h.makeUser("halfopen");
     const authBefore = await h.authSessions(u.userId);
     const liveBefore = await h.liveSessions(u.memberId);
@@ -323,7 +323,7 @@ describe("K-301 パスワードで入る：会社の人・セッション・知�
       await h.admin.query("drop trigger if exists k301_down on sessions");
       await h.admin.query("drop function if exists app.k301_down()");
     }
-    expect(r!.status).toBe(500);
+    expect(r!.status).toBe(503);
     const j = await h.json(r!);
     expect(j["code"]).toBe("E-PAGE-003");
     expect(j["message"]).toBe(msg("E-PAGE-003"));

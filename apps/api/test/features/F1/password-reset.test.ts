@@ -9,7 +9,7 @@
 //   要求の体 { token: string, new_password: string }
 //   201 { data: { reset: true } }（ログインの印は入れない）
 //   410 E-AUTH-006（期限切れ・使い終わった・前のリンク）／409 E-PAGE-006（無い・空・K-638 で 410 から替えた）／422（欄 token・new_password。E-VAL-005・E-VAL-011）／
-//   500 E-PAGE-003（切る所・変える所で落ちた。リンクは残る）／429 retry_after_sec
+//   503 E-PAGE-003（切る所・変える所で落ちた。リンクは残る）／429 retry_after_sec
 // 時刻は眠らずに、DB の行の時刻を DB の now() からずらして進める（D-128.130）。
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { createHash } from "node:crypto";
@@ -509,7 +509,7 @@ describe("K-314 揺れ・失敗・守り", () => {
     expect(await doneEvents(uid)).toHaveLength(1);
   });
 
-  it("K314-API-017 端末を切る所で失敗：500・E-PAGE-003。パスワードは変わらない。直った後に同じリンクで送ると 201", async () => {
+  it("K314-API-017 端末を切る所で失敗：503・E-PAGE-003。パスワードは変わらない。直った後に同じリンクで送ると 201", async () => {
     const e = email("revoke-down");
     const uid = await registered("revoke-down");
     expect(await canSignIn(e, PW)).toBe(true); // 切るセッションを 1 つ作る
@@ -523,7 +523,7 @@ describe("K-314 揺れ・失敗・守り", () => {
     const spy = vi.spyOn(console, "error").mockImplementation(() => undefined);
     try {
       const r = await reset(token);
-      expect(r.status).toBe(500);
+      expect(r.status).toBe(503);
       const j = await json(r);
       expect(j["code"]).toBe("E-PAGE-003");
       expect(j["message"]).toBe(msg("E-PAGE-003"));
@@ -536,7 +536,7 @@ describe("K-314 揺れ・失敗・守り", () => {
     expect((await reset(token)).status).toBe(201);
   });
 
-  it("K314-API-018 切れた後、パスワードを変える所で失敗：500・E-PAGE-003。セッションは切れたまま。直った後に同じリンクで送ると 201", async () => {
+  it("K314-API-018 切れた後、パスワードを変える所で失敗：503・E-PAGE-003。セッションは切れたまま。直った後に同じリンクで送ると 201", async () => {
     const e = email("change-down");
     const uid = await registered("change-down");
     expect(await canSignIn(e, PW)).toBe(true);
@@ -549,7 +549,7 @@ describe("K-314 揺れ・失敗・守り", () => {
     const spy = vi.spyOn(console, "error").mockImplementation(() => undefined);
     try {
       const r = await reset(token);
-      expect(r.status).toBe(500);
+      expect(r.status).toBe(503);
       expect((await json(r))["code"]).toBe("E-PAGE-003");
       const ss = await sessionsOf(uid);
       expect(ss.length).toBeGreaterThan(0);
@@ -606,7 +606,7 @@ describe("K-314 揺れ・失敗・守り", () => {
       await admin.query(
         "create trigger k314_log_down before update on kaname_auth.account for each row execute function kaname_auth.k314_log_down()",
       );
-      expect((await reset(token)).status).toBe(500);
+      expect((await reset(token)).status).toBe(503);
       await admin.query("drop trigger if exists k314_log_down on kaname_auth.account");
       expect((await reset(token)).status).toBe(201);
       const out = c.text();
