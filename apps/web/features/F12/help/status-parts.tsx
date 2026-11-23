@@ -85,7 +85,7 @@ function FullCard({
     <main className="k-root k-error-page">
       <div className="k-error-card">
         <div className="k-uh-full-card">
-          <span className="k-ws-mark" aria-hidden="true">
+          <span className="k-uh-full-mark" aria-hidden="true">
             {icon}
           </span>
           <div className="k-uh-full">

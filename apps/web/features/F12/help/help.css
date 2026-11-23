@@ -363,6 +363,19 @@
   width: 100%;
   max-width: 100%;
 }
+/* 画面いっぱいの札の頭の印（外枠の会社の印と同じ見た目。外枠の名前は components/k の外で使わない・G67） */
+.k-uh-full-mark {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: var(--k-s-lg);
+  height: var(--k-s-lg);
+  border-radius: var(--k-r-md);
+  background: var(--k-primary);
+  color: var(--k-on-primary);
+  font-size: var(--k-text-body-sm);
+  font-weight: var(--k-fw-h1);
+}
 .k-uh-bands {
   display: grid;
   gap: var(--k-s-sm);

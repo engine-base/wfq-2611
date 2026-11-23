@@ -357,7 +357,7 @@ export function MockView({ id, theme }: { id: string; theme: Theme }) {
       );
     case "uh-peek":
       return (
-        <div className="k-uh-peek-host">
+        <div>
           <PeekBar
             who="合同会社ミナト企画 ・ 湊 さくら さん"
             reason="問い合わせ「承認したのに動かない」"
