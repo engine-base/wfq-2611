@@ -1,6 +1,23 @@
 {
  "data_links": [
-  {"paths": ["apps/api/src/hooks/f9-knowledge-publish.ts", "apps/api/src/features/F9/knowledge/publish.ts"],
-   "tests": ["apps/api/test/features/F9/knowledge-publish.test.ts"]}
+  {
+   "paths": [
+    "apps/api/src/hooks/f9-knowledge-publish.ts",
+    "apps/api/src/features/F9/knowledge/publish.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F9/knowledge-publish.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F9/knowledge-publish.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts",
+    "apps/api/test/features/F1/terms.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_knowledge_pages_id_publish.test.ts"
+   ]
+  }
  ]
 }
