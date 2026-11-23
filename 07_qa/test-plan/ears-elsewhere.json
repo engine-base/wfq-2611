@@ -2012,7 +2012,7 @@
      "mark": "K144-API-032"
     },
     "test_delete_knowledge_pages_id_draft_rejected_422": {
-     "file": "apps/api/test/features/contract/k144.d/K-675.ts",
+     "file": "apps/api/test/features/contract/k144.d/K-679.ts",
      "mark": "K144-API-106"
     },
     "test_delete_knowledge_pages_id_draft_session_unresolved_2": {

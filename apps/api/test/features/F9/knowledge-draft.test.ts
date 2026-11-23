@@ -517,7 +517,7 @@ describe("K-679 ページを作る・下書きを保存する・やめる", () =
     await addDraft(w, pid, 2, "壊す前の下書き", w.mgr1);
     await h.ready();
     const fixPages = await breakWrites("knowledge_pages", w.co.tenantId);
-    let logs = "";
+    let logs: string;
     try {
       logs = await h.captureLogs(async () => {
         const c = await create(w.mgr1, { shelf: "group", group_id: w.g1, title: "秘密の題名" });
