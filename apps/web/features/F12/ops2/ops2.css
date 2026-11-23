@@ -1,0 +1,218 @@
+/* 運営の 問い合わせ・お知らせ・請求・配るもの（段 13・領域 ops2）。クラスは k-oq-。値は --k-* だけ。運営の共通の部品は ops/ops.css（k-op-） */
+
+/* ---- 受信箱 ---- */
+.k-oq-inbox {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) calc(var(--k-s-xl) * 5);
+  gap: var(--k-s-md);
+  align-items: start;
+}
+.k-oq-inbox[data-open] {
+  grid-template-columns: calc(var(--k-s-xl) * 6) minmax(0, 1fr) calc(var(--k-s-xl) * 4);
+}
+.k-oq-inbox > * {
+  min-width: 0;
+}
+@media (max-width: 1279px) {
+  .k-oq-inbox,
+  .k-oq-inbox[data-open] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.k-oq-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: var(--k-c-detail-card-border);
+  border-radius: var(--k-r-card);
+  background: var(--k-card);
+  overflow: hidden;
+}
+.k-oq-list li {
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-s-xs);
+  padding: var(--k-s-sm) var(--k-s-md);
+  border-bottom: var(--k-c-detail-rule-border-bottom);
+  font-size: var(--k-text-body);
+}
+.k-oq-list li[aria-current="true"] {
+  background: var(--k-surface-variant);
+}
+.k-oq-list li > span {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--k-s-xs) var(--k-s-sm);
+  align-items: center;
+  font-size: var(--k-text-body-sm);
+  color: var(--k-on-surface-variant);
+}
+.k-oq-sub {
+  margin-bottom: var(--k-s-sm);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--k-s-sm);
+  align-items: center;
+  justify-content: space-between;
+  font-size: var(--k-text-body-sm);
+  color: var(--k-on-surface-variant);
+}
+
+/* ---- やり取り ---- */
+.k-oq-thread {
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-s-md);
+  min-width: 0;
+}
+.k-oq-msg {
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-s-xs);
+  padding: var(--k-s-md);
+  border: var(--k-c-detail-card-border);
+  border-radius: var(--k-r-card);
+  background: var(--k-card);
+  font-size: var(--k-text-body);
+  line-height: var(--k-lh-body);
+}
+.k-oq-msg[data-kind="memo"] {
+  background: var(--k-tertiary-container);
+}
+.k-oq-msg-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--k-s-sm);
+  align-items: center;
+  font-size: var(--k-text-body-sm);
+  color: var(--k-on-surface-variant);
+}
+.k-oq-msg p {
+  margin: 0;
+}
+.k-oq-acts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--k-s-sm);
+  align-items: flex-end;
+}
+.k-oq-acts > * {
+  min-width: 0;
+}
+.k-oq-end {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--k-s-sm);
+  justify-content: flex-end;
+  align-items: center;
+}
+
+/* ---- 書く・直す ---- */
+.k-oq-grid2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--k-s-md);
+}
+@media (max-width: 767px) {
+  .k-oq-grid2 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.k-oq-preview {
+  padding: var(--k-s-md);
+  border: var(--k-c-detail-card-border);
+  border-radius: var(--k-r-card);
+  background: var(--k-surface-variant);
+  display: flex;
+  flex-direction: column;
+  gap: var(--k-s-sm);
+  font-size: var(--k-text-body);
+}
+.k-oq-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--k-s-sm);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.k-oq-steps li {
+  display: inline-flex;
+  gap: var(--k-s-xs);
+  align-items: center;
+  padding: var(--k-s-xs) var(--k-s-md);
+  border: var(--k-c-detail-card-border);
+  border-radius: var(--k-r-full);
+  font-size: var(--k-text-body-sm);
+  color: var(--k-on-surface-variant);
+}
+.k-oq-steps li[aria-current="step"] {
+  background: var(--k-primary);
+  color: var(--k-on-primary);
+}
+
+/* ---- プランの箱・差 ---- */
+.k-oq-plans {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--k-s-md);
+}
+@media (max-width: 1023px) {
+  .k-oq-plans {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.k-oq-from {
+  color: var(--k-on-surface-variant);
+}
+.k-oq-to {
+  font-weight: var(--k-fw-h3);
+  color: var(--k-on-surface);
+}
+.k-oq-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--k-s-sm);
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* ---- 配るものの中の行き先 ---- */
+.k-oq-subnav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--k-s-sm);
+  align-items: center;
+  margin: 0;
+  padding: 0 0 var(--k-s-sm);
+  list-style: none;
+  border-bottom: var(--k-c-detail-rule-border-bottom);
+}
+.k-oq-subnav a {
+  display: inline-flex;
+  gap: var(--k-s-xs);
+  align-items: center;
+  padding: var(--k-s-xs) var(--k-s-md);
+  border-radius: var(--k-r-full);
+  font-size: var(--k-text-body);
+  color: var(--k-on-surface-variant);
+  text-decoration: none;
+}
+.k-oq-subnav a[aria-current="page"] {
+  background: var(--k-surface-variant);
+  color: var(--k-on-surface);
+  font-weight: var(--k-fw-h3);
+}
+.k-oq-numbered {
+  margin: 0;
+  padding: 0 0 0 var(--k-s-lg);
+  font-size: var(--k-text-body);
+  line-height: var(--k-lh-body);
+}
+
+/* ---- 狭い幅で表だけ横に送る（ページ全体ははみ出さない） ---- */
+.k-oq-scroll {
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: auto;
+}

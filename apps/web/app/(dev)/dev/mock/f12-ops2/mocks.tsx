@@ -1,0 +1,192 @@
+// 段 13（F12 運営とのやり取り・運営が回す）の領域 ops2 の下絵のモック：問い合わせ・お知らせ・請求・配るもの（部品先行・枝 c/段13）。
+//   本番と同じ部品（features/F12/ops2/・features/F12/ops・components/k）を、決めた値で並べる。1 つの id ＝ 1 つの状態。
+//   ticket・leaf は持ち主の画面の葉（切り方 1 章）。絵は代表の答え 2026-11-23（D-156.20〜36）の形
+export interface MockEntry {
+  id: string;
+  /** 下絵の番号（段 13 の下絵の表の no） */
+  no: string;
+  screen: "ops-support" | "ops-notices" | "ops-billing" | "ops-skills" | "settings";
+  label: string;
+  ticket: string;
+  leaf: string;
+}
+
+export const MOCKS: readonly MockEntry[] = [
+  {
+    id: "oq-inbox",
+    no: "10-1",
+    screen: "ops-support",
+    label: "受信箱（5 つの箱・種類・新しい順・右にそのワークスペースの様子）",
+    ticket: "K-976",
+    leaf: "K-976",
+  },
+  {
+    id: "oq-inbox-thread",
+    no: "10-2",
+    screen: "ops-support",
+    label: "1 件を開いた（やり取り・返す・社内メモ・担当・後で・済みにする）",
+    ticket: "K-976",
+    leaf: "K-976",
+  },
+  { id: "oq-inbox-empty", no: "10-3", screen: "ops-support", label: "箱が空", ticket: "K-976", leaf: "K-976" },
+  {
+    id: "oq-inbox-taken",
+    no: "10-4",
+    screen: "ops-support",
+    label: "ほかの人が担当になった（見るだけ）",
+    ticket: "K-976",
+    leaf: "K-976",
+  },
+  {
+    id: "oq-notices",
+    no: "11-1",
+    screen: "ops-notices",
+    label: "お知らせの一覧（出した・予定・障害の状態）",
+    ticket: "K-980",
+    leaf: "K-980",
+  },
+  {
+    id: "oq-notice-new",
+    no: "11-2",
+    screen: "ops-notices",
+    label: "お知らせを作る（種類・題・本文・メンテの時間・誰に・出す場所）",
+    ticket: "K-1015",
+    leaf: "K-1015",
+  },
+  {
+    id: "oq-notice",
+    no: "11-3",
+    screen: "ops-notices",
+    label: "1 件（障害の続報を足す・状態 4 つ）",
+    ticket: "K-980",
+    leaf: "K-980",
+  },
+  {
+    id: "oq-notice-publish",
+    no: "11-4",
+    screen: "ops-notices",
+    label: "出す確かめ（届く数・メンテはメールも）",
+    ticket: "K-1015",
+    leaf: "K-1015",
+  },
+  {
+    id: "oq-notice-edit",
+    no: "11-5",
+    screen: "ops-notices",
+    label: "出したお知らせを書き直す（題・本文・影響・メンテの時間だけ・誰に・種類・出す場所は変えない）",
+    ticket: "K-1015",
+    leaf: "K-1015",
+  },
+  {
+    id: "oq-bills",
+    no: "12-1",
+    screen: "ops-billing",
+    label: "請求（月ごと・お支払い待ち・払われた・期限を過ぎた）",
+    ticket: "K-984",
+    leaf: "K-984",
+  },
+  {
+    id: "oq-bills-issue",
+    no: "12-2",
+    screen: "ops-billing",
+    label: "今月の請求書をまとめて出す確かめ",
+    ticket: "K-984",
+    leaf: "K-984",
+  },
+  {
+    id: "oq-pay",
+    no: "12-3",
+    screen: "ops-billing",
+    label: "入金を記録（入金日・金額・振込名義・差）",
+    ticket: "K-984",
+    leaf: "K-984",
+  },
+  {
+    id: "oq-pay-diff",
+    no: "12-4",
+    screen: "ops-billing",
+    label: "入金を記録：差がある（未入金のまま）",
+    ticket: "K-984",
+    leaf: "K-984",
+  },
+  {
+    id: "oq-plans",
+    no: "13-1",
+    screen: "ops-skills",
+    label: "配るもの › プラン（版・変える案 1）",
+    ticket: "K-991",
+    leaf: "K-991",
+  },
+  {
+    id: "oq-plan-edit",
+    no: "13-2",
+    screen: "ops-skills",
+    label: "値段を変える案を作る（前後の差・いまの顧客の扱い・理由）",
+    ticket: "K-991",
+    leaf: "K-991",
+  },
+  {
+    id: "oq-plan-review",
+    no: "13-3",
+    screen: "ops-skills",
+    label: "決める人の画面（影響を見て決める・差し戻す）",
+    ticket: "K-991",
+    leaf: "K-991",
+  },
+  {
+    id: "oq-plan-self",
+    no: "13-4",
+    screen: "ops-skills",
+    label: "自分の案は決められない",
+    ticket: "K-991",
+    leaf: "K-991",
+  },
+  {
+    id: "oq-plan-log",
+    no: "13-5",
+    screen: "ops-skills",
+    label: "値段の記録（消せない）",
+    ticket: "K-991",
+    leaf: "K-991",
+  },
+  {
+    id: "oq-templates",
+    no: "13-6",
+    screen: "ops-skills",
+    label: "配るもの › ひな形（種別・状態・項目。版・使っている会社の数）",
+    ticket: "K-994",
+    leaf: "K-994",
+  },
+  {
+    id: "oq-template-release",
+    no: "13-7",
+    screen: "ops-skills",
+    label: "ひな形の新しい版を出す確かめ（直す頁から出す・既定のまま使っている会社の管理者に鈴）",
+    ticket: "K-1111",
+    leaf: "K-1111",
+  },
+  {
+    id: "op-template-edit",
+    no: "13-10",
+    screen: "ops-skills",
+    label: "ひな形の新しい版の中身を直している（今の版を写して 足す・直す・消す）",
+    ticket: "K-1111",
+    leaf: "K-1111",
+  },
+  {
+    id: "oq-operations",
+    no: "13-8",
+    screen: "ops-skills",
+    label: "配るもの › 操作（読むだけ）",
+    ticket: "K-994",
+    leaf: "K-994",
+  },
+  {
+    id: "oq-template-update",
+    no: "13-9",
+    screen: "settings",
+    label: "会社の側：ひな形がこう変わります（手を付けていない所だけ・そのままにする／変える）",
+    ticket: "K-1016",
+    leaf: "K-1016",
+  },
+];
