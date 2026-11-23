@@ -17484,9 +17484,11 @@
     "1440"
    ],
    "access_roles": [
+    "R1",
     "R2"
    ],
    "edit_roles": [
+    "R1",
     "R2"
    ],
    "related_apis": [
@@ -36022,9 +36024,11 @@
     "1440"
    ],
    "access_roles": [
+    "R1",
     "R2"
    ],
    "edit_roles": [
+    "R1",
     "R2"
    ],
    "related_apis": [

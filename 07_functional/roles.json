@@ -48,6 +48,7 @@
     "automation-repair",
     "audit",
     "policies",
+    "members",
     "ai-staff",
     "ai-staff-detail",
     "security-brief",
@@ -63,6 +64,7 @@
     "inquiry",
     "notices",
     "billing",
+    "member-detail",
     "tickets",
     "masters",
     "layers",
@@ -82,6 +84,8 @@
     "work-types",
     "rules",
     "knowledge",
+    "members",
+    "member-detail",
     "layers",
     "masters",
     "audit",
@@ -677,7 +681,7 @@
    "R6": "-"
   },
   "members": {
-   "R1": "-",
+   "R1": "edit",
    "R2": "edit",
    "R3": "-",
    "R4": "-",
@@ -873,7 +877,7 @@
    "R6": "edit"
   },
   "member-detail": {
-   "R1": "-",
+   "R1": "edit",
    "R2": "edit",
    "R3": "-",
    "R4": "-",

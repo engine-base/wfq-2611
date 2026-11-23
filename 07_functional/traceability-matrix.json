@@ -1431,6 +1431,7 @@
     "navigate /today"
    ],
    "access_roles": [
+    "R1",
     "R2"
    ]
   },
@@ -2831,6 +2832,7 @@
     "navigate /today"
    ],
    "access_roles": [
+    "R1",
     "R2"
    ]
   },
