@@ -89,8 +89,8 @@ export function makeAuthenticator(): Authenticator {
   return { credentialId: randomBytes(32), privateKey, cose };
 }
 
-/** 認証器の応答（AuthenticationResponseJSON・署名の回数は毎回 1 つ進める） */
-function assertion(a: Authenticator, userId: string, challenge: string, counter: number) {
+/** 認証器の応答（AuthenticationResponseJSON・署名の回数は毎回 1 つ進める）。運営の人をパスキーで入れるほかの試験（F1/terms.test.ts）も使う */
+export function assertion(a: Authenticator, userId: string, challenge: string, counter: number) {
   const cnt = Buffer.alloc(4);
   cnt.writeUInt32BE(counter);
   const authData = Buffer.concat([sha256(RP_ID), Buffer.from([0x05]), cnt]); // UP + UV
