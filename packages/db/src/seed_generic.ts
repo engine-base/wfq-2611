@@ -124,6 +124,9 @@ where c.contype = 'f' and c.connamespace = 'public'::regnamespace
     which === "A" ? b.scopeRootA : which === "B" ? b.scopeRootB : b.opsScope;
   const whichOf = (tenant: string): "A" | "B" | "ops" =>
     tenant === b.tenantA ? "A" : tenant === b.tenantB ? "B" : "ops";
+  /** 本文の形を DB の check（app.ticket_body_valid）が守る jsonb の列（K-674）。既定の {} では入らない */
+  const DOC_BODY_COLS = new Set(["knowledge_page_versions.body"]);
+  const EMPTY_DOC_BODY = JSON.stringify({ doc: { type: "doc", content: [] }, text: "" });
   const defaultOf = (x: Col): unknown => {
     if (x.type === "boolean") return false;
     if (["smallint", "integer", "bigint", "numeric", "real", "double precision"].includes(x.type)) return 1;
@@ -176,6 +179,9 @@ where c.contype = 'f' and c.connamespace = 'public'::regnamespace
         row[x.col] = v;
       } else if (x.col === "key") row[x.col] = fresh ? `k9-${rnd()}` : "seed";
       else if (x.col === "version") row[x.col] = fresh ? Math.floor(Math.random() * 1e6) + 2 : 1;
+      else if (DOC_BODY_COLS.has(`${t}.${x.col}`))
+        // 本文の形を DB が守る列（既定の {} は守りに通らない）：空の文書 {doc, text}
+        row[x.col] = EMPTY_DOC_BODY;
       else if (!x.nullable && x.def === null)
         // 新しく足す行の文字の列は重ならない値にする（例：チケットごとに区画の名前は 1 つ）
         row[x.col] = allowed.get(`${t}.${x.col}`) ?? (fresh && x.type === "text" ? `seed-${rnd()}` : defaultOf(x));
