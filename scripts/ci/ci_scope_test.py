@@ -1239,6 +1239,13 @@ class K1105FidelityScope(unittest.TestCase):
             r = self.t.pick([f])
             self.assertEqual(r["gates"]["70"], [K1105_FID], f)
             self.assertNotIn("70", r["gate_groups"], f)
+        # 部品の対応の道具そのものを変えたら、70 は全部で画面の組も起きる（画面の試験の道具と同じ・web_select.all_on と jobs.web.paths）
+        r = self.t.pick(["scripts/ci/fidelity_parts.py"])
+        self.assertEqual(r["gates"]["70"], [K1105_FID])
+        self.assertNotIn("70", r["gate_groups"])
+        rules = json.loads((ROOT / "scripts" / "ci" / "ci_scope.json").read_text(encoding="utf-8"))
+        self.assertTrue(ci_scope.match("scripts/ci/fidelity_parts.py", rules["jobs"]["web"]["paths"]), "変えた回に画面の組が起きる")
+        self.assertEqual(rules["web_select"]["all_on"][0], "apps/web/playwright.config.ts", "all_on の先頭は前のまま（末尾に足す）")
         # トークンと部品を同時に変えても全部（絞らない）
         r = self.t.pick(["apps/web/styles/k-tokens.css", "apps/web/components/auth/box.tsx"])
         self.assertNotIn("70", r["gate_groups"])
