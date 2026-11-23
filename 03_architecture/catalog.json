@@ -2447,7 +2447,9 @@
     "knowledge_page_versions"
    ],
    "status": "契約だけ（501）",
-   "owner_tickets": []
+   "owner_tickets": [
+    "K-680"
+   ]
   },
   {
    "op": "unarchiveKnowledgePage",
