@@ -127,6 +127,15 @@ where c.contype = 'f' and c.connamespace = 'public'::regnamespace
   /** 本文の形を DB の check（app.ticket_body_valid）が守る jsonb の列（K-674）。既定の {} では入らない */
   const DOC_BODY_COLS = new Set(["knowledge_page_versions.body"]);
   const EMPTY_DOC_BODY = JSON.stringify({ doc: { type: "doc", content: [] }, text: "" });
+  /**
+   * INSERT の見本だけに当てる値（K-674）。ナレッジは権限の束を使わず棚で書ける人が決まる（会社＝管理者・グループ＝マネージャー・自分＝本人）。
+   * 種の代表は管理者ではないので、「権限あり・自分の範囲」は自分の棚に書く形にする。版は下書きだけを足せる（kind の既定は published）
+   */
+  const INSERT_AS: Record<string, Record<string, unknown>> = {
+    knowledge_pages: { is_personal: true, folder_id: null }, // 種のフォルダは会社の棚（フォルダと同じ棚の引き金に当たる）
+    knowledge_folders: { is_personal: true },
+    knowledge_page_versions: { kind: "draft" },
+  };
   const defaultOf = (x: Col): unknown => {
     if (x.type === "boolean") return false;
     if (["smallint", "integer", "bigint", "numeric", "real", "double precision"].includes(x.type)) return 1;
@@ -290,7 +299,12 @@ where c.contype = 'f' and c.connamespace = 'public'::regnamespace
       seeded2.set(`${t}:${b.tenantA}`, await insertRow(t, build(t, "A", true)));
       seeded2.set(`${t}:${b.tenantB}`, await insertRow(t, build(t, "B", true)));
     }
-    out[t] = { visible: idA, hiddenLayer: null, other: idB, insert: (tenant) => build(t, whichOf(tenant), true) };
+    out[t] = {
+      visible: idA,
+      hiddenLayer: null,
+      other: idB,
+      insert: (tenant) => ({ ...build(t, whichOf(tenant), true), ...(INSERT_AS[t] ?? {}) }),
+    };
   }
   return out;
 }
