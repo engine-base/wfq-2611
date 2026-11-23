@@ -24396,9 +24396,12 @@
    "canvas": [],
    "canvas_none": "口の答えの状態の番号だけ。画面のコードを変えない（画面は 500 も 503 も「落ちている」として同じに出す・signup-form.tsx の r.status >= 500）",
    "affects": [
-    "@kaname/api"
+    "@kaname/api",
+    "@kaname/contracts"
    ],
-   "ci_wide": [],
+   "ci_wide": [
+    "shared"
+   ],
    "changes": [
     "apps/api/src/contract/op.ts",
     "apps/api/src/features/F1/consent-terms/index.ts",
