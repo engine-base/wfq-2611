@@ -34,11 +34,12 @@ BUILDER_TEXT = BUILDER.read_text(encoding="utf-8")
 WEB_GATES = ("G48 ", "G59 ", "G70 ")
 
 
-def eval_if(expr: str, *, inputs_web: str, static_web: str, cancelled: bool = False) -> bool:
+def eval_if(expr: str, *, inputs_web: str, static_web: str, cancelled: bool = False, on_defer: str = "false") -> bool:
     """組の if（${{ … }}）を、この試験で使う語だけの小さな読み手で評価する。知らない語があれば止める（黙って真にしない）"""
     m = re.fullmatch(r"\s*\$\{\{(.*)\}\}\s*", expr, re.S)
     body = m.group(1) if m else expr
     known = {
+        "needs.static.outputs.web_on_defer": repr(on_defer),   # K-1105：長い名前を先に置き換える（web の頭が同じ）
         "inputs.web": repr(inputs_web),
         "needs.static.outputs.web": repr(static_web),
     }
@@ -85,6 +86,9 @@ class WebIf(unittest.TestCase):
         self.assertTrue(eval_if(expr, inputs_web="", static_web="true"), "入力が空の回は今までどおり流れる")
         self.assertTrue(eval_if(expr, inputs_web="run", static_web="true"), "run は流れる")
         self.assertFalse(eval_if(expr, inputs_web="defer", static_web="true"), "defer の回は流れない")
+        # K-1105：defer の回でも、範囲の台本が「突き合わせ（G70）に当たる部品を変えた」印（web_on_defer）を立てたら組は起きる（流すのは G70 だけ）
+        self.assertTrue(eval_if(expr, inputs_web="defer", static_web="true", on_defer="true"), "defer でも印が立てば G70 のために流れる")
+        self.assertFalse(eval_if(expr, inputs_web="defer", static_web="false", on_defer="true"), "範囲の外なら印があっても流れない")
         for w in ("", "run", "defer"):
             with self.subTest(inputs_web=w):
                 self.assertFalse(eval_if(expr, inputs_web=w, static_web="false"), "範囲の外なら入力にかかわらず流れない")
@@ -118,8 +122,11 @@ class WebConcurrency(unittest.TestCase):
                 if "inputs.web" in str(st):
                     # K-631：画面の型の確かめ（static の組の 1 段）は、web=run の回に二重に流さないため inputs.web を読む
                     is_types = name == "static" and "next typegen" in str(st.get("run", "")) and "inputs.web != 'run'" in str(st.get("if", ""))
-                    hits.append(f"{name}: types" if is_types else f"{name}: {st.get('name')}")
-        self.assertEqual(hits, ["static: types", "web.if"], "inputs.web を読むのは web の組の if と、画面の型の確かめの段（K-631）だけ（ほかの組・段は今までどおり）")
+                    # K-1105：static の範囲の台本（G0・id: scope）は入力 web を受け、defer の回に G70 だけを選ぶ
+                    is_scope = name == "static" and st.get("id") == "scope" and (st.get("env") or {}).get("CI_WEB_INPUT") == "${{ inputs.web }}"
+                    hits.append(f"{name}: types" if is_types else (f"{name}: scope" if is_scope else f"{name}: {st.get('name')}"))
+        self.assertEqual(sorted(hits), ["static: scope", "static: types", "web.if"],
+                         "inputs.web を読むのは web の組の if と、画面の型の確かめの段（K-631）と、範囲の台本（G0・K-1105）だけ（ほかの組・段は今までどおり）")
         self.assertNotIn("inputs.web", str(WF.get("env", "")))
 
 

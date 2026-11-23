@@ -354,28 +354,31 @@ class GateSelectTest(unittest.TestCase):
             r = pick([f])
             self.assertEqual(r["gates"]["70"], [], f)
             self.assertEqual(r["g48"], ["apps/web/tests/k/a.spec.ts"], f)
-        # 入れた組が 1 つでもあれば、web の組が起きる回には専用の段を必ず選ぶ（G48 の答えは同じ）。入れた組が 0 なら上のまま。
-        # ci_scope が実際に選ぶ所（_web_pick）を偽の木に当てる。fidelity.json が無い・壊れているときは always を付けない（例外で落ちない。形の誤りは G69 が赤にする）
+        # 入れた組が有っても、画面の部品でない差分（関係ないファイル・別の試験の部品）では専用の段を選ばない（K-1105 で「必ず選ぶ」から替えた：
+        # 組は、その組の頁が import で辿って読む部品を変えたときに選ぶ。頁の見つからない組は、どの部品を変えても選ぶ）。G48 の答えは同じ。
+        # ci_scope が実際に選ぶ所（_web_pick）を偽の木に当てる。fidelity.json が無い・壊れているときも例外で落ちない（形の誤りは G69 が赤にする）
         tmp = pathlib.Path(tempfile.mkdtemp(prefix="k238-gate-"))
         try:
             (tmp / "04_design").mkdir()
             (tmp / "11_tickets").mkdir()
             rules = {"web_select": web_cfg(), "spec": {}}
-            # 関係ないファイルの差分（誰の画面でもない画面のコードは、前からの決まりで全部に倒れて専用の段も選ぶので使わない）
             plan = {"changes": [ci_scope.Change("M", "README.md", None)]}
-            for text, want in ((json.dumps({"groups": [{"id": "g", "enrolled": True}]}), [FID]),
-                               (json.dumps({"groups": [{"id": "g", "enrolled": False}]}), []),
-                               (None, []), ("{oops", [])):
+            part = {"changes": [ci_scope.Change("M", "apps/web/features/x.tsx", None)]}
+            for text, part_want in ((json.dumps({"groups": [{"id": "g", "enrolled": True}]}), [FID]),
+                                    (json.dumps({"groups": [{"id": "g", "enrolled": False}]}), None),
+                                    (None, None), ("{oops", None)):
                 f = tmp / "04_design" / "fidelity.json"
                 if text is None:
                     f.unlink(missing_ok=True)
                 else:
                     f.write_text(text, encoding="utf-8")
                 r = ci_scope._web_pick(str(tmp), str(tmp / "11_tickets"), rules, plan, "K-99")
-                self.assertEqual(r["gates"]["70"], want, text)
-                # always が付いても G48・G59 は全部に倒れない（チケットの CI はチケットの範囲だけ）
+                self.assertEqual(r["gates"]["70"], [], text)
                 r = pick(["apps/web/tests/_lib/row.ts"], cfg=ci_scope.gate_cfg(str(tmp), web_cfg()))
-                self.assertEqual((r["gates"]["70"], r["g48"], r["g59"]), (want, ["apps/web/tests/k/a.spec.ts"], []), text)
+                self.assertEqual((r["gates"]["70"], r["g48"], r["g59"]), ([], ["apps/web/tests/k/a.spec.ts"], []), text)
+                if part_want is not None:   # 入れた組（頁の無い組 g）が在る：部品を変えた差分では選ぶ
+                    r = ci_scope._web_pick(str(tmp), str(tmp / "11_tickets"), rules, part, "K-99")
+                    self.assertEqual(r["gates"]["70"], part_want, text)
         finally:
             shutil.rmtree(tmp, ignore_errors=True)
 
