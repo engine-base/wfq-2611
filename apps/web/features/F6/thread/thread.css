@@ -412,6 +412,15 @@
   align-items: center;
   gap: var(--k-s-sm);
 }
+/* 見出し「知らせる人」は折らずに 1 行。長い名前の札が並んだときは札の並びだけを折り返し、＋は並びの最後に付く（K-393） */
+.k-talk-send > .k-talk-sub {
+  flex: none;
+  white-space: nowrap;
+}
+.k-talk-send > .k-talk-notify {
+  flex: 1 1 auto;
+  min-width: 0;
+}
 .k-talk-send .k-btn {
   margin-left: auto;
 }
