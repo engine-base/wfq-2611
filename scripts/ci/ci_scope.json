@@ -215,6 +215,7 @@
    "03_architecture/choke-points.json",
    "scripts/ci/generated.json",
    "scripts/ci/web_select*",
+   "scripts/ci/fidelity_parts*",
    "scripts/ci/ticket_commit_gate*",
    "scripts/ci/ticket_order_gate*",
    "scripts/tickets/**",

@@ -32,7 +32,8 @@ def eval_if(expr: str, *, inputs_web: str, static_web: str, cancelled: bool = Fa
     """段・組の if（${{ … }}）を、この試験で使う語だけの小さな読み手で評価する。知らない語があれば止める（黙って真にしない）"""
     m = re.fullmatch(r"\s*\$\{\{(.*)\}\}\s*", str(expr), re.S)
     py = m.group(1) if m else str(expr)
-    known = {"inputs.web": repr(inputs_web), "needs.static.outputs.web": repr(static_web), "steps.scope.outputs.web": repr(static_web)}
+    # K-1105：web の組の if の web_on_defer（G70 に当たる部品を変えた印）は、この試験では立たない回（"false"）として読む。長い名前を先に置き換える
+    known = {"needs.static.outputs.web_on_defer": repr("false"), "inputs.web": repr(inputs_web), "needs.static.outputs.web": repr(static_web), "steps.scope.outputs.web": repr(static_web)}
     for k, v in known.items():
         py = py.replace(k, v)
     py = py.replace("!cancelled()", repr(not cancelled)).replace("cancelled()", repr(cancelled))
