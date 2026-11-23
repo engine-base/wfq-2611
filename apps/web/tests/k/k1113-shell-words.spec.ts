@@ -39,7 +39,7 @@ async function openMock(page: Page, id: string, width: number) {
 const leftNav = (page: Page) => page.getByRole("navigation", { name: "メニュー", exact: true });
 const canvasFiles = () => readdirSync(CANVAS).filter((f) => f.endsWith(".dc.html"));
 
-test("K1113-UI-001 左のメニュー（役 R1・幅 1440 と 768 のレール）：項目は チケット・承認待ち・高本のAI・ナレッジ・ワークスペースの管理 の 5 つで、「取引先」は押せない形でも無い（字・title・読み上げのどれにも無い）", async ({
+test("K1113-UI-001 左のメニュー（役 R1・幅 1440 と 768 のレール）：項目は チケット・承認待ち・高本のAI・ナレッジ・ワークスペースの管理 の 5 つで、「取引先」は押せない形でも無い（字・title・読み上げのどれにも無い）。幅 375 の引き出し「メニュー（全部）」にも無い", async ({
   page,
 }) => {
   await guard(page);
@@ -54,6 +54,13 @@ test("K1113-UI-001 左のメニュー（役 R1・幅 1440 と 768 のレール�
     await expect(nav.getByRole("link", { name: /取引先/ }), `幅 ${w}`).toHaveCount(0);
     expect(await nav.evaluate((e) => e.outerHTML), `幅 ${w}`).not.toContain("取引先");
   }
+  // 幅 375：下のタブの「メニュー」で開く引き出し「メニュー（全部）」にも取引先が無い
+  await openMock(page, "pc-claude-done", 375);
+  await page.getByRole("navigation", { name: "下のタブ" }).getByRole("button", { name: "メニュー" }).click();
+  const sheet = page.getByRole("navigation", { name: "メニュー（全部）" });
+  await expect(sheet).toBeVisible();
+  await expect(sheet.getByRole("link", { name: /ナレッジ/ })).toHaveCount(1);
+  expect(await sheet.evaluate((e) => e.outerHTML)).not.toContain("取引先");
 });
 
 test("K1113-UI-002 上の帯の鈴：数の無いときの読み上げは「お知らせ」・指を置くと「お知らせ（準備中）」（幅 1440・375）。数のある見本 /dev/k/showcase は「お知らせ（3 件）」で、押すと見本の知らせが出る", async ({
@@ -130,7 +137,7 @@ test("K1113-UI-006 画面のコード：外枠（shell.tsx）・第 2 ナビ（m
   }
 });
 
-test("K1113-UI-007 キャンバス（正の絵）：どの絵にも左の「取引先」の項目・鈴の「知らせ」・第 2 ナビの「知らせ」とその注の古い字が無い。EdPC は鈴が「お知らせ（3 件）」・第 2 ナビが「お知らせ」", () => {
+test("K1113-UI-007 キャンバス（正の絵）：どの絵にも左の「取引先」の項目・鈴の「知らせ」・第 2 ナビの「知らせ」とその注の古い字が無い。EdPC は鈴が「お知らせ（3 件）」・第 2 ナビが「お知らせ」。スマホのメニュー MbMenu に取引先の行が無く副題は「ログイン・PC・お知らせ」。MeNotify のいまの場所・見出しと MbNotify の見出しは「お知らせ」", () => {
   // 絵が 1 枚も読めないと古い字も無く緑になるので、枚数も見る
   expect(canvasFiles().length).toBeGreaterThan(100);
   const bad: string[] = [];
@@ -149,17 +156,27 @@ test("K1113-UI-007 キャンバス（正の絵）：どの絵にも左の「取�
   expect(edpc).toContain('aria-label="お知らせ（3 件）"');
   expect(edpc).toContain('<span class="kn-sub-t">お知らせ</span>');
   expect(edpc).toContain("預けたログイン情報とお知らせはワークスペースごと");
+  const mbMenu = readFileSync(join(CANVAS, "MbMenu.dc.html"), "utf8");
+  expect(mbMenu).not.toContain("MbClients.dc.html");
+  expect(mbMenu).not.toContain("取引先");
+  expect(mbMenu).toContain("ログイン・PC・お知らせ");
+  const meNotify = readFileSync(join(CANVAS, "MeNotify.dc.html"), "utf8");
+  expect(meNotify).toMatch(/<nav aria-label="いまの場所"[^]*?>お知らせ<\/b><\/nav>/);
+  expect(meNotify).not.toMatch(/>知らせ</);
+  expect(readFileSync(join(CANVAS, "MbNotify.dc.html"), "utf8")).not.toMatch(/>知らせ</);
 });
 
-test("K1113-UI-008 キャンバスの作り手：絵の写しに shellfix.py（全部の絵にそろえの処理をかける）を回し直しても、絵が 1 バイトも変わらない（作り手に古い字が残っていれば戻る）", () => {
+test("K1113-UI-008 キャンバスの作り手：絵の写しに shellfix.py（全部の絵にそろえの処理をかける）を回し直しても、絵が 1 バイトも変わらず、途中の作り手（edwire・linkfix・tokensnap）の失敗の行も出ない", () => {
   const tmp = mkdtempSync(join(tmpdir(), "k1113-canvas-"));
   try {
     cpSync(CANVAS, tmp, { recursive: true });
-    execFileSync("python3", ["shellfix.py"], {
+    const out = execFileSync("python3", ["shellfix.py"], {
       cwd: GEN,
       env: { ...process.env, KANAME_CANVAS: `${tmp}/` },
-      stdio: "pipe",
+      encoding: "utf8",
     });
+    // shellfix.py は edwire・linkfix・tokensnap の失敗を「edwire <誤り>」と出して 0 で終わる。握りつぶしたまま緑にしない
+    expect(out.split("\n").filter((l) => /^edwire /.test(l))).toEqual([]);
     const changed = canvasFiles().filter(
       (f) => readFileSync(join(tmp, f), "utf8") !== readFileSync(join(CANVAS, f), "utf8"),
     );
@@ -167,4 +184,25 @@ test("K1113-UI-008 キャンバスの作り手：絵の写しに shellfix.py（�
   } finally {
     rmSync(tmp, { recursive: true, force: true });
   }
+});
+
+test("K1113-UI-009 キャンバスの作り手のソース：shellfix.py が呼ばない作り手（me.py・topbar.py・mb.py・op.py・on.py）にも古い字が残らない。鈴は「お知らせ（3 件）」・第 2 ナビと注は「お知らせ」・MbMenu の取引先の行が無い", () => {
+  const read = (f: string) => readFileSync(join(GEN, f), "utf8");
+  const me = read("me.py");
+  expect(me).toContain('"お知らせ", "", False)');
+  expect(me).toContain("預けたログイン情報とお知らせはワークスペースごと");
+  expect(me).toContain('page("MeNotify.dc.html", "自分の設定 お知らせ", "お知らせ", body)');
+  expect(read("topbar.py")).toContain('aria-label="お知らせ（3 件）"');
+  const mb = read("mb.py");
+  expect(mb.match(/aria-label="お知らせ（3 件）"/g)?.length ?? 0).toBe(2);
+  expect(mb).not.toContain('mrow("取", "取引先"');
+  expect(mb).toContain('"ログイン・PC・お知らせ"');
+  // 古い鈴・第 2 ナビ・注の字（正規表現の お? と linkfix の TEXT の鍵を除く）が、作り手のどれにも無い
+  const bad: string[] = [];
+  for (const f of ["shellfix.py", "topbar.py", "me.py", "mb.py", "op.py", "on.py", "edwire.py"]) {
+    const src = read(f);
+    for (const re of [/(?<!\?)aria-label="知らせ/g, /"知らせ", ""/g, /と知らせはワークスペース/g])
+      for (const m of src.matchAll(re)) bad.push(`${f}：${src.slice(Math.max(0, m.index! - 20), m.index! + 20)}`);
+  }
+  expect(bad).toEqual([]);
 });
