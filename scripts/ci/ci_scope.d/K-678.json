@@ -1,6 +1,26 @@
 {
  "data_links": [
-  {"paths": ["apps/api/src/hooks/f9-knowledge-folders.ts", "apps/api/src/features/F9/knowledge/folder-*.ts"],
-   "tests": ["apps/api/test/features/F9/knowledge-folders.test.ts"]}
+  {
+   "paths": [
+    "apps/api/src/hooks/f9-knowledge-folders.ts",
+    "apps/api/src/features/F9/knowledge/folder-*.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F9/knowledge-folders.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F9/knowledge-folders.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts",
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/contract/k144.d/K-678.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_knowledge_folders.test.ts",
+    "apps/api/test/generated/patch_knowledge_folders_id.test.ts",
+    "apps/api/test/generated/delete_knowledge_folders_id.test.ts"
+   ]
+  }
  ]
 }
