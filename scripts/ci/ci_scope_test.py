@@ -1150,11 +1150,31 @@ class K1105Tree:
             # どの組の頁からも読まれない部品（開発用の頁だけが読む）
             "apps/web/app/(dev)/dev/mock/page.tsx": 'import { Mock } from "@/features/F9/mock-only";\nexport default function P() { return <Mock />; }\n',
             "apps/web/features/F9/mock-only.tsx": "export function Mock() { return null; }\n",
+            # 途中の layout（区切りの括弧の中）と頁の隣の loading：その下の頁の組だけが読む
+            "apps/web/app/(work)/layout.tsx": 'import { Nav } from "@/components/shell/nav";\nexport default function L({ children }) { return children; }\n',
+            "apps/web/components/shell/nav.tsx": "export function Nav() { return null; }\n",
+            "apps/web/app/(work)/tickets/[id]/loading.tsx": 'import { Skel } from "./skel";\nexport default function L() { return <Skel />; }\n',
+            "apps/web/app/(work)/tickets/[id]/skel.tsx": "export function Skel() { return null; }\n",
+            # 字の段（/legal/terms）が動く段 [kind] に当たる組。字の段の頁（/legal/about）が在ればそちらが先
+            "apps/web/app/(outside)/legal/[kind]/page.tsx": 'import { Legal } from "@/features/F1/legal";\nexport default function P() { return <Legal />; }\n',
+            "apps/web/app/(outside)/legal/about/page.tsx": 'import { About } from "@/features/F1/about";\nexport default function P() { return <About />; }\n',
+            "apps/web/features/F1/legal.tsx": "export function Legal() { return null; }\n",
+            "apps/web/features/F1/about.tsx": "export function About() { return null; }\n",
+            # import で辿れない物（fs で読む文面）：どの頁・入口からも辿れない
+            "apps/web/content/legal/terms.md": "# 規約\n",
+            # 頁が読むワークスペースのパッケージ（package.json の workspace:）
+            "apps/web/package.json": json.dumps({"name": "@kaname/web", "dependencies": {"@kaname/config": "workspace:*", "react": "19"}}),
+            "packages/config/package.json": json.dumps({"name": "@kaname/config"}),
+            "packages/config/src/legal.ts": "export const X = 1;\n",
+            "packages/other/package.json": json.dumps({"name": "@kaname/other"}),
+            "packages/other/src/a.ts": "export const Y = 1;\n",
         }
         groups = [{"id": "ticket-detail", "app": "/tickets/{ticket}", "enrolled": True},
-                  {"id": "login", "app": "/login?step=terms", "enrolled": True}]
+                  {"id": "login", "app": "/login?step=terms", "enrolled": True},
+                  {"id": "legal", "app": "/legal/terms", "enrolled": True},
+                  {"id": "about", "app": "/legal/about", "enrolled": True}]
         if ghost:
-            groups.append({"id": "ghost", "app": "/no-such-page", "enrolled": True})
+            groups += [{"id": "ghost", "app": "/no-such-page", "enrolled": True}, {"id": "noapp", "enrolled": True}]
         w["04_design/fidelity.json"] = json.dumps({"groups": groups}, ensure_ascii=False)
         for rel, text in w.items():
             f = self.root / rel
@@ -1192,6 +1212,13 @@ class K1105FidelityScope(unittest.TestCase):
             self.assertEqual(r["gate_groups"].get("70"), ["ticket-detail"], f)
         r = self.t.pick(["apps/web/components/auth/box.tsx"])
         self.assertEqual(r["gate_groups"].get("70"), ["login"], "相対の道で読む部品・問いの付いた道（?step=terms）の組")
+        # 頁そのもの・頁の隣の loading が読む部品・途中の layout（区切りの括弧の中）が読む部品は、その下の頁の組だけ
+        for f in ("apps/web/app/(work)/tickets/[id]/page.tsx", "apps/web/app/(work)/tickets/[id]/skel.tsx",
+                  "apps/web/components/shell/nav.tsx", "apps/web/app/(work)/layout.tsx"):
+            self.assertEqual(self.t.pick([f])["gate_groups"].get("70"), ["ticket-detail"], f)
+        # 字の段は同じ字の段の頁が先、無ければ動く段 [x] に当たる（/legal/terms → [kind]・/legal/about → about）
+        self.assertEqual(self.t.pick(["apps/web/features/F1/legal.tsx"])["gate_groups"].get("70"), ["legal"])
+        self.assertEqual(self.t.pick(["apps/web/features/F1/about.tsx"])["gate_groups"].get("70"), ["about"])
         r = self.t.pick(["apps/web/components/auth/box.tsx", "apps/web/features/F6/progress/progress.css"])
         self.assertEqual(r["gate_groups"].get("70"), ["login", "ticket-detail"], "2 つの部品なら両方の組（並びは名前の順）")
         out = ci_scope.with_web_selection(k1105_plan(), r)
@@ -1223,14 +1250,23 @@ class K1105FidelityScope(unittest.TestCase):
         try:
             files = g.cfg()["gates"]["70"]["group_files"]
             self.assertIsNone(files["ghost"], "頁の無い組は None（決められない）")
+            self.assertIsNone(files["noapp"], "app の道が無い組も None")
             self.assertIn("apps/web/features/F6/progress/progress.css", files["ticket-detail"])
-            self.assertEqual(g.pick(["apps/web/components/auth/box.tsx"])["gate_groups"].get("70"), ["ghost", "login"])
-            self.assertEqual(g.pick(["apps/web/features/F9/mock-only.tsx"])["gate_groups"].get("70"), ["ghost"])
+            self.assertEqual(g.pick(["apps/web/components/auth/box.tsx"])["gate_groups"].get("70"), ["ghost", "login", "noapp"])
+            self.assertEqual(g.pick(["apps/web/features/F9/mock-only.tsx"])["gate_groups"].get("70"), ["ghost", "noapp"])
         finally:
             g.close()
-        r = self.t.pick(["packages/errors/src/catalog.ts"])
-        self.assertEqual(r["gates"]["70"], [K1105_FID])
-        self.assertNotIn("70", r["gate_groups"])
+        # 決まりの unsure・頁が読むワークスペースのパッケージ（apps/web/package.json の workspace:）の src・どの頁や入口からも辿れない画面の物は全部
+        for f in ("packages/errors/src/catalog.ts", "packages/config/src/legal.ts", "apps/web/content/legal/terms.md"):
+            r = self.t.pick([f])
+            self.assertEqual(r["gates"]["70"], [K1105_FID], f)
+            self.assertNotIn("70", r["gate_groups"], f)
+        self.assertEqual(self.t.pick(["packages/other/src/a.ts"])["gates"]["70"], [], "頁が読まないパッケージは入らない")
+        # 前からの全部の道（on のファイル：キャンバス・組の設定）と部品を同時に変えても絞らない
+        for f in ("04_design/canvas/Main.dc.html", "04_design/fidelity.json"):
+            r = self.t.pick([f, "apps/web/components/auth/box.tsx"])
+            self.assertEqual(r["gates"]["70"], [K1105_FID], f)
+            self.assertNotIn("70", r["gate_groups"], f)
         for f in (K1105_FID, "apps/web/tests/_lib/fidelity-states.ts"):
             r = web_select.select([f, "apps/web/components/auth/box.tsx"], "K-99", {}, [], [],
                                   {"apps/web/tests/_lib/fidelity-states.ts": {K1105_FID}}, self.t.cfg())
@@ -1238,6 +1274,10 @@ class K1105FidelityScope(unittest.TestCase):
             self.assertNotIn("70", r["gate_groups"], f)
         mine = {"K-99": {"tests": [K1105_FID], "changes": [], "depends_on": []}}
         self.assertNotIn("70", self.t.pick(["apps/web/components/auth/box.tsx"], mine)["gate_groups"])
+        dep = {"K-99": {"tests": [], "changes": [], "depends_on": ["K-2"]}, "K-2": {"tests": [K1105_FID], "changes": [], "depends_on": []}}
+        r = self.t.pick(["apps/web/components/auth/box.tsx"], dep)
+        self.assertEqual(r["gates"]["70"], [K1105_FID], "依存のチケットの tests: に突き合わせの試験")
+        self.assertNotIn("70", r["gate_groups"])
 
     def test_K1105_CS_005_defer_keeps_only_g70(self) -> None:
         """K1105-CS-005 画面の行を後回しにする回（web=defer）：G70 に当たれば web の組を起こす印（web_on_defer）が立ち、G48・G59・G73 の一覧は空。
@@ -1247,14 +1287,25 @@ class K1105FidelityScope(unittest.TestCase):
         hit["gates"] = {**hit["gates"], "73": ["apps/web/tests/bridge/k379-bridge-chrome.spec.ts"]}
         out = ci_scope.with_web_selection(k1105_plan(), hit, defer=True)
         o = ci_scope.outputs(out)
-        self.assertEqual(o["web_on_defer"], "true")
+        self.assertEqual((o["web_on_defer"], o["web"]), ("true", "true"))
         self.assertEqual((json.loads(o["web_g48"]), json.loads(o["web_g59"]), json.loads(o["web_tasks"])), ([], [], []))
         self.assertEqual(json.loads(o["web_gates"]), {"70": [K1105_FID], "73": []})
         self.assertEqual(json.loads(o["web_gate_groups"]), {"70": ["ticket-detail"]})
         self.assertEqual(out["errors"], [])
         miss = self.t.pick(["apps/web/features/F9/mock-only.tsx"])
         miss = {**miss, "g48": ["apps/web/tests/k/a.spec.ts"]}
-        self.assertEqual(ci_scope.outputs(ci_scope.with_web_selection(k1105_plan(), miss, defer=True))["web_on_defer"], "false")
+        out = ci_scope.with_web_selection(k1105_plan(), miss, defer=True)
+        self.assertEqual(ci_scope.outputs(out)["web_on_defer"], "false")
+        self.assertEqual(out["errors"], [], "defer で空にした一覧では止める文を出さない（G48 に当たる回は前のとおり選べている）")
+        # 段 73 だけに当たる defer の回：印は立たず、止める文も出ない
+        only73 = {**self.t.pick(["apps/web/features/F9/mock-only.tsx"]), "on_defer": []}
+        only73["gates"] = {"70": [], "73": ["apps/web/tests/bridge/k379-bridge-chrome.spec.ts"]}
+        out = ci_scope.with_web_selection(k1105_plan(), only73, defer=True)
+        self.assertEqual((ci_scope.outputs(out)["web_on_defer"], out["errors"]), ("false", []))
+        self.assertEqual(json.loads(ci_scope.outputs(out)["web_gates"]), {"70": [], "73": []})
+        # 全部の回は defer でも印を立てず、組の一覧は空（鍵は出す）
+        full = ci_scope.outputs(ci_scope.with_web_selection({**k1105_plan(), "mode": "full"}, hit, defer=True))
+        self.assertEqual((full["web_on_defer"], json.loads(full["web_gate_groups"])), ("false", {}))
         self.assertEqual(ci_scope.outputs(ci_scope.with_web_selection(k1105_plan(web=False), hit, defer=True))["web_on_defer"], "false",
                          "web の組が起きない回（画面を変えていない）は印を立てない")
         now = ci_scope.outputs(ci_scope.with_web_selection(k1105_plan(), hit))
@@ -1277,6 +1328,20 @@ class K1105FidelityScope(unittest.TestCase):
             self.assertRegex(title(t), rx, t)
         for t in no:
             self.assertNotRegex(title(t), rx, t)
+        # Playwright と同じ JS の RegExp（旗 gi）でも同じ答え
+        node = shutil.which("node")
+        if node or IN_CI:
+            js = ("const rx=new RegExp(process.argv[1],'gi');const ts=JSON.parse(process.argv[2]);"
+                  "console.log(JSON.stringify(ts.map(t=>{rx.lastIndex=0;return rx.test(t);})))")
+            r = subprocess.run([node or "node", "-e", js, rx, json.dumps([title(t) for t in yes + no], ensure_ascii=False)],
+                               capture_output=True, text=True, check=True)
+            self.assertEqual(json.loads(r.stdout), [True] * len(yes) + [False] * len(no))
+        # env から読む道：無い・空・壊れている・70 の鍵が無い・空の一覧は絞らない（""）。一覧が在れば式
+        for raw in (None, "", "{oops", "{}", '{"70": []}', '["ticket-detail"]'):
+            env = {} if raw is None else {"CI_WEB_GATE_GROUPS": raw}
+            self.assertEqual(web_run.gate_grep_from_env("70", env), "", repr(raw))
+        self.assertEqual(web_run.gate_grep_from_env("70", {"CI_WEB_GATE_GROUPS": '{"70": ["ticket-detail"]}'}),
+                         web_run.group_grep(cfg["group_title"], ["ticket-detail"]))
         self.assertEqual(web_run.gate_commands("70", False, {"70": [K1105_FID]}, cfg["tests"], ""),
                          [["pnpm", "--filter", "@kaname/web", "exec", "playwright", "test", "tests/fidelity/fidelity.spec.ts"]])
         self.assertEqual(web_run.gate_commands("70", True, {}, cfg["tests"], rx),
@@ -1309,6 +1374,11 @@ class K1105FidelityScope(unittest.TestCase):
         r = subprocess.run([sys.executable, str(HERE / "ci_scope.py"), "--web", "later", "--json", "--no-vitest"],
                            capture_output=True, text=True, cwd=ROOT)
         self.assertNotEqual(r.returncode, 0)
+        self.assertIn("invalid choice", r.stderr, "--web の値を選べる形で止める（--web を知らないだけの止まり方でない）")
+        ap = ci_scope.decide_parser()
+        for w in ("", "run", "defer"):
+            self.assertEqual(ap.parse_args(["--web", w]).web, w, w)
+        self.assertEqual(ap.parse_args([]).web, "", "入力が無い回（push）は空")
 
     def test_K1105_CS_008_real_tree_maps_every_group(self) -> None:
         """K1105-CS-008 本物の木：入れた組はどれも頁が見つかり（None が無い）、K-395 が変えた段の札の部品（views.tsx・progress.css）は
