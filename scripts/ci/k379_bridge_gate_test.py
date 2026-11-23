@@ -212,7 +212,7 @@ class ScopeMap(unittest.TestCase):
 
     def test_K379_CI_005_unrelated_changes_do_not_pick_gate(self) -> None:
         """K379-CI-005 on に当たらない変更（関係ない口・関係ない migration・文書・別のチケットの画面のコード・別の試験の部品・Bridge の単体の試験）では 73 は選ばれない。
-        突き合わせに入れた組が在る木（G70 が毎回選ばれる）でも 73 は毎回にならない"""
+        突き合わせに入れた組が在る木でも 73 は毎回にならない（70 も関係ない変更では選ばれない：K-1105 で「入れた組が在れば毎回」を部品の対応に替えた）"""
         for f in ON_MISSES:
             self.assertEqual(pick([f])["gates"][GID], [], f)
         tmp = pathlib.Path(tempfile.mkdtemp(prefix="k379-gate-"))
@@ -223,7 +223,7 @@ class ScopeMap(unittest.TestCase):
             rules = {"web_select": web_cfg(), "spec": {}}
             r = ci_scope._web_pick(str(tmp), str(tmp / "11_tickets"), rules, {"changes": [ci_scope.Change("M", DOC, None)]}, "K-99")
             self.assertEqual(r["gates"][GID], [], "入れた組が在っても 73 は関係ない変更では選ばれない")
-            self.assertEqual(r["gates"]["70"], [FID], "70 は今までどおり毎回（K-238）")
+            self.assertEqual(r["gates"]["70"], [], "70 も関係ない変更（文書）では選ばれない（K-1105）")
             r = ci_scope._web_pick(str(tmp), str(tmp / "11_tickets"), rules,
                                    {"changes": [ci_scope.Change("M", ON_HITS[0], None)]}, "K-99")
             self.assertEqual(r["gates"][GID], sorted(gate()["tests"]))
