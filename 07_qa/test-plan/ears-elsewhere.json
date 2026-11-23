@@ -2020,6 +2020,37 @@
      "mark": "K144-API-032"
     }
    }
+  },
+  "publishKnowledgePage": {
+   "file": "apps/api/test/features/F9/knowledge-publish.test.ts",
+   "reason": "書き終えるのは役・下書きの有無・必ず守るの字数で答えが変わる。生成の試験の偽のセッションでは版も所属も作れない（K-680）",
+   "covers": {
+    "test_post_knowledge_pages_id_publish_ok": "K680-API-001",
+    "test_post_knowledge_pages_id_publish_shape": "K680-API-001",
+    "test_post_knowledge_pages_id_publish_rejected_401": "K680-API-009",
+    "test_post_knowledge_pages_id_publish_rejected_403": "K680-API-008",
+    "test_post_knowledge_pages_id_publish_not_found": "K680-API-008",
+    "test_post_knowledge_pages_id_publish_rejected_422": "K680-API-010",
+    "test_post_knowledge_pages_id_publish_conflict": "K680-API-005",
+    "test_post_knowledge_pages_id_publish_rate_limited": "K680-API-011",
+    "test_post_knowledge_pages_id_publish_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_knowledge_pages_id_publish_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_knowledge_pages_id_publish_conflict_2": "K680-API-006",
+    "test_post_knowledge_pages_id_publish_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_knowledge_pages_id_publish_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   }
   }
  }
 }

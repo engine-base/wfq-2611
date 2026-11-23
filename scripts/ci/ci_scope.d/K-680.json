@@ -1,0 +1,6 @@
+{
+ "data_links": [
+  {"paths": ["apps/api/src/hooks/f9-knowledge-publish.ts", "apps/api/src/features/F9/knowledge/publish.ts"],
+   "tests": ["apps/api/test/features/F9/knowledge-publish.test.ts"]}
+ ]
+}
