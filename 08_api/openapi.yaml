@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Kaname API
   version: 1.0.0
-  description: Mock-Driven Contract Generation。2026-11-23 凍結。信頼源は 08_api/endpoints.json。x-acts / x-screens / x-choke-points / x-source で行為・画面・関門・決定に辿れる
+  description: Mock-Driven Contract Generation。2026-11-22 凍結。信頼源は 08_api/endpoints.json。x-acts / x-screens / x-choke-points / x-source で行為・画面・関門・決定に辿れる
 servers:
 - url: /api/v1
 components:
@@ -10417,6 +10417,31 @@ components:
           pattern: ^(?:[1-9]\d{3}-(?:0[13578]|1[02])-(?:0[1-9]|[12]\d|3[01])|[1-9]\d{3}-(?:0[469]|11)-(?:0[1-9]|[12]\d|30)|[1-9]\d{3}-02-(?:0[1-9]|1\d|2[0-8])|(?:[1-9]\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)T(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d(?:\.\d{1,6})?(?:Z|[+-](?:0\d|1[0-5])(?::?[0-5]\d)?)$
       additionalProperties: false
       x-operation: markTicketTimelineSeen
+    TicketMessageInput:
+      type: object
+      properties:
+        body:
+          type: string
+          pattern: \S
+        mention_member_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+        notify_member_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+        quote_of_id:
+          type: string
+          format: uuid
+          nullable: true
+      additionalProperties: false
+      x-operation: createTicketMessage
+      required:
+      - body
+      x-required-by: hooks
     TicketUpdateInput:
       type: object
       properties:
@@ -10679,7 +10704,7 @@ components:
         deleted:
           type: object
           nullable: true
-      x-operation: listTicketTimeline
+      x-operation: createTicketMessage
     TestSpecLint:
       type: object
       properties:
@@ -12488,6 +12513,21 @@ components:
           type: string
           format: uuid
       x-operation: deleteTicketLink
+    TicketDeleted:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        deleted_count:
+          type: integer
+        withdrawn_approvals:
+          type: integer
+        stopped_runs:
+          type: integer
+        restorable_until:
+          type: string
+      x-operation: deleteTicket
     TicketField:
       type: object
       properties:
@@ -41515,7 +41555,7 @@ paths:
       - D-125.167
       - D-125.62
       x-permission: assignee
-      x-permission-scope: 担当者・作成者・マネージャー（子の扱いを選ぶ）
+      x-permission-scope: 作った人か、そのグループで tickets の edit を持つ人（D-125.62）。子・孫の扱い（children）を選ぶ
       x-step-up: false
       security:
       - session: []
@@ -41526,6 +41566,28 @@ paths:
         schema:
           type: string
           format: uuid
+      - name: children
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          enum:
+          - ''
+          - move
+          - cascade
+          - detach
+      - name: parent_id
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          format: uuid
+      - name: reason
+        in: query
+        allowEmptyValue: true
+        schema:
+          type: string
+          maxLength: 400
       responses:
         '200':
           description: 成功
@@ -41535,7 +41597,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/Tickets'
+                    $ref: '#/components/schemas/TicketDeleted'
                   meta:
                     type: object
         '401':
@@ -41545,7 +41607,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '403':
-          description: FORBIDDEN／E-AUTH-010／MFA_REQUIRED
+          description: E-DEL-001／E-AUTH-010／MFA_REQUIRED
           content:
             application/json:
               schema:
@@ -41562,14 +41624,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-        '429':
-          description: RATE_LIMITED
+        '409':
+          description: E-DEL-010
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         '503':
           description: E-PAGE-003
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: RATE_LIMITED
           content:
             application/json:
               schema:
@@ -43457,8 +43525,8 @@ paths:
       - D-125.131
       - D-125.167
       - D-125.29
-      x-permission: write
-      x-permission-scope: そのグループの人（閲覧のみは書けない）
+      x-permission: read
+      x-permission-scope: そのチケットを見られる人（閲覧のみの人も書ける。段や決定は変えられない・⑧）
       x-step-up: false
       security:
       - session: []
@@ -43474,7 +43542,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TicketMessagesInput'
+              $ref: '#/components/schemas/TicketMessageInput'
       responses:
         '201':
           description: 成功
@@ -43484,7 +43552,7 @@ paths:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/TicketMessages'
+                    $ref: '#/components/schemas/TimelineItem'
                   meta:
                     type: object
         '401':
@@ -43500,7 +43568,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '404':
-          description: NOT_FOUND
+          description: E-PAGE-001／NOT_FOUND
           content:
             application/json:
               schema:
@@ -43512,7 +43580,13 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         '422':
-          description: VALIDATION_ERROR
+          description: E-VAL-027
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: E-PAGE-003
           content:
             application/json:
               schema:
@@ -43525,12 +43599,6 @@ paths:
                 $ref: '#/components/schemas/Error'
         '429':
           description: RATE_LIMITED
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        '503':
-          description: E-PAGE-003
           content:
             application/json:
               schema:

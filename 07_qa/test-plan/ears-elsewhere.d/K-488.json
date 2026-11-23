@@ -1,0 +1,28 @@
+{
+ "ops": {
+  "deleteTicket": {
+   "file": "apps/api/test/features/F7/ticket-delete.test.ts",
+   "reason": "消すは、作った人か edit・子・孫の扱い・承認の取り下げ・走っている AI の止めで答えが変わる。生成の試験の種ではその組を作れない（K-488）",
+   "covers": {
+    "test_delete_tickets_id_ok": "K488-API-001",
+    "test_delete_tickets_id_shape": "K488-API-001",
+    "test_delete_tickets_id_rejected_401": "K488-API-024",
+    "test_delete_tickets_id_rejected_403": "K488-API-003",
+    "test_delete_tickets_id_not_found": "K488-API-004",
+    "test_delete_tickets_id_conflict": "K488-API-007",
+    "test_delete_tickets_id_rejected_422": "K488-API-016",
+    "test_delete_tickets_id_rate_limited": "K488-API-024",
+    "test_delete_tickets_id_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_delete_tickets_id_session_unresolved": "K488-API-025",
+    "test_delete_tickets_id_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {}
+  }
+ }
+}

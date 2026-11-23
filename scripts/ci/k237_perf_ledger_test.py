@@ -32,7 +32,7 @@ API_TARGETS = {  # 道 → (文, begin)
 SCREEN_TARGETS = {  # 画面の道 → 口の数の上限（直列の段はどれも 1）
     "/tickets": 8,
     "/tickets?new=1": 9,
-    "/tickets/:id": 6,
+    "/tickets/:id": 8,  # K-392：やり取りの最初の 20 件（GET /tickets/:id/timeline・タブの読んでいない数）と K-397：決定の一覧（GET /tickets/:id/decisions）を詳細と同時に読む。段は 1 のまま（台帳は K-392 で 7・K-397 で 8）
     "/approvals": 4,
 }
 STAGING_TARGETS = {  # (住所の名前, 方法, 道) → 答えまでの時間の中央値の上限（ms）

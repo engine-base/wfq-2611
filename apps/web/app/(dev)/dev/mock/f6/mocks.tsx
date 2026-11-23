@@ -636,6 +636,7 @@ function view(id: string, theme: Theme): ReactNode {
           ps="PS2"
           stage={menu(ST.hold!)}
           count={1}
+          jump={3}
           panel={<TalkBody items={THREAD_FULL} older={14} composer={{ notify: DEFAULT_NOTIFY }} />}
         />
       );

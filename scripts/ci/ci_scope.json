@@ -1256,6 +1256,26 @@
   },
   {
    "paths": [
+    "apps/api/src/hooks/ticket-message-post.ts",
+    "apps/api/src/features/F6/thread/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F6/thread-post.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F6/thread-post.test.ts",
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_tickets_id_messages.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/src/hooks/ticket-update.ts",
     "apps/api/src/features/ticket-update/**",
     "apps/api/src/features/F6/progress/**"
@@ -1425,6 +1445,26 @@
    ],
    "tests": [
     "apps/api/test/generated/get_tickets_id_delete_preview.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/hooks/ticket-delete.ts",
+    "apps/api/src/features/F7/ticket-delete/**"
+   ],
+   "tests": [
+    "apps/api/test/features/F7/ticket-delete.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F7/ticket-delete.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts",
+    "apps/api/test/features/F1/terms.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/delete_tickets_id.test.ts"
    ]
   },
   {
@@ -1629,6 +1669,7 @@
   "apps/api/test/features/F6/thread.harness.ts": "葉の hooks のファイル apps/api/src/hooks/<名前>.ts を名前を組み立てて動的 import で読む（最初の要求の前に 1 回・まだ無いファイルを準備で読まない）。読む物と使う試験は data_links で結ぶ・K-383",
   "apps/api/test/features/contract/k144.d/K-383.ts": "setup の中で土台 ../../F6/thread.harness.js を動的 import で読む（土台を値で読み込まない・K-378.ts の注）・K-383",
   "apps/api/test/features/contract/k144.d/K-384.ts": "setup の中で土台 ../../F6/thread.harness.js を動的 import で読む（K-378.ts の注）・K-384",
+  "apps/api/test/features/contract/k144.d/K-385.ts": "setup の中で土台 ../../F6/thread.harness.js を動的 import で読む（K-378.ts の注）・K-385",
   "apps/api/test/features/F6/progress.harness.ts": "段 7 の進める口の hooks のファイル（apps/api/src/hooks/ticket-update.ts）を最初の要求の前に動的 import で読む（data_links で結ぶ・K-387）",
   "apps/api/test/features/contract/k144.d/K-387.ts": "この葉の hooks のファイルを本体の準備の中で動的 import で読む（data_links で結ぶ・k144.d の README の決まり・K-387）",
   "apps/api/test/features/F6/progress-reopen.test.ts": "承認と完了の口の hooks のファイル（apps/api/src/hooks/approve-complete.ts）を最初の要求の前に動的 import で読む（K-388）",
@@ -1644,6 +1685,7 @@
   "apps/api/test/features/F7/search-tickets.test.ts": "探す口の hooks のファイル（apps/api/src/hooks/search.ts）と種類の置き場（features/F7/search/kinds.ts）を動的 import で読む（失敗の道の確かめ。data_links で結ぶ・K-468）",
   "apps/api/test/features/contract/k144.d/K-487.ts": "k144 の置き場の葉のファイル。準備の中で F3/leaf-hooks.ts を動的 import し、hooks のファイルを最初の要求のときに読む。ファイルは読まない（K-378）",
   "apps/api/test/features/F7/ticket-delete.harness.ts": "土台。leaf-hooks 越しに葉の hooks のファイルを読む。K-488・K-489 の試験も使う・K-487",
+  "apps/api/test/features/contract/k144.d/K-488.ts": "k144 の置き場の葉のファイル。準備の中で F3/leaf-hooks.ts を動的 import し、hooks のファイルを最初の要求のときに読む。ファイルは読まない（K-378）",
   "apps/api/test/features/F4/ticket-fields.test.ts": "読む口の hooks のファイル apps/api/src/hooks/ticket-fields-read.ts を動的 import で読む（最初の要求のときに 1 回）。読む物と使う試験は data_links で結ぶ・K-563",
   "apps/api/test/features/contract/k144.d/K-563.ts": "葉の hooks のファイルを F3/leaf-hooks.ts の動的 import で読む。読む物と使う試験は data_links で結ぶ・K-563",
   "apps/web/tests/k/k630-request-ref.spec.ts": "K-630 の試験。画面の型を確かめるため子プロセスで apps/web の tsc を流す（読む物は apps/web の画面のコードと型。web の組が流す）",
