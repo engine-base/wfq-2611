@@ -1,0 +1,28 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/hooks/handovers-sender.ts",
+    "apps/api/src/features/F8/handovers/withdraw.ts",
+    "apps/api/src/features/F8/handovers/remind.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F8/handover-sender.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F8/handover-sender.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_ticket_handovers_id_withdraw.test.ts",
+    "apps/api/test/generated/post_ticket_handovers_id_remind.test.ts"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "apps/api/test/features/F8/handover-sender.test.ts": "この葉の hooks のファイル apps/api/src/hooks/handovers-sender.ts を it の中で existsSync と動的 import で読む（切る段の smoke で準備ごと落とさないため）。読む物と試験は data_links で結ぶ・K-406",
+  "apps/api/test/features/contract/k144.d/K-406.ts": "準備（setup）で apps/api/src/hooks/handovers-sender.ts を動的 import で読む・K-406"
+ }
+}

@@ -54,6 +54,7 @@
   ],
   "paths": [
    "05_flow/*.py",
+   "05_flow/build_api.d/**",
    "05_flow/*.json",
    "05_flow/*.html",
    "04_design/**",
@@ -1412,6 +1413,73 @@
   },
   {
    "paths": [
+    "apps/api/src/features/F8/handovers/create/pass.ts",
+    "apps/api/src/features/F8/handovers/notify.ts",
+    "apps/api/src/features/F8/handovers/mail.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F8/handover-pass.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/features/F8/handovers/answer/pass.ts",
+    "apps/api/src/features/F8/handovers/notify.ts",
+    "apps/api/src/features/F8/handovers/mail.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F8/handover-answer-pass.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "packages/db/migrations/20261121090400_handover_switch.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F8/handover-switch.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/hooks/handovers-read.ts",
+    "apps/api/src/features/F8/handovers/list.ts",
+    "apps/api/src/features/F4/create-ticket/hooks.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F8/handover-queue-read.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F8/handover-queue-read.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/get_tickets_id_handovers.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/hooks/handovers-sender.ts",
+    "apps/api/src/features/F8/handovers/withdraw.ts",
+    "apps/api/src/features/F8/handovers/remind.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F8/handover-sender.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F8/handover-sender.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_ticket_handovers_id_withdraw.test.ts",
+    "apps/api/test/generated/post_ticket_handovers_id_remind.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/src/features/F8/handovers/overdue.ts",
     "apps/api/src/features/F5/approve-complete/sweep.ts",
     "apps/api/src/features/F5/approve-complete/queue.ts",
@@ -1421,6 +1489,83 @@
     "apps/api/test/features/F8/handover-overdue.test.ts",
     "apps/api/test/k236_read_sweep.test.ts",
     "apps/api/test/k234_one_transaction.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/features/F8/handovers/create/offer.ts",
+    "apps/api/src/features/F8/handovers/answer/offer.ts"
+   ],
+   "tests": [
+    "apps/api/test/features/F8/handover-offer.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/features/F8/handovers/create/distribute.ts",
+    "apps/api/src/features/F8/handovers/answer/distribute.ts",
+    "packages/db/migrations/20261121090900_handover_distribute.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F8/distribute-person.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/hooks/handover-claim.ts",
+    "apps/api/src/features/F8/handovers/create/distribute-group.ts",
+    "apps/api/src/features/F8/handovers/answer/distribute-group.ts",
+    "apps/api/src/features/F8/handovers/claim.ts",
+    "packages/db/migrations/20261121091000_handover_group.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F8/distribute-group.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F8/distribute-group.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_ticket_handovers_id_claim.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/web/features/F8/handover/"
+   ],
+   "tests": [
+    "apps/web/tests/k/k411-pass-detail.spec.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/web/features/F8/handover/",
+    "apps/web/features/F5/approve-complete/queue-table.tsx",
+    "apps/web/features/F5/approve-complete/queue-card.tsx"
+   ],
+   "tests": [
+    "apps/web/tests/k/k412-answer-handover.spec.ts",
+    "apps/web/tests/k/k231-approvals.spec.ts",
+    "apps/web/tests/features/F5/approve-complete-queue.spec.ts"
+   ]
+  },
+  {
+   "paths": [
+    "07_qa/test-specs/errors.json"
+   ],
+   "tests": [
+    "apps/web/tests/k/k414-offer.spec.ts"
+   ]
+  },
+  {
+   "paths": [
+    "07_qa/test-specs/errors.json"
+   ],
+   "tests": [
+    "apps/web/tests/k/k415-distribute.spec.ts"
    ]
   },
   {
@@ -1440,6 +1585,15 @@
    "readers": [
     "apps/api/test/generated/get_workspace_members.test.ts",
     "apps/api/test/generated/post_invitations.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/web/features/F10/invite/**",
+    "apps/web/app/(work)/members/**"
+   ],
+   "tests": [
+    "apps/web/tests/k/k420-members-invite.spec.ts"
    ]
   },
   {
@@ -1464,6 +1618,52 @@
    ],
    "readers": [
     "apps/api/test/generated/post_invitations_link.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/features/F2/invitations/**",
+    "apps/api/src/hooks/invitation-confirm.ts",
+    "packages/auth/src/invitations.ts",
+    "packages/auth/src/pending.ts",
+    "packages/db/migrations/20261121092200_invitation_link_joins.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F10/invite-link-confirm.test.ts",
+    "apps/api/test/features/F10/invite-link.test.ts",
+    "apps/api/test/features/F2/invitation-accept-new.test.ts",
+    "apps/api/test/features/F2/invitation-accept-signed.test.ts",
+    "apps/api/test/features/F1/sign-up.test.ts",
+    "apps/api/test/features/F1/verify-email.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F10/invite-link-confirm.test.ts",
+    "apps/api/test/features/F2/invitation-accept-new.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_auth_invitations_confirm.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F10/invite-link.test.ts",
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_invitations_link.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/web/features/F2/invite/**",
+    "apps/web/app/(outside)/invite/**"
+   ],
+   "tests": [
+    "apps/web/tests/k/k423-invite-link-join.spec.ts"
    ]
   },
   {
@@ -1812,6 +2012,20 @@
    "tests": [
     "apps/web/tests/k/k1100-stage-locked.spec.ts"
    ]
+  },
+  {
+   "paths": [
+    "04_design/canvas/**",
+    "04_design/canvas_gen/**",
+    "05_flow/phase1.py",
+    "05_flow/flow.json",
+    "apps/web/components/k/shell.tsx",
+    "apps/web/components/k/me-sub.tsx",
+    "apps/web/features/F3/connect-pc/pc-row-parts.tsx"
+   ],
+   "tests": [
+    "apps/web/tests/k/k1113-shell-words.spec.ts"
+   ]
   }
  ],
  "reads_ok": {
@@ -1951,7 +2165,16 @@
   "apps/web/tests/k/k400-stage9-mock.spec.ts": "モックの置き場 apps/web/app/(dev)/dev/mock/f8/mocks.tsx・部品 apps/web/features/F8/handover/（views.tsx・handover.css・detail-slots.tsx・slot-dispatch.tsx・use-handovers.ts・区画のファイル 10 個）と apps/web/features/F10/invite/views.tsx・探す欄の型 apps/web/components/k/search-field.tsx・道の一覧 apps/web/lib/built-routes.ts・写しの台本 07_functional/段9-F8/mock-shots.mjs・正本 04_design/DESIGN-kaname.md・トークン apps/web/styles/k-tokens.css・設計の検査の訳 design-gate.json を読み、scripts/ci/design_gate.py を子プロセスで流す（K-400）",
   "apps/api/test/features/F8/handover.harness.ts": "口の hooks のファイル apps/api/src/hooks/handovers.ts を試験の本体で動的 import で読む（切る段の smoke で、まだ無いファイルを準備で読まない）。読む物と使う試験は data_links で結ぶ・K-401。後ろの葉（K-402〜K-404）は自分の断片に paths → 自分の試験の 1 行を足す",
   "apps/api/test/features/contract/k144.d/K-401.ts": "準備（setup）で口の hooks のファイル apps/api/src/hooks/handovers.ts を最初の要求の前に動的 import で読む（k144.d の README の決まり）。hooks → k144 は上の data_links で結ぶ・K-401",
+  "apps/api/test/features/F8/handover-queue-read.test.ts": "この葉の hooks のファイル apps/api/src/hooks/handovers-read.ts を it の中で existsSync と動的 import で読む（切る段の smoke で準備ごと落とさないため）。読む物と試験は data_links で結ぶ・K-405",
+  "apps/api/test/features/contract/k144.d/K-405.ts": "準備（setup）で apps/api/src/hooks/handovers-read.ts を動的 import で読む。読む物と試験は data_links で結ぶ・K-405",
+  "apps/api/test/features/F8/handover-sender.test.ts": "この葉の hooks のファイル apps/api/src/hooks/handovers-sender.ts を it の中で existsSync と動的 import で読む（切る段の smoke で準備ごと落とさないため）。読む物と試験は data_links で結ぶ・K-406",
+  "apps/api/test/features/contract/k144.d/K-406.ts": "準備（setup）で apps/api/src/hooks/handovers-sender.ts を動的 import で読む・K-406",
   "apps/api/test/features/F8/handover-overdue.test.ts": "承認待ちの口の hooks のファイル apps/api/src/hooks/approve-complete.ts を it の中で動的 import で読み、メールの偽を持つ材料で作り直す（切る段の smoke で準備ごと落とさない）。読む物と試験は data_links で結ぶ・K-407",
+  "apps/api/test/features/F8/handover-offer.test.ts": "K-401 の口の hooks のファイル apps/api/src/hooks/handovers.ts を it の中で existsSync と動的 import で読む（切る段の smoke で準備ごと落とさない）。読む物と試験は data_links で結ぶ・K-408",
+  "apps/api/test/features/F8/distribute.harness.ts": "段 9 の口の hooks のファイル apps/api/src/hooks/handover*.ts を existsSync と動的 import で読む（まだ入っていない葉の物は無いので、在る物だけを差す）。読む物と使う試験は data_links で結ぶ・K-409",
+  "apps/api/test/features/contract/k144.d/K-410.ts": "準備（setup）で口の hooks のファイル apps/api/src/hooks/handover-claim.ts を最初の要求の前に動的 import で読む（k144.d の README の決まり）。hooks → k144 は上の data_links で結ぶ・K-410",
+  "apps/web/tests/k/k414-offer.spec.ts": "文言の正本 07_qa/test-specs/errors.json を読み、口が断ったときの文を番号で引く（K-414。K-369 の断片と同じ形で data_links に結ぶ）",
+  "apps/web/tests/k/k415-distribute.spec.ts": "文言の正本 07_qa/test-specs/errors.json を読む（エラーの文を番号で引く）。data_links で結ぶ（実ブラウザの試験は web の組が流す）・K-415",
   "apps/api/test/features/F10/invite-create.test.ts": "葉の hooks のファイル apps/api/src/hooks/workspace-invitations.ts を existsSync で見て動的 import で読む（まだ入っていないときは差さない）。読む物と使う試験は data_links で結ぶ・K-419",
   "packages/db/test/k426_function_execute_private.test.ts": "この葉の migration のファイルを読み、取引の中でもう一度当てる（migration の道で db の組に当たる）と、口の文（apps/api/src・packages/auth/src・packages/contracts/src・packages/db/src）を読んで app の関数の名前を集める（DB の試験なので db の組で流れる）・K-426",
   "apps/api/test/features/F5/k429_runs_shape.test.ts": "契約 08_api/openapi.yaml を読み、実行の一覧の問い合わせ（limit・cursor・sort）の形が契約に書いた形と一致するかを確かめる。契約は _base の 47 に在り、この試験は api の組が流す・K-429",
@@ -1977,7 +2200,8 @@
   "apps/api/test/features/F4/ticket-fields.test.ts": "読む口の hooks のファイル apps/api/src/hooks/ticket-fields-read.ts を動的 import で読む（最初の要求のときに 1 回）。読む物と使う試験は data_links で結ぶ・K-563",
   "apps/api/test/features/contract/k144.d/K-563.ts": "葉の hooks のファイルを F3/leaf-hooks.ts の動的 import で読む。読む物と使う試験は data_links で結ぶ・K-563",
   "apps/web/tests/k/k630-request-ref.spec.ts": "K-630 の試験。画面の型を確かめるため子プロセスで apps/web の tsc を流す（読む物は apps/web の画面のコードと型。web の組が流す）",
-  "apps/web/tests/k/k1100-stage-locked.spec.ts": "鍵の札の CSS apps/web/features/F6/progress/progress.css を読み、余白と間が正本のトークンだけを読むかを見る（K1100-UI-004）。正本と生成物の変更でも流れるよう data_links で結ぶ（K-1100）"
+  "apps/web/tests/k/k1100-stage-locked.spec.ts": "鍵の札の CSS apps/web/features/F6/progress/progress.css を読み、余白と間が正本のトークンだけを読むかを見る（K1100-UI-004）。正本と生成物の変更でも流れるよう data_links で結ぶ（K-1100）",
+  "apps/web/tests/k/k1113-shell-words.spec.ts": "正の絵 04_design/canvas/*.dc.html・作り手のソース 04_design/canvas_gen/*.py・並べ方の正 05_flow/phase1.py・画面のコード（shell.tsx・me-sub.tsx・pc-row-parts.tsx）を読み、古い字が無いかを見る。絵の写しに作り手 04_design/canvas_gen/shellfix.py を子プロセスで回し、絵が変わらないかを見る（K1113-UI-005〜009）。読む物の変更でも流れるよう data_links で結ぶ（K-1113）"
  },
  "web_select": {
   "_doc": "web の組でチケットの範囲の回に流す画面の試験の選び方（K-177・scripts/ci/web_select.py）。registry：みんなが書き足す一覧のファイル（作った人で選ばない）。all_on：変えたら全部の物。web_own：画面ごとのコード（作ったチケットの試験・当たらなければ全部）。web_tests：試験の置き場。gates：専用の段の画面の試験（G48・G59 の一覧に無く、その段が流す。tests が試験・on が変えたらその段を起こすファイル・K-238）。always_when_enrolled：突き合わせに入れた組が在るとき、画面の組が起きる回には必ず選ぶ段（K-379）",

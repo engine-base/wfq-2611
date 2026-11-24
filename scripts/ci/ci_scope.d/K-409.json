@@ -1,0 +1,17 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/features/F8/handovers/create/distribute.ts",
+    "apps/api/src/features/F8/handovers/answer/distribute.ts",
+    "packages/db/migrations/20261121090900_handover_distribute.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F8/distribute-person.test.ts"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "apps/api/test/features/F8/distribute.harness.ts": "段 9 の口の hooks のファイル apps/api/src/hooks/handover*.ts を existsSync と動的 import で読む（まだ入っていない葉の物は無いので、在る物だけを差す）。読む物と使う試験は data_links で結ぶ・K-409"
+ }
+}

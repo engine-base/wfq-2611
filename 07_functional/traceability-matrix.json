@@ -1,6 +1,6 @@
 {
  "version": "v3.1",
- "created_at": "2026-11-23",
+ "created_at": "2026-11-22",
  "summary": {
   "screens_count": 74,
   "features_count": 32,
@@ -99,13 +99,16 @@
     "E-002 scopes",
     "E-001 tenants",
     "E-131 terms_consents",
-    "E-080 notifications"
+    "E-080 notifications",
+    "E-061 sessions"
    ],
    "related_apis": [
     "GET /api/auth/invitations/:token",
     "POST /api/auth/invitations/:token/accept",
     "POST /api/auth/invitations/:token/accept",
-    "POST /api/auth/invitations/:token/resend-request"
+    "POST /api/auth/invitations/:token/resend-request",
+    "POST /api/auth/invitations/confirm",
+    "POST /api/auth/invitations/confirm"
    ],
    "access_roles": [
     "R3",
@@ -624,6 +627,7 @@
     "POST /api/approvals/bulk",
     "GET /api/approvals/history",
     "PATCH /api/ticket_handovers/:id",
+    "POST /api/ticket_handovers/:id/claim",
     "navigate /account",
     "navigate /settings/close",
     "navigate /ai-staff/activity",
@@ -1432,6 +1436,7 @@
     "navigate /today"
    ],
    "access_roles": [
+    "R1",
     "R2"
    ]
   },
@@ -2832,6 +2837,7 @@
     "navigate /today"
    ],
    "access_roles": [
+    "R1",
     "R2"
    ]
   },
@@ -2988,7 +2994,14 @@
     "POST /api/tickets/:id/timeline/seen",
     "GET /api/tickets/:id/handover-preview",
     "GET /api/tickets/:id/handover-preview",
-    "GET /api/tickets/:id/handover-preview"
+    "GET /api/tickets/:id/handover-preview",
+    "GET /api/tickets/:id/handovers",
+    "GET /api/tickets/:id/handovers",
+    "POST /api/ticket_handovers/:id/withdraw",
+    "POST /api/ticket_handovers/:id/withdraw",
+    "POST /api/ticket_handovers/:id/withdraw",
+    "POST /api/ticket_handovers/:id/remind",
+    "POST /api/ticket_handovers/:id/remind"
    ],
    "access_roles": [
     "R1",
@@ -3507,6 +3520,18 @@
      "role": "action",
      "method": "POST",
      "path_draft": "/api/auth/invitations/:token/resend-request"
+    },
+    {
+     "act": "A03",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/auth/invitations/confirm"
+    },
+    {
+     "act": "A96",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/auth/invitations/confirm"
     }
    ]
   },
@@ -4641,6 +4666,12 @@
      "role": "action",
      "method": "PATCH",
      "path_draft": "/api/ticket_handovers/:id"
+    },
+    {
+     "act": "A111",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_handovers/:id/claim"
     },
     {
      "role": "transition",
@@ -11121,6 +11152,48 @@
      "role": "data_fetch",
      "method": "GET",
      "path_draft": "/api/tickets/:id/handover-preview"
+    },
+    {
+     "act": "A110",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/tickets/:id/handovers"
+    },
+    {
+     "act": "A51",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/tickets/:id/handovers"
+    },
+    {
+     "act": "A51",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_handovers/:id/withdraw"
+    },
+    {
+     "act": "A48",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_handovers/:id/withdraw"
+    },
+    {
+     "act": "A111",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_handovers/:id/withdraw"
+    },
+    {
+     "act": "A51",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_handovers/:id/remind"
+    },
+    {
+     "act": "A111",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_handovers/:id/remind"
     }
    ]
   },
@@ -12931,6 +13004,7 @@
    "entity_name": "sessions",
    "used_by_screens": [
     "verify-email",
+    "invite-accept",
     "mfa-setup",
     "login",
     "password-reset",
@@ -12952,6 +13026,7 @@
    ],
    "used_by_features": [
     "F-001",
+    "F-002",
     "F-003",
     "F-004",
     "F-005",
@@ -14692,6 +14767,7 @@
     "E-004",
     "E-055",
     "E-058",
+    "E-061",
     "E-080",
     "E-091",
     "E-129",

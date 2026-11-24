@@ -30,6 +30,8 @@ export interface Hook {
   effect?: (a: HookArgs) => Promise<EffectResult>;
   /** 記録の後（通知など。失敗しても応答は返す） */
   after?: (a: HookArgs, row: Row | Row[]) => Promise<void>;
+  /** 入口の行の守りが「見えない・無い」と判定したときの 404 の答え（既定は汎用の NOT_FOUND。口が決めた番号で断る口だけが持つ） */
+  rowMissing?: () => HookReply;
   /** 冪等の器に答えを残さない（答えに 1 回だけ渡す秘密が入る口・K-57 の PC の印） */
   noIdempotency?: boolean;
 }
