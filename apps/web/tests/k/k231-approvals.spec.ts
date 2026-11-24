@@ -254,16 +254,21 @@ test("K231-UI-013 空：見出しの横は「あなたが決めるもの 0 件�
   await expect(card(page)).toHaveCount(0);
 });
 
-test("K231-UI-014 幅 375：表はカードの中で横に送れ（カードの外にはみ出さない）、頁の横溢れ 0・見出しの 1 文字目が画面の中", async ({
+test("K231-UI-014 幅 375：表のカードは出さず、1 件 1 枚のカード（.k-hnd-mcard・K-412・D-148.26）を縦に並べる。カードは画面の中、頁の横溢れ 0・見出しの 1 文字目が画面の中", async ({
   page,
 }) => {
+  // K-412 が切る段で替えた（2026-11-20・代表の直し：スマホの承認待ちは表を横に送らず 1 件 1 枚のカード。前は「表はカードの中で横に送れる」）
   await mockApi(page);
   await openQueue(page, 375);
-  const c = await box(card(page));
-  expect(c.x + c.width).toBeLessThanOrEqual(375);
+  await expect(card(page)).toBeHidden();
+  const cards = page.locator("#k-main .k-hnd-mcard");
+  await expect(cards).toHaveCount(QUEUE().length);
+  for (let i = 0; i < (await cards.count()); i++) {
+    const c = await box(cards.nth(i));
+    expect(c.x).toBeGreaterThanOrEqual(0);
+    expect(c.x + c.width).toBeLessThanOrEqual(375);
+  }
   expect(await overflowX(page)).toBe(0);
-  const scroller = card(page).locator("table").locator("xpath=..");
-  expect(await cssOf(scroller, "overflow-x")).toBe("auto");
   expect(await firstCharLeft(head(page).locator("h1"))).toBeGreaterThanOrEqual(0);
 });
 

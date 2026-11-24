@@ -3,10 +3,14 @@
 import type pg from "pg";
 import type { Hook } from "../contract/deps.js";
 import { approveHooks as make } from "../features/F5/approve-complete/index.js";
+import type { HandoverMailer } from "../features/F8/handovers/deps.js";
 import { defineHooks } from "./registry.js";
 
-export function approveHooks(appPool: pg.Pool): Record<string, Hook> {
-  const h = make(appPool);
+export function approveHooks(
+  appPool: pg.Pool,
+  o: { mailer?: HandoverMailer; webBaseUrl?: string } = {},
+): Record<string, Hook> {
+  const h = make(appPool, o);
   return {
     listApprovalQueue: { ...h["listApprovalQueue"] },
     getApproval: { ...h["getApproval"] },
@@ -18,6 +22,7 @@ export function approveHooks(appPool: pg.Pool): Record<string, Hook> {
 
 export const register = defineHooks({
   name: "approveHooks",
-  make: (d) => approveHooks(d.appPool),
+  make: (d) =>
+    approveHooks(d.appPool, { ...(d.mailer ? { mailer: d.mailer } : {}), webBaseUrl: d.config.webBaseUrl ?? "" }),
   fuzz: "same",
 });
