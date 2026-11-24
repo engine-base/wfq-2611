@@ -1,7 +1,7 @@
 {
  "meta": {
   "version": "v3.1",
-  "created_at": "2026-11-23",
+  "created_at": "2026-11-24",
   "_doc": "05_flow/build_functional.py が flow.json・ER図・モック・errors.json から生成。手で直さない。",
   "source": [
    "D-053.1",
@@ -116,6 +116,10 @@
     "E-HND-150",
     "E-HND-151",
     "E-HND-152",
+    "E-INV-013",
+    "E-INV-016",
+    "E-INV-014",
+    "E-INV-015",
     "E-SEC-004",
     "E-SEC-005",
     "E-SPEC-001",
@@ -516,7 +520,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-001",
     "D-001.5",
@@ -585,7 +589,11 @@
     "E-INV-006",
     "E-INV-005",
     "E-INV-007",
-    "E-INV-008"
+    "E-INV-008",
+    "E-INV-013",
+    "E-INV-016",
+    "E-INV-014",
+    "E-INV-015"
    ],
    "policies": [
     "C2"
@@ -608,6 +616,7 @@
     "E-004",
     "E-055",
     "E-058",
+    "E-061",
     "E-080",
     "E-091",
     "E-129",
@@ -651,7 +660,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-026",
     "D-037",
@@ -741,7 +750,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-042",
     "D-053.3",
@@ -1817,7 +1826,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-002",
     "D-003.1",
@@ -2370,7 +2379,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-003.7",
     "D-004",
@@ -3021,7 +3030,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-003.7",
     "D-008.2",
@@ -3274,7 +3283,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-006.2",
     "D-010",
@@ -3592,7 +3601,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-003",
     "D-003.1",
@@ -3785,7 +3794,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-003.1",
     "D-003.3",
@@ -4550,11 +4559,11 @@
     "UNWANTED: IF 承認待ち・完了のチケット、承認の後の実行、作り終えた実行で「自分で直す」にしようとした THEN Kaname は「いまは自分で直すに切り替えられません（承認待ち・完了のとき、または承認の後の実行です）」を出し、画面を読み直す（E-STP-002）",
     "UNWANTED: IF 新しい実行がある古い止まりで「自分で直す」にしようとした THEN Kaname は「この実行はもう新しい実行に替わっています」を出し、画面を読み直す（E-STP-004）",
     "UNWANTED: IF 確認項目が 1 つも無いチケットで、使わない理由を書かずに「AI に任せる」を押した THEN Kaname は「確認項目が 1 つもありません。確認項目を足すか、使わない理由を書いてから任せてください」を出し、確認項目を足す／理由を書く（E-CONF-020）",
-    "EVENT-DRIVEN: WHEN R2 が「メールと層と権限の束を選んで招く」したとき THEN Kaname は「招待（7 日）を送る」を行う",
+    "EVENT-DRIVEN: WHEN R1／R2 が「メールと層と権限の束を選んで招く」したとき THEN Kaname は「招待（7 日）を送る」を行う",
     "UNWANTED: IF 宛先がこの会社に紐づかない（外部の宛先へ送ろうとした） THEN Kaname は「この宛先は会社の外です。外に送るには代表の承認が要ります」を出し、承認を頼む／やめる（E-GATE-005）",
-    "EVENT-DRIVEN: WHEN R2 が「主の所属と兼務、権限の束と個別の権限を決める」したとき THEN Kaname は「—」を行う",
+    "EVENT-DRIVEN: WHEN R1／R2 が「主の所属と兼務、権限の束と個別の権限を決める」したとき THEN Kaname は「—」を行う",
     "UNWANTED: IF 抜ける人の依存（タスク・承認待ち・AI社員・層の長）に自分のAIが引き継ぎ先の案を出せない、または引き継ぎ先が未決のまま「無効にする」を押した THEN Kaname は「引き継ぎ先が決まっていないものがあります。決めるまで無効にできません」を出し、自分のAIの案を全部採る／1 件ずつ決める（E-ACT-035）",
-    "EVENT-DRIVEN: WHEN R2 が「担当中のチケットと承認を引き継いでから抜けさせる」したとき THEN Kaname は「セッションを失効」を行う",
+    "EVENT-DRIVEN: WHEN R1／R2 が「担当中のチケットと承認を引き継いでから抜けさせる」したとき THEN Kaname は「セッションを失効」を行う",
     "UNWANTED: IF 抜ける人の依存（タスク・承認待ち・AI社員・層の長）に自分のAIが引き継ぎ先の案を出せない、または引き継ぎ先が未決のまま「無効にする」を押した THEN Kaname は「引き継ぎ先が決まっていないものがあります。決めるまで無効にできません」を出し、自分のAIの案を全部採る／1 件ずつ決める（E-ACT-035）",
     "EVENT-DRIVEN: WHEN R1／R2／R3 が「自分のAIとAI社員のやりとりを見る」したとき THEN Kaname は「差し戻しの履歴」を行う（自動側：自分のAIが何を直させたかを説明する）",
     "EVENT-DRIVEN: WHEN R1／R2／R3 が「やることを書いて、どの目標かを選ぶ」したとき THEN Kaname は「タスクを保存。目標が無ければ「行き先のないタスク」に」を行う（自動側：自分のAIが紐づく目標の候補と担当（人／AI社員）を出す）",
@@ -4567,7 +4576,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-003.1",
     "D-004.10",
@@ -5052,7 +5061,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-003",
     "D-003.1",
@@ -5496,7 +5505,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-010.7",
     "D-015",
@@ -6136,7 +6145,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-003.7",
     "D-010",
@@ -6271,7 +6280,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-030",
     "D-030.10",
@@ -6473,7 +6482,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-002",
     "D-002.2",
@@ -6961,7 +6970,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-002",
     "D-002.2",
@@ -7338,7 +7347,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-006.5",
     "D-013.1",
@@ -7500,7 +7509,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-030.6",
     "D-037",
@@ -7631,7 +7640,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-010.7",
     "D-019.3",
@@ -7825,7 +7834,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-026",
     "D-026.2",
@@ -8127,7 +8136,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-125.121",
     "D-125.123",
@@ -8268,7 +8277,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-125.121",
     "D-125.122",
@@ -8595,7 +8604,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-007",
     "D-012",
@@ -9039,7 +9048,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-003.9",
     "D-007",
@@ -9160,7 +9169,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-013",
     "D-014",
@@ -9405,7 +9414,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-010",
     "D-038",
@@ -9516,7 +9525,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-004",
     "D-007",
@@ -9593,7 +9602,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-029",
     "D-025",
@@ -9659,7 +9668,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-015",
     "D-044",
@@ -9757,7 +9766,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-012",
     "D-043",
@@ -9825,7 +9834,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-002",
     "D-004",
@@ -9892,7 +9901,7 @@
    "checklist": [],
    "legacy_drift_notes": null,
    "status": "decided",
-   "decided_at": "2026-11-23",
+   "decided_at": "2026-11-24",
    "source": [
     "D-017",
     "D-042",
