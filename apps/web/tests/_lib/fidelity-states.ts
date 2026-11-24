@@ -644,7 +644,9 @@ export const FIDELITY_STATES: Record<string, (page: Page, path: string) => Promi
   // prettier-ignore
   "approvals": async (page, path) => {
     await openApprovals(page, path, CANVAS_QUEUE());
-    await expect(page.locator(".k-ap-card table")).toBeVisible();
+    // 幅 767 以下は表を隠して 1 件 1 枚のカード（キャンバス MbApprovals・K-412）。768 以上は表
+    const narrow = (page.viewportSize()?.width ?? 1440) <= 767;
+    await expect(page.locator(narrow ? ".k-hnd-mq" : ".k-ap-card table")).toBeVisible();
   },
   "approvals-empty": async (page, path) => {
     await openApprovals(page, path, []);

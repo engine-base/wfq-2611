@@ -611,7 +611,8 @@
     "E-119 ticket_messages",
     "E-037 policies",
     "E-052 audit_events",
-    "E-030 memory_proposals"
+    "E-030 memory_proposals",
+    "E-080 notifications"
    ],
    "related_apis": [
     "GET /api/approvals/queue",
@@ -626,6 +627,7 @@
     "POST /api/approvals/bulk",
     "GET /api/approvals/history",
     "PATCH /api/ticket_handovers/:id",
+    "POST /api/ticket_handovers/:id/claim",
     "navigate /account",
     "navigate /settings/close",
     "navigate /ai-staff/activity",
@@ -2989,7 +2991,17 @@
     "GET /api/handover_rules",
     "GET /api/members",
     "GET /api/clients",
-    "POST /api/tickets/:id/timeline/seen"
+    "POST /api/tickets/:id/timeline/seen",
+    "GET /api/tickets/:id/handover-preview",
+    "GET /api/tickets/:id/handover-preview",
+    "GET /api/tickets/:id/handover-preview",
+    "GET /api/tickets/:id/handovers",
+    "GET /api/tickets/:id/handovers",
+    "POST /api/ticket_handovers/:id/withdraw",
+    "POST /api/ticket_handovers/:id/withdraw",
+    "POST /api/ticket_handovers/:id/withdraw",
+    "POST /api/ticket_handovers/:id/remind",
+    "POST /api/ticket_handovers/:id/remind"
    ],
    "access_roles": [
     "R1",
@@ -4654,6 +4666,12 @@
      "role": "action",
      "method": "PATCH",
      "path_draft": "/api/ticket_handovers/:id"
+    },
+    {
+     "act": "A111",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_handovers/:id/claim"
     },
     {
      "role": "transition",
@@ -11116,6 +11134,66 @@
      "role": "action",
      "method": "POST",
      "path_draft": "/api/tickets/:id/timeline/seen"
+    },
+    {
+     "act": "A51",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/tickets/:id/handover-preview"
+    },
+    {
+     "act": "A111",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/tickets/:id/handover-preview"
+    },
+    {
+     "act": "A48",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/tickets/:id/handover-preview"
+    },
+    {
+     "act": "A110",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/tickets/:id/handovers"
+    },
+    {
+     "act": "A51",
+     "role": "data_fetch",
+     "method": "GET",
+     "path_draft": "/api/tickets/:id/handovers"
+    },
+    {
+     "act": "A51",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_handovers/:id/withdraw"
+    },
+    {
+     "act": "A48",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_handovers/:id/withdraw"
+    },
+    {
+     "act": "A111",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_handovers/:id/withdraw"
+    },
+    {
+     "act": "A51",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_handovers/:id/remind"
+    },
+    {
+     "act": "A111",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_handovers/:id/remind"
     }
    ]
   },
@@ -13271,6 +13349,7 @@
     "mfa-setup",
     "login",
     "bridge-setup",
+    "approvals",
     "clone-chat",
     "members",
     "ops-support",

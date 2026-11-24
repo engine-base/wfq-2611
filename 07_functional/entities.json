@@ -13659,6 +13659,26 @@
     {
      "name": "decided_at",
      "note": null
+    },
+    {
+     "name": "notify_managers",
+     "note": "上の層にも知らせる"
+    },
+    {
+     "name": "reminded_at",
+     "note": "催促した時刻"
+    },
+    {
+     "name": "overdue_notified_at",
+     "note": "期限切れを知らせた時刻"
+    },
+    {
+     "name": "switch_applied",
+     "note": "jsonb（実際に移した物"
+    },
+    {
+     "name": "answered_by",
+     "note": "答えた人"
     }
    ],
    "relations": [],
@@ -13718,13 +13738,14 @@
     }
    ],
    "legacy_drift_notes": null,
-   "note": "**★新設（D-125.70）。**`task_handovers` を置き換える",
+   "note": "**★新設（D-125.70）。**`task_handovers` を置き換える。後ろの 5 列は K-401 が足す。待っている渡しは 1 つのチケットに 1 つ（D-148.20）：一意の索引は置かず、渡しの行を作る DB の関数がチケットの行を for update で取ってから数える（app.handover_gate）",
    "status": "decided",
    "decided_at": "2026-11-22",
    "source": [
     "D-125",
     "D-125.70",
-    "D-128"
+    "D-128",
+    "D-148.20"
    ]
   },
   {
