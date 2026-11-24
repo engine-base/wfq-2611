@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
-"""取り込む順の検査（scripts/ci/ticket_order_gate.py・G56・K-94）を、各実装のコミットの時点の depends_on で裁く形に直す試験（K-159）。
-行 ID（K159-CI-011〜028）は 11_tickets/K-159.md の表に結ぶ。テストはチケットと一緒に先に書き、実装に入ったら変えない（D-132）。
+"""取り込む順の検査（scripts/ci/ticket_order_gate.py・G56・K-94）の試験（K-159。K-1154 で替えた）。
+行 ID（K159-CI-011〜030）は 11_tickets/K-159.md の表に結ぶ。テストはチケットと一緒に先に書き、実装に入ったら変えない（D-132）。
+
+K-1154（代表の決め answer=ee72b1756f5d・2026-11-24）で、裁くのは枝の先頭だけになった：枝の先頭の版の depends_on が
+START..rev の実装のコミットに在れば緑で、コミットの順（依存より前か後か）は見ない。下の「コミットごと」の説明は K-159 の時の形で、
+K159-CI-013・014・015・028 の期待は K-1154 で「赤は空」に替えた（依存は枝の先頭までに入っている）。
 
 由来：検査は HEAD の tickets.json の depends_on を START..HEAD の全部の実装のコミットに当てていた。K-62 が回 3 で depends_on に
 K-143 を足すと、それより前の K-62 の実装のコミットまで「K-143 の実装が祖先に無い」で赤になった（依存を後から足すたびに過去が赤）。
@@ -111,33 +115,29 @@ class PerCommitTest(Case):
         self.assertNotIn(c1[:10], bad[0])
 
     def test_K159_CI_013_commit_after_dep_added_without_dep_is_red(self):
-        """K159-CI-013 時間の流れ (f)：依存を足した後の K-2 の実装のコミットが K-1 を祖先に持たない → そのコミットを名指しで赤。
-        足す前のコミットは名指ししない。K-1 は後から枝に入れたので枝の先頭では満たしている（赤はコミットごとの 1 件だけ）"""
-        c1 = self.r.commit("K-2 feat: 作る 1", {"apps/a.ts": "a"})
+        """K159-CI-013 時間の流れ (f)（K-1154 で替えた）：依存を足した後の K-2 の実装のコミットが K-1 を祖先に持たなくても、
+        K-1 を後から枝に入れたので枝の先頭では満たしている → 緑（コミットごとには裁かない）。見た実装のコミットは 3 本"""
+        self.r.commit("K-2 feat: 作る 1", {"apps/a.ts": "a"})
         self.r.tickets({"K-1": [], "K-2": ["K-1"]})
         self.r.commit("K-2 docs: 依存に K-1 を足す")
-        c3 = self.r.commit("K-2 feat: 作る 2", {"apps/a2.ts": "a"})
+        self.r.commit("K-2 feat: 作る 2", {"apps/a2.ts": "a"})
         self.r.commit("K-1 feat: 依存を後から作る", {"apps/b.ts": "b"})
         bad, _, n = self.check()
-        self.assertEqual(len(bad), 1, bad)
-        self.assertTrue(bad[0].startswith(c3[:10]), bad)
-        self.assertIn("K-2 は K-1", bad[0])
-        self.assertFalse(any(c1[:10] in b for b in bad), bad)
+        self.assertEqual(bad, [], bad)
         self.assertEqual(n, 3)
 
     def test_K159_CI_014_commit_that_adds_the_dep_is_judged_with_it(self):
-        """K159-CI-014 時間の流れ（G-12 切り替わりの瞬間）：実装と一緒に depends_on に K-1 を足したコミット（K-62 の 3637c890 の形）は、
-        足した後として裁く → K-1 が祖先に無ければそのコミットを名指しで赤"""
+        """K159-CI-014 時間の流れ（G-12 切り替わりの瞬間・K-1154 で替えた）：実装と一緒に depends_on に K-1 を足したコミット（K-62 の 3637c890 の形）の後に
+        K-1 を枝に入れる → 枝の先頭で満たしているので緑"""
         self.r.tickets({"K-1": [], "K-2": ["K-1"]})
-        c1 = self.r.commit("K-2 feat: 作り、依存を足す", {"apps/a.ts": "a"})   # 文に依存の番号を書かない（3637c890 の文は K-62 だけ）
+        self.r.commit("K-2 feat: 作り、依存を足す", {"apps/a.ts": "a"})   # 文に依存の番号を書かない（3637c890 の文は K-62 だけ）
         self.r.commit("K-1 feat: 依存を後から作る", {"apps/b.ts": "b"})
         bad, _, _ = self.check()
-        self.assertEqual(len(bad), 1, bad)
-        self.assertTrue(bad[0].startswith(c1[:10]), bad)
+        self.assertEqual(bad, [], bad)
 
     def test_K159_CI_015_unreadable_or_missing_falls_back_to_head(self):
-        """K159-CI-015 失敗：そのコミットの版の tickets.json が無い・JSON でない・そのチケットが載っていない → 枝の先頭の depends_on で裁く
-        （前と同じ・緩めない）。K-1 が祖先に無いそのコミットを名指しで赤"""
+        """K159-CI-015 失敗（K-1154 で替えた）：そのコミットの版の tickets.json が無い・JSON でない・そのチケットが載っていない → 途中の版は読まず、
+        枝の先頭の depends_on で裁く。K-1 は枝の先頭までに入っているので、例外を出さず緑"""
         for label, broken in (("JSON でない", "{"), ("載っていない", json.dumps({"tickets": [{"id": "K-1", "depends_on": []}]})),
                               ("ファイルが無い", None)):
             with self.subTest(label=label):
@@ -153,10 +153,9 @@ class PerCommitTest(Case):
                     r.tickets({"K-1": [], "K-2": ["K-1"]})
                     r.commit("K-2 docs: 直す")
                     r.commit("K-1 feat: 依存を後から作る", {"apps/b.ts": "b"})
-                    bad, _, _ = g.check(t, "HEAD", start)
-                    self.assertEqual(len(bad), 1, bad)
-                    self.assertTrue(bad[0].startswith(c1[:10]), bad)
-                    self.assertIn("K-2 は K-1", bad[0])
+                    bad, _, n = g.check(t, "HEAD", start)
+                    self.assertEqual((bad, n), ([], 2))
+                    self.assertTrue(c1)
 
     def test_K159_CI_016_japanese_file_names(self):
         """K159-CI-016 入力（TP-TOOL-01）：日本語の名前の文書だけのコミット（11_tickets・07_qa/test-specs）は実装に数えない（依存が
@@ -309,8 +308,8 @@ class PerCommitTest(Case):
         self.assertEqual(g.generated_outputs(self.tmp.name), {"docs/作られた.md", "apps/x.ts"})
 
     def test_K159_CI_028_dep_removed_then_restored_is_red(self):
-        """K159-CI-028 守り（L-014 迂回の道）：depends_on から依存を外して先に実装し、依存を作った後で戻す → 外していた間の実装のコミットを
-        名指しで赤（前の検査と同じ）。外したのが START の版でも、枝の中で一度足した後でも同じ。初めて足した依存（K159-CI-011）は緑のまま"""
+        """K159-CI-028（K-1154 で替えた）：depends_on から依存を外して先に実装し、依存を作った後で戻す → 枝の先頭の depends_on の K-1 は
+        枝に入っているので緑（コミットの順は見ない・answer=ee72b1756f5d）。外したのが START の版でも、枝の中で一度足した後でも同じ"""
         for label, at_start in (("START の版にあった", True), ("枝の中で一度足した", False)):
             with self.subTest(label=label):
                 with tempfile.TemporaryDirectory() as t:
@@ -321,15 +320,12 @@ class PerCommitTest(Case):
                         r.tickets({"K-1": [], "K-2": ["K-1"]})
                         r.commit("K-2 docs: 依存を足す")
                     r.tickets({"K-1": [], "K-2": []})
-                    a = r.commit("K-2 feat: 依存を外して先に作る", {"apps/a.ts": "a"})
+                    r.commit("K-2 feat: 依存を外して先に作る", {"apps/a.ts": "a"})
                     r.commit("K-1 feat: 依存を後から作る", {"apps/b.ts": "b"})
                     r.tickets({"K-1": [], "K-2": ["K-1"]})
                     r.commit("K-2 docs: 依存を戻す")
                     bad, _, n = g.check(t, "HEAD", start)
-                    self.assertEqual(n, 2)
-                    self.assertEqual(len(bad), 1, bad)
-                    self.assertTrue(bad[0].startswith(a[:10]), bad)
-                    self.assertIn("K-2 は K-1", bad[0])
+                    self.assertEqual((bad, n), ([], 2))
 
     def test_K159_CI_021_git_failure_raises(self):
         """K159-CI-021 失敗：START が無い（浅い写し・違うリポジトリ）など git が失敗 → RuntimeError（止める側・main は FAIL で exit 1）"""
