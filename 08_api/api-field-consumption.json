@@ -5630,6 +5630,7 @@
    "field": "member_id",
    "consumed_by_screens": [
     "verify-email",
+    "invite-accept",
     "mfa-setup",
     "login",
     "password-reset",
@@ -5657,6 +5658,7 @@
    "field": "kind_id",
    "consumed_by_screens": [
     "verify-email",
+    "invite-accept",
     "mfa-setup",
     "login",
     "password-reset",
@@ -5684,6 +5686,7 @@
    "field": "auth_session_id",
    "consumed_by_screens": [
     "verify-email",
+    "invite-accept",
     "mfa-setup",
     "login",
     "password-reset",
@@ -5711,6 +5714,7 @@
    "field": "device_label",
    "consumed_by_screens": [
     "verify-email",
+    "invite-accept",
     "mfa-setup",
     "login",
     "password-reset",
@@ -5738,6 +5742,7 @@
    "field": "ip_region",
    "consumed_by_screens": [
     "verify-email",
+    "invite-accept",
     "mfa-setup",
     "login",
     "password-reset",
@@ -5765,6 +5770,7 @@
    "field": "issued_at",
    "consumed_by_screens": [
     "verify-email",
+    "invite-accept",
     "mfa-setup",
     "login",
     "password-reset",
@@ -5792,6 +5798,7 @@
    "field": "last_seen_at",
    "consumed_by_screens": [
     "verify-email",
+    "invite-accept",
     "mfa-setup",
     "login",
     "password-reset",
@@ -5819,6 +5826,7 @@
    "field": "revoked_at",
    "consumed_by_screens": [
     "verify-email",
+    "invite-accept",
     "mfa-setup",
     "login",
     "password-reset",
@@ -5846,6 +5854,7 @@
    "field": "revoke_reason_id",
    "consumed_by_screens": [
     "verify-email",
+    "invite-accept",
     "mfa-setup",
     "login",
     "password-reset",
@@ -5873,6 +5882,7 @@
    "field": "device_token_hash",
    "consumed_by_screens": [
     "verify-email",
+    "invite-accept",
     "mfa-setup",
     "login",
     "password-reset",
@@ -5900,6 +5910,7 @@
    "field": "alive_at",
    "consumed_by_screens": [
     "verify-email",
+    "invite-accept",
     "mfa-setup",
     "login",
     "password-reset",
@@ -5927,6 +5938,7 @@
    "field": "bridge_version",
    "consumed_by_screens": [
     "verify-email",
+    "invite-accept",
     "mfa-setup",
     "login",
     "password-reset",
@@ -5954,6 +5966,7 @@
    "field": "machine_id",
    "consumed_by_screens": [
     "verify-email",
+    "invite-accept",
     "mfa-setup",
     "login",
     "password-reset",
