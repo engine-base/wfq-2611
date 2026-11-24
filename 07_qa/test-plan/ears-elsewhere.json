@@ -1172,7 +1172,15 @@
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
     },
-    "test_post_auth_invitations_token_accept_shape": "K332-API-002"
+    "test_post_auth_invitations_token_accept_shape": "K332-API-002",
+    "test_post_auth_invitations_token_accept_rejected_422_2": {
+     "file": "apps/api/test/features/F10/invite-link-confirm.test.ts",
+     "mark": "K422-API-003"
+    },
+    "test_post_auth_invitations_token_accept_conflict_3": {
+     "file": "apps/api/test/features/F10/invite-link-confirm.test.ts",
+     "mark": "K422-API-003"
+    }
    }
   },
   "requestInvitationResend": {
@@ -1902,6 +1910,112 @@
     "test_get_handover_rules_rejected_422": "入力を受けない GET"
    }
   },
+  "listTicketHandovers": {
+   "file": "apps/api/test/features/F8/handover-queue-read.test.ts",
+   "reason": "渡しの見え方は、チケットの見える範囲・渡した人・答える人（K-401 の app.handover_answerer）の組み合わせで変わる（帯を 1 回だけ出す覚えは画面の手元で、この口は書かない）。生成の試験の種では渡しの行と人の組を作れない（K-405）",
+   "covers": {
+    "test_get_tickets_id_handovers_ok": "K405-API-010",
+    "test_get_tickets_id_handovers_shape": "K405-API-010",
+    "test_get_tickets_id_handovers_rejected_401": "K405-API-017",
+    "test_get_tickets_id_handovers_rejected_403": "K405-API-017",
+    "test_get_tickets_id_handovers_rejected_422": "K405-API-017",
+    "test_get_tickets_id_handovers_not_found": "K405-API-017",
+    "test_get_tickets_id_handovers_rate_limited": "K405-API-018",
+    "test_get_tickets_id_handovers_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_get_tickets_id_handovers_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_get_tickets_id_handovers_ok_2": "読む口は渡しの有る・無いで形が変わらない（空の並び 200 は K405-API-016）。2 つ目の成功の筋は無い"
+   }
+  },
+  "withdrawTicketHandover": {
+   "file": "apps/api/test/features/F8/handover-sender.test.ts",
+   "reason": "取り消しは渡しの状態と渡した人（行の決まり from_member_id）と相手の受け箱で確かめる。生成の試験の種では渡しの行と人の組を作れない（K-406）",
+   "covers": {
+    "test_post_ticket_handovers_id_withdraw_ok": "K406-API-001",
+    "test_post_ticket_handovers_id_withdraw_shape": "K406-API-001",
+    "test_post_ticket_handovers_id_withdraw_rejected_401": "K406-API-004",
+    "test_post_ticket_handovers_id_withdraw_rejected_403": "K406-API-004",
+    "test_post_ticket_handovers_id_withdraw_not_found": "K406-API-004",
+    "test_post_ticket_handovers_id_withdraw_rejected_422": "K406-API-005",
+    "test_post_ticket_handovers_id_withdraw_rate_limited": "K406-API-017",
+    "test_post_ticket_handovers_id_withdraw_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_ticket_handovers_id_withdraw_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_ticket_handovers_id_withdraw_ok_2": "K406-API-006",
+    "test_post_ticket_handovers_id_withdraw_ok_3": "K406-API-001",
+    "test_post_ticket_handovers_id_withdraw_conflict": "K406-API-003",
+    "test_post_ticket_handovers_id_withdraw_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   }
+  },
+  "remindTicketHandover": {
+   "file": "apps/api/test/features/F8/handover-sender.test.ts",
+   "reason": "催促は 1 日 1 回（日本の日付）・種類・相手のメールの宛てで答えが変わる。生成の試験の種では作れない（K-406）",
+   "covers": {
+    "test_post_ticket_handovers_id_remind_ok": "K406-API-010",
+    "test_post_ticket_handovers_id_remind_shape": "K406-API-010",
+    "test_post_ticket_handovers_id_remind_rejected_401": "K406-API-016",
+    "test_post_ticket_handovers_id_remind_rejected_403": "K406-API-016",
+    "test_post_ticket_handovers_id_remind_not_found": "K406-API-016",
+    "test_post_ticket_handovers_id_remind_rejected_422": "K406-API-005",
+    "test_post_ticket_handovers_id_remind_rate_limited": "K406-API-017",
+    "test_post_ticket_handovers_id_remind_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_ticket_handovers_id_remind_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    },
+    "test_post_ticket_handovers_id_remind_ok_2": "K406-API-010",
+    "test_post_ticket_handovers_id_remind_conflict": "K406-API-013",
+    "test_post_ticket_handovers_id_remind_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    }
+   }
+  },
+  "claimTicketHandover": {
+   "file": "apps/api/test/features/F8/distribute-group.test.ts",
+   "reason": "グループに配られた渡しの人を決める口は、配る・グループの権限・グループの人の組み合わせで答えが変わる。生成の試験の種ではグループ宛ての待っている渡しを作れない（K-410）",
+   "covers": {
+    "test_post_ticket_handovers_id_claim_ok": "K410-API-013",
+    "test_post_ticket_handovers_id_claim_shape": "K410-API-013",
+    "test_post_ticket_handovers_id_claim_rejected_401": "K410-API-022",
+    "test_post_ticket_handovers_id_claim_rejected_403": "K410-API-016",
+    "test_post_ticket_handovers_id_claim_rejected_422": "K410-API-026",
+    "test_post_ticket_handovers_id_claim_not_found": "K410-API-022",
+    "test_post_ticket_handovers_id_claim_conflict": "K410-API-018",
+    "test_post_ticket_handovers_id_claim_rate_limited": "K410-API-022",
+    "test_post_ticket_handovers_id_claim_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_ticket_handovers_id_claim_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_ticket_handovers_id_claim_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {}
+  },
   "getWorkspaceMembers": {
    "file": "apps/api/test/features/F10/invite-create.test.ts",
    "reason": "メンバーの並びは、グループ・兼ねる所属・招待中・PC の様子・権限の組み合わせで答えが変わる。生成の試験の種では作れない（K-419）",
@@ -1968,6 +2082,35 @@
    "na": {
     "test_post_invitations_link_rate_limited": "上限は入口の共通（op.ts の limits）で、口ごとの上限の数を契約に持たない。上限の 429 は入口の共通の試験が見る（K-419 の招く口と同じ扱い）",
     "test_post_invitations_link_mfa_pending": "2 段階を付けるまで進めない（K-308）は入口の共通の決まり（MFA_OPEN_OPS に無い口は全部 403）。口ごとに見ない（K-419 と同じ扱い）"
+   }
+  },
+  "confirmInvitationJoin": {
+   "file": "apps/api/test/features/F10/invite-link-confirm.test.ts",
+   "reason": "確認の口は、保留の行（待っている・使われた・期限切れ）と招待の様子（使える・使われた・取り消し）と、その間に登録された同じメールのアカウントの組み合わせで答えが決まる。生成の試験の種では保留の行と確認のトークンを作れない（K-422）",
+   "covers": {
+    "test_post_auth_invitations_confirm_ok": "K422-API-007",
+    "test_post_auth_invitations_confirm_ok_2": {
+     "file": "apps/api/test/features/F2/invitation-accept-new.test.ts",
+     "mark": "K332-API-003"
+    },
+    "test_post_auth_invitations_confirm_shape": "K422-API-007",
+    "test_post_auth_invitations_confirm_rejected_422": "K422-API-018",
+    "test_post_auth_invitations_confirm_rejected_403": "K422-API-017",
+    "test_post_auth_invitations_confirm_not_found": "K422-API-018",
+    "test_post_auth_invitations_confirm_conflict": "K422-API-016",
+    "test_post_auth_invitations_confirm_gone": "K422-API-008",
+    "test_post_auth_invitations_confirm_session_unresolved": "K422-API-024",
+    "test_post_auth_invitations_confirm_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_auth_invitations_confirm_session_unresolved_2": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {
+    "test_post_auth_invitations_confirm_rate_limited": "回数は入口の共通の数えで、同じ表の口の型の確かめは acceptInvitation の K332-API-013 が持つ"
    }
   },
   "updateTicketBody": {

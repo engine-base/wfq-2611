@@ -3,14 +3,15 @@
 //   キャンバスに在ってまだ使えない物（絞り込みの札 6 つ・まとめて承認・決めた履歴・選ぶのチェック）は出し、押せない（D-145.9）。
 //   本当の値が無い字は空（種別：口がチケットの種別を返さない・期限なし）。札の件数は「すべて」だけ（種類ごとの数を返す口が無い）。
 //   区切りの名前と並びは前からの決め（D-128.36）。名前と件数は別の span（ちょうどの字で探す前からの試験とぶつけない）
-//   行の 1 つずつは段 9 の差し込み口 F8.QueueRowSlot で包む（K-380・今は行をそのまま返す。承認でない種類の行は段 9 の K-412 が描き分ける）
+//   行の 1 つずつは段 9 の差し込み口 F8.QueueRowSlot で包む（K-380。渡された行は K-412 の queue-row-pass.tsx が描く）
+//   幅 767 以下は表を隠し、表の後ろの 1 件 1 枚のカード（queue-card.tsx・K-412・D-148.26）を出す。小さな知らせの置き場は queue.tsx
 import { Fragment, type ReactNode } from "react";
 import { Button } from "@/components/k";
 import * as F8 from "@/features/F8/handover/detail-slots";
 import { DUE_GROUPS, dueGroupOf, jstDay, type DueGroup } from "./due";
 import type { QueueRow } from "./queue";
+import { FILTERS, INERT as inert, QueueCards } from "./queue-card";
 
-const FILTERS = ["AI の成果物", "上位の承認", "渡された", "判断を仰がれた", "決まりの例外", "やり方を広げる"] as const;
 const KIND_LABEL: Record<string, string> = { artifact: "AI の成果物" };
 const HEADERS = ["決めること", "種別", "番号", "題名", "誰から", "確認", "期限"] as const;
 const NOTE =
@@ -18,9 +19,6 @@ const NOTE =
 /** 区切りの名前と件数の間（キャンバスの全角の空白） */
 const GAP = "\u3000";
 const RED_GROUPS: ReadonlySet<DueGroup> = new Set(["期限切れ"]);
-
-/** まだ使えない物：在るが押せない（aria-disabled・Tab で止まらない・押しても何もしない） */
-const inert = { "aria-disabled": true, tabIndex: -1 } as const;
 
 export interface RowActs {
   busy: string | null;
@@ -33,47 +31,50 @@ export function QueueCard({ rows, total, acts }: { rows: QueueRow[]; total: numb
     ([, rs]) => rs.length > 0,
   );
   return (
-    <section className="k-ap-card" aria-label="承認待ちの一覧">
-      <Tools total={total} />
-      <div className="k-ap-scroll">
-        <table className="k-ap-table">
-          <thead>
-            <tr>
-              <th scope="col">
-                <input type="checkbox" disabled aria-label="まとめて選べるものをすべて選ぶ" />
-              </th>
-              {HEADERS.map((h) => (
-                <th key={h} scope="col">
-                  {h}
+    <>
+      <section className="k-ap-card k-hnd-q-table" aria-label="承認待ちの一覧">
+        <Tools total={total} />
+        <div className="k-ap-scroll">
+          <table className="k-ap-table">
+            <thead>
+              <tr>
+                <th scope="col">
+                  <input type="checkbox" disabled aria-label="まとめて選べるものをすべて選ぶ" />
                 </th>
-              ))}
-              <th scope="col" className="k-ap-end">
-                その場で決める
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {groups.map(([g, rs]) => (
-              <Fragment key={g}>
-                <tr className="k-ap-group" data-alert={RED_GROUPS.has(g) || undefined}>
-                  <td colSpan={9}>
-                    <span>{g}</span>
-                    {GAP}
-                    <span>{rs.length} 件</span>
-                  </td>
-                </tr>
-                {rs.map((r) => (
-                  <F8.QueueRowSlot key={r.id} row={r} acts={acts}>
-                    <Row row={r} acts={acts} />
-                  </F8.QueueRowSlot>
+                {HEADERS.map((h) => (
+                  <th key={h} scope="col">
+                    {h}
+                  </th>
                 ))}
-              </Fragment>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      <p className="k-ap-note">{NOTE}</p>
-    </section>
+                <th scope="col" className="k-ap-end">
+                  その場で決める
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {groups.map(([g, rs]) => (
+                <Fragment key={g}>
+                  <tr className="k-ap-group" data-alert={RED_GROUPS.has(g) || undefined}>
+                    <td colSpan={9}>
+                      <span>{g}</span>
+                      {GAP}
+                      <span>{rs.length} 件</span>
+                    </td>
+                  </tr>
+                  {rs.map((r) => (
+                    <F8.QueueRowSlot key={r.id} row={r} acts={acts}>
+                      <Row row={r} acts={acts} />
+                    </F8.QueueRowSlot>
+                  ))}
+                </Fragment>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p className="k-ap-note">{NOTE}</p>
+      </section>
+      <QueueCards rows={groups.flatMap(([, rs]) => rs)} total={total} acts={acts} />
+    </>
   );
 }
 

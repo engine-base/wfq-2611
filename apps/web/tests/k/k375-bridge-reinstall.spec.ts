@@ -24,7 +24,7 @@ const D1 = "11111111-0000-4000-8000-000000000375";
 const D2 = "22222222-0000-4000-8000-000000000375";
 const REINSTALL_TEXT = "書いたことは溜めておき、入れ直した後に順に片づけます。";
 const ON_PC = "その PC でこの画面を開いて、入れ直してください";
-const TAKEN = "受け取りを始めました。受け取った Kaname Bridge を開いて入れ直すと、この知らせは自分で消えます";
+const TAKEN = "受け取りを始めました。受け取った Kaname Bridge を開いて入れ直すと、このお知らせは自分で消えます";
 const SUMMARY = "「開いていません」「PC が保護されました」と出たとき";
 const IPHONE_UA =
   "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1";

@@ -1,0 +1,9 @@
+{
+ "data_links": [
+  {"paths": ["apps/api/src/features/F8/handovers/create/offer.ts", "apps/api/src/features/F8/handovers/answer/offer.ts"],
+   "tests": ["apps/api/test/features/F8/handover-offer.test.ts"]}
+ ],
+ "reads_ok": {
+  "apps/api/test/features/F8/handover-offer.test.ts": "K-401 の口の hooks のファイル apps/api/src/hooks/handovers.ts を it の中で existsSync と動的 import で読む（切る段の smoke で準備ごと落とさない）。読む物と試験は data_links で結ぶ・K-408"
+ }
+}
