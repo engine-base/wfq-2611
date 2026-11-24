@@ -9,7 +9,7 @@
 //   空はキャンバス ApEmpty：点線の箱に ✓・見出し・説明・決めた履歴。続けて裁く・決めた履歴の画面はまだ無いので押せない（D-145.9）
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
-import { Button, Callout, Empty, Loading } from "@/components/k";
+import { Button, Callout, Empty, Loading, Toaster } from "@/components/k";
 import { call, type CallErr } from "@/lib/api/call";
 import { messageOf } from "./message";
 import { ApproveConfirm } from "./approve-confirm";
@@ -195,7 +195,8 @@ function QueueView({ rows, total, more, loadingMore, onMore }: QueueViewProps) {
   );
   const shown = rows.filter((r) => !done.has(r.id));
   return (
-    <>
+    // 小さな知らせ（渡された行を受けた・もう決まっていた・K-412）の置き場。最後の 1 件で空の画面に替わっても消えないよう、一覧の入れ物に置く
+    <Toaster>
       {notice ? <Callout tone="danger">{notice}</Callout> : null}
       {dialog}
       {confirm}
@@ -209,6 +210,6 @@ function QueueView({ rows, total, more, loadingMore, onMore }: QueueViewProps) {
           もっと見る
         </Button>
       ) : null}
-    </>
+    </Toaster>
   );
 }

@@ -7242,6 +7242,10 @@
    }
   },
   "ticket_handovers": {
+   "answered_by": {
+    "type": "uuid",
+    "nullable": true
+   },
    "ask": {
     "type": "text",
     "nullable": true
@@ -7278,8 +7282,20 @@
     "type": "text",
     "nullable": false
    },
+   "notify_managers": {
+    "type": "boolean",
+    "nullable": false
+   },
+   "overdue_notified_at": {
+    "type": "timestamp with time zone",
+    "nullable": true
+   },
    "reason": {
     "type": "text",
+    "nullable": true
+   },
+   "reminded_at": {
+    "type": "timestamp with time zone",
     "nullable": true
    },
    "reply_due": {
@@ -7293,6 +7309,10 @@
    "switch": {
     "type": "jsonb",
     "nullable": false
+   },
+   "switch_applied": {
+    "type": "jsonb",
+    "nullable": true
    },
    "tenant_id": {
     "type": "uuid",

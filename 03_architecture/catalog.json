@@ -5,14 +5,14 @@
   "D-128.129"
  ],
  "counts": {
-  "api": 370,
-  "api_built": 97,
+  "api": 375,
+  "api_built": 105,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
   "db": 148,
   "ui": 19,
   "packages": 13,
-  "errors": 266,
+  "errors": 287,
   "stack": 56,
   "env": 41
  },
@@ -1763,7 +1763,7 @@
    "op": "listHandoverRules",
    "method": "GET",
    "path": "/api/v1/handover_rules",
-   "what": "取得（handover_rules）— 渡されたものを受ける／断る（理由）",
+   "what": "取得（handover_rules）— 渡すときに一緒に切り替えるものの決まり（会社の分を全部）",
    "flows": [
     "F8"
    ],
@@ -1771,9 +1771,9 @@
    "tables": [
     "handover_rules"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-68"
+    "K-401"
    ]
   },
   {
@@ -4661,9 +4661,60 @@
    "tables": [
     "ticket_handovers"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-68"
+    "K-401"
+   ]
+  },
+  {
+   "op": "claimTicketHandover",
+   "method": "POST",
+   "path": "/api/v1/ticket_handovers/:id/claim",
+   "what": "作成・実行（ticket_handovers）— 上から配る（人・グループへ）",
+   "flows": [
+    "F8"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "ticket_handovers"
+   ],
+   "status": "作った",
+   "owner_tickets": [
+    "K-410"
+   ]
+  },
+  {
+   "op": "remindTicketHandover",
+   "method": "POST",
+   "path": "/api/v1/ticket_handovers/:id/remind",
+   "what": "作成・実行（ticket_handovers）— 上から配る（人・グループへ）／引き継いでもらう（理由・お願い・返事の期限・一緒に切り替",
+   "flows": [
+    "F8"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "ticket_handovers"
+   ],
+   "status": "作った",
+   "owner_tickets": [
+    "K-406"
+   ]
+  },
+  {
+   "op": "withdrawTicketHandover",
+   "method": "POST",
+   "path": "/api/v1/ticket_handovers/:id/withdraw",
+   "what": "作成・実行（ticket_handovers）— 上から配る（人・グループへ）／引き継ぐ（他の人の仕事の引き取りを申し出る）",
+   "flows": [
+    "F8"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "ticket_handovers"
+   ],
+   "status": "作った",
+   "owner_tickets": [
+    "K-406"
    ]
   },
   {
@@ -5215,6 +5266,40 @@
    ]
   },
   {
+   "op": "previewTicketHandover",
+   "method": "GET",
+   "path": "/api/v1/tickets/:id/handover-preview",
+   "what": "取得（tickets）— 上から配る（人・グループへ）／引き継ぐ（他の人の仕事の引き取りを申し出る）",
+   "flows": [
+    "F8"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "tickets"
+   ],
+   "status": "作った",
+   "owner_tickets": [
+    "K-401"
+   ]
+  },
+  {
+   "op": "listTicketHandovers",
+   "method": "GET",
+   "path": "/api/v1/tickets/:id/handovers",
+   "what": "取得（ticket_handovers）— チケットの渡しの今と前の渡し（新しい順・50 件まで）",
+   "flows": [
+    "F8"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "ticket_handovers"
+   ],
+   "status": "作った",
+   "owner_tickets": [
+    "K-405"
+   ]
+  },
+  {
    "op": "createTicketHandover",
    "method": "POST",
    "path": "/api/v1/tickets/:id/handovers",
@@ -5226,9 +5311,9 @@
    "tables": [
     "ticket_handovers"
    ],
-   "status": "契約だけ（501）",
+   "status": "作った",
    "owner_tickets": [
-    "K-68"
+    "K-401"
    ]
   },
   {
@@ -7377,7 +7462,9 @@
     "F6",
     "F7"
    ],
-   "reads": [],
+   "reads": [
+    "F8"
+   ],
    "boundary": true
   },
   {

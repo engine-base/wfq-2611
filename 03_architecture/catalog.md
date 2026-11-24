@@ -2,7 +2,7 @@
 
 > 生成物（`python3 scripts/ci/build_catalog.py`）。手で直さない。チケットを切るときは、まずここを探す。使えるなら依存として書き、無いときだけ作る（D-128.125・D-128.129）。
 
-API 370（作った 97・後のフェーズの行為だけ 20）・前の道すじ 26・表 148・画面の部品 19・共通の処理 13・エラー 266・部品 56・設定 41
+API 375（作った 105・後のフェーズの行為だけ 20）・前の道すじ 26・表 148・画面の部品 19・共通の処理 13・エラー 287・部品 56・設定 41
 
 ## 共通の処理
 
@@ -137,7 +137,7 @@ API 370（作った 97・後のフェーズの行為だけ 20）・前の道す�
 | `ticket_sections` | skeleton | F4 |  |  |
 | `ticket_stages` | skeleton |  | F4 |  |
 | `ticket_thread_seen` | internal |  |  |  |
-| `tickets` | skeleton | F11,F3,F4,F5,F6,F7 |  | ○ |
+| `tickets` | skeleton | F11,F3,F4,F5,F6,F7 | F8 | ○ |
 
 凍結の表（60）：`account_event_items`・`agent_usage_snapshots`・`ai_employees`・`billing_events`・`bridge_job_states`・`bridge_pairings`・`class_axes`・`class_values`・`credential_kinds`・`daily_plans`・`disclosure_versions`・`distribution_versions`・`duties`・`duty_versions`・`erasure_certificates`・`goal_allocations`・`goal_contributions`・`goal_kinds`・`goal_versions`・`goals`・`hypotheses`・`integrations`・`learned_procedures`・`ledger_definitions`・`ledger_fields`・`ledger_records`・`ledger_stages`・`ledger_views`・`llm_capabilities`・`llm_routes`・`measures`・`memory_digests`・`memory_kinds`・`memory_proposals`・`notification_preferences`・`payment_methods`・`permission_rules`・`plan_change_requests`・`plan_versions`・`procedure_steps`・`push_devices`・`retention_holds`・`review_requests`・`revoke_reasons`・`role_bundle_defaults`・`rollup_kinds`・`service_registry`・`service_registry_versions`・`service_requests`・`session_kinds`・`setup_steps`・`skill_attachments`・`subprocessors`・`task_handovers`・`tasks`・`ticket_class_values`・`triggers`・`units`・`usage_meters`・`validations`
 
@@ -419,9 +419,14 @@ API 370（作った 97・後のフェーズの行為だけ 20）・前の道す�
 | `deleteTicket` | DELETE /api/v1/tickets/:id | 削除（tickets）— チケットを消す・アーカイブする（子孫の扱いを決める） | F7 | 作った | K-67,K-488 |
 | `previewTicketDelete` | GET /api/v1/tickets/:id/delete-preview | 取得（tickets）— チケットを消す・アーカイブする（子孫の扱いを決める） | F7 | 作った | K-67,K-487 |
 | `restoreTicket` | POST /api/v1/tickets/:id/restore | 作成・実行（tickets）— チケットを消す・アーカイブする（子孫の扱いを決める） | F7 | 契約だけ（501） | K-67 |
-| `listHandoverRules` | GET /api/v1/handover_rules | 取得（handover_rules）— 渡されたものを受ける／断る（理由） | F8 | 契約だけ（501） | K-68 |
-| `answerTicketHandover` | PATCH /api/v1/ticket_handovers/:id | 更新（ticket_handovers）— 渡されたものを受ける／断る（理由） | F8 | 契約だけ（501） | K-68 |
-| `createTicketHandover` | POST /api/v1/tickets/:id/handovers | 作成・実行（tickets）— 上から配る（人・グループへ）／上へ上げる（判断を仰ぐ・上位の承認を求める・詰まりを上げ | F8 | 契約だけ（501） | K-68 |
+| `listHandoverRules` | GET /api/v1/handover_rules | 取得（handover_rules）— 渡すときに一緒に切り替えるものの決まり（会社の分を全部） | F8 | 作った | K-401 |
+| `answerTicketHandover` | PATCH /api/v1/ticket_handovers/:id | 更新（ticket_handovers）— 渡されたものを受ける／断る（理由） | F8 | 作った | K-401 |
+| `claimTicketHandover` | POST /api/v1/ticket_handovers/:id/claim | 作成・実行（ticket_handovers）— 上から配る（人・グループへ） | F8 | 作った | K-410 |
+| `remindTicketHandover` | POST /api/v1/ticket_handovers/:id/remind | 作成・実行（ticket_handovers）— 上から配る（人・グループへ）／引き継いでもらう（理由・お願い・返事の期限・一緒に切り替 | F8 | 作った | K-406 |
+| `withdrawTicketHandover` | POST /api/v1/ticket_handovers/:id/withdraw | 作成・実行（ticket_handovers）— 上から配る（人・グループへ）／引き継ぐ（他の人の仕事の引き取りを申し出る） | F8 | 作った | K-406 |
+| `previewTicketHandover` | GET /api/v1/tickets/:id/handover-preview | 取得（tickets）— 上から配る（人・グループへ）／引き継ぐ（他の人の仕事の引き取りを申し出る） | F8 | 作った | K-401 |
+| `listTicketHandovers` | GET /api/v1/tickets/:id/handovers | 取得（ticket_handovers）— チケットの渡しの今と前の渡し（新しい順・50 件まで） | F8 | 作った | K-405 |
+| `createTicketHandover` | POST /api/v1/tickets/:id/handovers | 作成・実行（tickets）— 上から配る（人・グループへ）／上へ上げる（判断を仰ぐ・上位の承認を求める・詰まりを上げ | F8 | 作った | K-401 |
 | `countKnows` | GET /api/v1/clones/me/knows/counts | 取得（clones）— 自分の AI に教える（覚えて） | F9 | 契約だけ（501） | K-69 |
 | `askKnowledge` | POST /api/v1/knowledge/ask | 作成・実行（knowledge）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
 | `sendKnowledgeAnswerFeedback` | POST /api/v1/knowledge/ask/feedback | 作成・実行（knowledge）— ナレッジのページを書く・直す | F9 | 契約だけ（501） |  |
