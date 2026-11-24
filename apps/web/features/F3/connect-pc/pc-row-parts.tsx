@@ -401,7 +401,7 @@ export const REINSTALL_TEXT = "書いたことは溜めておき、入れ直し�
 export const REINSTALL_ON_PC_TEXT = "その PC でこの画面を開いて、入れ直してください";
 /** 受け取りを始めた後の知らせ。新しい Bridge が知らせを返すと、行の自己診断から「古い」が消え、この区画も消える */
 export const REINSTALL_TAKEN_TEXT =
-  "受け取りを始めました。受け取った Kaname Bridge を開いて入れ直すと、この知らせは自分で消えます";
+  "受け取りを始めました。受け取った Kaname Bridge を開いて入れ直すと、このお知らせは自分で消えます";
 
 export interface BridgeReinstallProps {
   /** この端末に Bridge を入れられるか（pair-device.ts の canPairHere）。false なら受け取るボタンを出さず、開く場所だけを言う */
