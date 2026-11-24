@@ -29,7 +29,7 @@ test("KN105-001 375・768・1024・1440 で横にはみ出さない。押せる�
 test("KN105-002 左のバー：役割の主ナビが出て、いまの場所に aria-current。承認待ちの数", async ({ page }) => {
   await open(page, 1440);
   const nav = page.getByRole("navigation", { name: "メニュー", exact: true });
-  for (const name of ["チケット", "承認待ち", "高本のAI", "ナレッジ", "取引先", "ワークスペースの管理"])
+  for (const name of ["チケット", "承認待ち", "高本のAI", "ナレッジ", "ワークスペースの管理"])
     await expect(nav.getByRole("link", { name: new RegExp(`^${name}`) })).toBeVisible();
   await expect(nav.getByRole("link", { name: /^チケット/ })).toHaveAttribute("aria-current", "page");
   await expect(nav.getByRole("link", { name: /承認待ち/ })).toContainText("2");
@@ -60,7 +60,7 @@ test("KN105-004 左のバーを畳むと 56 のレールになり、開き直し
   await expect.poll(() => nav.evaluate((e) => e.getBoundingClientRect().width)).toBe(216);
 });
 
-test("KN105-005 上の帯：いまの場所・探す・知らせの数・自分のメニュー（設定と見た目）", async ({ page }) => {
+test("KN105-005 上の帯：いまの場所・探す・お知らせの数・自分のメニュー（設定と見た目）", async ({ page }) => {
   await open(page, 1440);
   const crumbs = page.getByRole("navigation", { name: "いまの場所" });
   await expect(crumbs.getByRole("link", { name: "チケット" })).toHaveAttribute("href", "/tickets");
@@ -72,7 +72,7 @@ test("KN105-005 上の帯：いまの場所・探す・知らせの数・自分�
   await box.fill("請求");
   await box.press("Enter");
   await expect(page.getByRole("status").filter({ hasText: "「請求」を探す" })).toBeVisible();
-  await expect(page.getByRole("button", { name: "知らせ（3 件）" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "お知らせ（3 件）" })).toBeVisible();
   await page.getByRole("button", { name: "自分のメニュー" }).click();
   const menu = page.getByRole("menu");
   await expect(menu.getByRole("menuitem", { name: "自分の設定" })).toBeVisible();
