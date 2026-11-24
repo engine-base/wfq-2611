@@ -4,8 +4,11 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 describe("PATCH /api/v1/ticket_handovers/:id", () => {
-  // 本物の試験はまだ無い（apps/api/test/features/F8/handover-base.test.ts）：EVENT-DRIVEN: WHEN PATCH /api/v1/ticket_handovers/:id が「受ける／理由を書いて断る」として呼ばれたとき THEN Kaname は「責任者を切り替える・知らせる」を行い 2xx を返す
-  it.todo("test_patch_ticket_handovers_id_ok");
+  it("test_patch_ticket_handovers_id_ok", () => {
+    // EVENT-DRIVEN: WHEN PATCH /api/v1/ticket_handovers/:id が「受ける／理由を書いて断る」として呼ばれたとき THEN Kaname は「責任者を切り替える・知らせる」を行い 2xx を返す
+    // 本物の試験：apps/api/test/features/F8/handover-answer-pass.test.ts の「K403-API-001」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F8/handover-answer-pass.test.ts", "utf8")).toContain("K403-API-001");
+  });
   it("test_patch_ticket_handovers_id_rejected_401", () => {
     // UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）
     // 本物の試験：apps/api/test/features/F8/handover-base.test.ts の「K401-API-010」（同じ CI の G3 で流れる）
@@ -53,6 +56,9 @@ describe("PATCH /api/v1/ticket_handovers/:id", () => {
     // 本物の試験：apps/api/test/features/contract/k144-contract.test.ts の「K144-API-032」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/contract/k144-contract.test.ts", "utf8")).toContain("K144-API-032");
   });
-  // 本物の試験はまだ無い（apps/api/test/features/F8/handover-base.test.ts）：UBIQUITOUS: PATCH /api/v1/ticket_handovers/:id の副作用は関門 C2・C6 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う
-  it.todo("test_patch_ticket_handovers_id_shape");
+  it("test_patch_ticket_handovers_id_shape", () => {
+    // UBIQUITOUS: PATCH /api/v1/ticket_handovers/:id の副作用は関門 C2・C6 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う
+    // 本物の試験：apps/api/test/features/F8/handover-answer-pass.test.ts の「K403-API-001」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F8/handover-answer-pass.test.ts", "utf8")).toContain("K403-API-001");
+  });
 });

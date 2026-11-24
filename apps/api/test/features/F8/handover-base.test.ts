@@ -475,7 +475,7 @@ describe("K-401 答える口の振り分けの前の確かめ（answerTicketHand
     expect((await h.answer(w.sato, randomUUID(), { decision: "accept" })).status).toBe(404);
     expect((await h.answer(w.sato, hid, { decision: "accept" })).status).toBe(404);
     expect((await h.handover(hid))!["state"]).toBe("waiting");
-    // 待っている間にチケットが消された：答えは 404（欄なし）で、担当者は替わらず・渡しは待っているまま・知らせの行は増えない
+    // 待っている間にチケットが消された：答えは 404（欄なし）で、担当者は替わらず・知らせの行は増えない。渡しは消したときに引き金が取り消す（withdrawn・K-406 の K406-API-019）
     const gone = await h.ticket(w);
     const gid = await h.waiting(w, { ticketId: gone.id, to: w.sato });
     await h.f.admin.query("update tickets set deleted_at = now() where id = $1", [gone.id]);
@@ -486,7 +486,7 @@ describe("K-401 答える口の振り分けの前の確かめ（answerTicketHand
     expect(gj.code).toBe("E-PAGE-001");
     for (const key of ["field", "details"]) expect(gj, `404 に ${key} を付けない`).not.toHaveProperty(key);
     expect(await h.assigneeOf(gone.id)).toBe(w.boss.id);
-    expect((await h.handover(gid))!["state"]).toBe("waiting");
+    expect((await h.handover(gid))!["state"]).toBe("withdrawn");
     expect(await h.num("select count(*) as n from notifications where tenant_id = $1", [w.co.tenantId])).toBe(before);
   });
 

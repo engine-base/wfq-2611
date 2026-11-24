@@ -47,6 +47,22 @@
     "test_post_tickets_id_handovers_session_unresolved": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
+    },
+    "test_post_tickets_id_handovers_ok_4": {
+     "file": "apps/api/test/features/F8/handover-pass.test.ts",
+     "mark": "K402-API-001"
+    },
+    "test_post_tickets_id_handovers_shape": {
+     "file": "apps/api/test/features/F8/handover-pass.test.ts",
+     "mark": "K402-API-001"
+    },
+    "test_post_tickets_id_handovers_ok_3": {
+     "file": "apps/api/test/features/F8/handover-offer.test.ts",
+     "mark": "K408-API-001"
+    },
+    "test_post_tickets_id_handovers_ok": {
+     "file": "apps/api/test/features/F8/distribute-person.test.ts",
+     "mark": "K409-API-001"
     }
    },
    "na": {
@@ -74,6 +90,14 @@
     "test_patch_ticket_handovers_id_session_unresolved": {
      "file": "apps/api/test/features/contract/k144-contract.test.ts",
      "mark": "K144-API-032"
+    },
+    "test_patch_ticket_handovers_id_ok": {
+     "file": "apps/api/test/features/F8/handover-answer-pass.test.ts",
+     "mark": "K403-API-001"
+    },
+    "test_patch_ticket_handovers_id_shape": {
+     "file": "apps/api/test/features/F8/handover-answer-pass.test.ts",
+     "mark": "K403-API-001"
     }
    }
   },

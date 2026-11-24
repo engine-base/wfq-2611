@@ -4,14 +4,23 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 describe("POST /api/v1/tickets/:id/handovers", () => {
-  // 本物の試験はまだ無い（apps/api/test/features/F8/handover-base.test.ts）：EVENT-DRIVEN: WHEN POST /api/v1/tickets/:id/handovers が「人かグループを選んで配る」として呼ばれたとき THEN Kaname は「層ごとの合意の要否に沿って知らせる」を行い 2xx を返す
-  it.todo("test_post_tickets_id_handovers_ok");
+  it("test_post_tickets_id_handovers_ok", () => {
+    // EVENT-DRIVEN: WHEN POST /api/v1/tickets/:id/handovers が「人かグループを選んで配る」として呼ばれたとき THEN Kaname は「層ごとの合意の要否に沿って知らせる」を行い 2xx を返す
+    // 本物の試験：apps/api/test/features/F8/distribute-person.test.ts の「K409-API-001」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F8/distribute-person.test.ts", "utf8")).toContain("K409-API-001");
+  });
   // 当てはまらない（上へ上げる（判断を仰ぐ・上位の承認・詰まり）は段 9 では作らない（D-148.1）。422・E-HND-001 は K401-API-011）：EVENT-DRIVEN: WHEN POST /api/v1/tickets/:id/handovers が「判断を仰ぐ・上位の承認を付ける・詰まっていますと上げる」として呼ばれたとき THEN Kaname は「上位に知らせる」を行い 2xx を返す
   it.todo("test_post_tickets_id_handovers_ok_2");
-  // 本物の試験はまだ無い（apps/api/test/features/F8/handover-base.test.ts）：EVENT-DRIVEN: WHEN POST /api/v1/tickets/:id/handovers が「引き取りを申し出る」として呼ばれたとき THEN Kaname は「—」を行い 2xx を返す
-  it.todo("test_post_tickets_id_handovers_ok_3");
-  // 本物の試験はまだ無い（apps/api/test/features/F8/handover-base.test.ts）：EVENT-DRIVEN: WHEN POST /api/v1/tickets/:id/handovers が「相手・理由・お願い・返事の期限を書いて渡す」として呼ばれたとき THEN Kaname は「渡し中にして相手に知らせる」を行い 2xx を返す
-  it.todo("test_post_tickets_id_handovers_ok_4");
+  it("test_post_tickets_id_handovers_ok_3", () => {
+    // EVENT-DRIVEN: WHEN POST /api/v1/tickets/:id/handovers が「引き取りを申し出る」として呼ばれたとき THEN Kaname は「—」を行い 2xx を返す
+    // 本物の試験：apps/api/test/features/F8/handover-offer.test.ts の「K408-API-001」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F8/handover-offer.test.ts", "utf8")).toContain("K408-API-001");
+  });
+  it("test_post_tickets_id_handovers_ok_4", () => {
+    // EVENT-DRIVEN: WHEN POST /api/v1/tickets/:id/handovers が「相手・理由・お願い・返事の期限を書いて渡す」として呼ばれたとき THEN Kaname は「渡し中にして相手に知らせる」を行い 2xx を返す
+    // 本物の試験：apps/api/test/features/F8/handover-pass.test.ts の「K402-API-001」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F8/handover-pass.test.ts", "utf8")).toContain("K402-API-001");
+  });
   it("test_post_tickets_id_handovers_rejected_401", () => {
     // UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）
     // 本物の試験：apps/api/test/features/F8/handover-base.test.ts の「K401-API-010」（同じ CI の G3 で流れる）
@@ -59,6 +68,9 @@ describe("POST /api/v1/tickets/:id/handovers", () => {
     // 本物の試験：apps/api/test/features/contract/k144-contract.test.ts の「K144-API-032」（同じ CI の G3 で流れる）
     expect(readFileSync("apps/api/test/features/contract/k144-contract.test.ts", "utf8")).toContain("K144-API-032");
   });
-  // 本物の試験はまだ無い（apps/api/test/features/F8/handover-base.test.ts）：UBIQUITOUS: POST /api/v1/tickets/:id/handovers の副作用は関門 C2・C6 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う
-  it.todo("test_post_tickets_id_handovers_shape");
+  it("test_post_tickets_id_handovers_shape", () => {
+    // UBIQUITOUS: POST /api/v1/tickets/:id/handovers の副作用は関門 C2・C6 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う
+    // 本物の試験：apps/api/test/features/F8/handover-pass.test.ts の「K402-API-001」（同じ CI の G3 で流れる）
+    expect(readFileSync("apps/api/test/features/F8/handover-pass.test.ts", "utf8")).toContain("K402-API-001");
+  });
 });

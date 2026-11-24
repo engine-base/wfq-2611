@@ -2,19 +2,24 @@
 // 相手を選ぶ小窓 → 引き継いでもらうの小窓の一続き（K-411・口は K-401 の previewTicketHandover と K-402 の createTicketHandover）。
 //   部品は views.tsx（PickDialog・HandoverDialog）をそのまま使い、値と動きを渡すだけ。口は「開いた時に下見 1 回」「送るとき 1 回」だけ（押し直しは同じ冪等の鍵）。
 //   断りは状態でなく答えの code で出し分ける（E-HND-007・008 はその欄の下／006・014 は相手の欄の下／004・003 と残りは小窓の上）。書いた中身は消さない。
-//   K-413 の「別の人にする」は replaces（今待っている渡しの id）を渡して同じ一続きを使う
+//   K-413 の「別の人にする」は replaces（今待っている渡しの id）を渡して同じ一続きを使う。
+//   K-415：mode が distribute（担当者でなく、配る権限の人・getTicket の handover_kinds に distribute）なら、押して読んだ下見の kinds に distribute が在るとき
+//   小窓を配るの形（1 行の文・グループの並び）で開き、人もグループも選んだ後は配る小窓（distribute-dialog.tsx）。下見に distribute が無ければ（権限を外された直後）
+//   E-HND-002 の文で選ばせない。担当者本人のとき（mode pass）も、下見に groups が在ればグループの並びを足し、グループを押すと配る小窓（人を押す道は変えない）
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNotify } from "@/components/k";
 import { PAGE_ERROR, errorCodeOf } from "@/components/k/error-of";
 import type { SlotTicket } from "@/features/F4/create-ticket/detail-slots";
 import { catalogMessage } from "@/features/F5/approve-complete/message";
 import { call } from "@/lib/api/call";
+import { DistributeFlow, type DistributeDest } from "./distribute-dialog";
 import {
   HandoverDialog,
   PickDialog,
   type CarryItem,
   type HandoverErrors,
   type HandoverValues,
+  type PickGroup,
   type PickMember,
 } from "./views";
 
@@ -64,7 +69,11 @@ interface Candidate {
   in_group: boolean;
 }
 type RuleMode = "ask" | "always" | "never";
-interface Preview {
+export interface Preview {
+  /** 見ている人がこのチケットでできる種類（K-401 の下見の kinds） */
+  kinds: string[];
+  /** 配る先のグループ（kinds に distribute が在るとき、または担当者がそのグループを管理する人のとき） */
+  groups: PickGroup[];
   blocked: "closed" | "ai_running" | "approval" | "waiting" | null;
   waitingName: string | null;
   /** 待っている渡しの id（別の人にする replaces の渡し自身は止まりに数えないため・K-413） */
@@ -77,7 +86,7 @@ interface Preview {
   candidates: Candidate[];
 }
 
-const rec = (v: unknown): Record<string, unknown> | null =>
+export const rec = (v: unknown): Record<string, unknown> | null =>
   typeof v === "object" && v !== null && !Array.isArray(v) ? (v as Record<string, unknown>) : null;
 const str = (v: unknown): string | null => (typeof v === "string" ? v : null);
 const num = (v: unknown): number => (typeof v === "number" && Number.isFinite(v) ? v : 0);
@@ -114,7 +123,7 @@ function readCandidate(v: unknown): Candidate | null {
 const BLOCKS = ["closed", "ai_running", "approval", "waiting"] as const;
 
 /** 口の答えを形で確かめて読む（形が違えば null＝読めなかったことにする） */
-function readPreview(raw: unknown): Preview | null {
+export function readPreview(raw: unknown): Preview | null {
   const o = rec(raw);
   const group = readGroup(o?.["group"]);
   const list = o && Array.isArray(o["candidates"]) ? o["candidates"].map(readCandidate) : null;
@@ -130,7 +139,13 @@ function readPreview(raw: unknown): Preview | null {
     const mode = x?.["mode"];
     return target !== null && (mode === "ask" || mode === "always" || mode === "never") ? [{ target, mode }] : [];
   });
+  const groups = (Array.isArray(o["groups"]) ? o["groups"] : []).flatMap((g) => {
+    const x = readGroup(g);
+    return x ? [x] : [];
+  });
   return {
+    kinds: Array.isArray(o["kinds"]) ? o["kinds"].filter((k): k is string => typeof k === "string") : [],
+    groups,
     blocked,
     waitingName: surnameOrNull(str(waitTo?.["name"])) ?? str(waitScope?.["name"]),
     waitingId: str(w?.["id"]),
@@ -146,10 +161,13 @@ const surnameOrNull = (n: string | null): string | null => (n === null ? null : 
 
 // ---------------------------------------------------------------- 文と欄
 const INTRO = "選んだ人に「引き継いでもらう」を頼みます。相手が受けるまで担当者はあなたのままです";
+const DISTRIBUTE_INTRO =
+  "あなたはこのグループのマネージャーなので、選ぶと「配る」になります（相手の合意なしで担当者が替わります）";
+const NO_POWER_INTRO = "いまの権限では、担当者を変えられません";
 const BLOCKED_INTRO = "AI が動いている・承認を待っているあいだは、担当者を変えられません";
 
 /** 答えの detail の値を {名前}・{訳} に入れる（画面で文を作らない・正本の文の穴埋めだけ） */
-const fill = (message: string, detail: Record<string, unknown> | null): string =>
+export const fill = (message: string, detail: Record<string, unknown> | null): string =>
   message.replace(/\{([^}]+)\}/g, (_, k: string) => String(detail?.[k] ?? ""));
 
 type CarryKey = "children" | "links" | "group";
@@ -174,7 +192,7 @@ function carryRows(p: Preview, who: Candidate | null, over: Partial<Record<Carry
   return rows;
 }
 
-const memberOf = (c: Candidate): PickMember => ({
+export const memberOf = (c: Candidate): PickMember => ({
   id: c.id,
   name: c.name,
   sub: `${c.group.name}${c.manager ? " マネージャー" : ""}`,
@@ -209,7 +227,7 @@ function targetOf(detail: SlotTicket["detail"]): string | null {
   return number !== null && title !== null ? `${number} ${title}` : null;
 }
 
-const newKey = (): string =>
+export const newKey = (): string =>
   typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `${Date.now()}-${Math.random()}`;
 const without = (e: HandoverErrors, key: keyof HandoverErrors): HandoverErrors => {
   const { [key]: _drop, ...rest } = e;
@@ -219,6 +237,8 @@ const without = (e: HandoverErrors, key: keyof HandoverErrors): HandoverErrors =
 
 export interface PassFlowProps {
   ticket: SlotTicket;
+  /** 入口の種類：pass＝担当者本人（引き継いでもらう）・distribute＝担当者でなく配る権限の人（配る・K-415）。既定は pass */
+  mode?: "pass" | "distribute";
   open: boolean;
   /** 閉じる（やめる・× ・Esc・渡せた後） */
   onClose: () => void;
@@ -231,12 +251,15 @@ export interface PassFlowProps {
 const EMPTY_VALUES: HandoverValues = { reason: "", ask: "", due: "" };
 
 /** 相手を選ぶ小窓から引き継いでもらうの小窓までの一続き。開くと下見を 1 回読み、読めてから相手を選ぶ小窓を出す */
-export function PassFlow({ ticket, open, onClose, onDone, replaces }: PassFlowProps) {
+export function PassFlow({ ticket, mode = "pass", open, onClose, onDone, replaces }: PassFlowProps) {
   const notify = useNotify();
-  const [phase, setPhase] = useState<"loading" | "pick" | "pass">("loading");
+  const [phase, setPhase] = useState<"loading" | "pick" | "pass" | "distribute">("loading");
   const [pv, setPv] = useState<Preview | null>(null);
   const [query, setQuery] = useState("");
   const [whoId, setWhoId] = useState<string | null>(null);
+  /** 配る先：人（whoId）かグループ（groupId）。配る小窓の「変える」で相手を選ぶ小窓に戻っても理由は残る */
+  const [dest, setDest] = useState<"member" | "group">("member");
+  const [groupId, setGroupId] = useState<string | null>(null);
   const [values, setValues] = useState<HandoverValues>(EMPTY_VALUES);
   const [over, setOver] = useState<Partial<Record<CarryKey, boolean>>>({});
   const [notifyManagers, setNotifyManagers] = useState(false);
@@ -293,6 +316,8 @@ export function PassFlow({ ticket, open, onClose, onDone, replaces }: PassFlowPr
     setPv(null);
     setQuery("");
     setWhoId(null);
+    setDest("member");
+    setGroupId(null);
     setValues(EMPTY_VALUES);
     setOver({});
     setNotifyManagers(false);
@@ -308,16 +333,28 @@ export function PassFlow({ ticket, open, onClose, onDone, replaces }: PassFlowPr
   const who = useMemo(() => pv?.candidates.find((c) => c.id === whoId) ?? null, [pv, whoId]);
   const rows = useMemo(() => (pv ? carryRows(pv, who, over) : []), [pv, who, over]);
   const members = useMemo(() => (pv ? pv.candidates.map(memberOf) : []), [pv]);
-  const blocked = pv ? blockedText(pv) : undefined;
+  // 入口が配る（担当者でない人）：下見に distribute が在れば配るの形、無ければ（権限を外された直後）E-HND-002 の文で選ばせない
+  const asManager = mode === "distribute" && pv !== null && pv.kinds.includes("distribute");
+  const noPower = mode === "distribute" && pv !== null && !pv.kinds.includes("distribute");
+  const group = useMemo(() => pv?.groups.find((g) => g.id === groupId) ?? null, [pv, groupId]);
+  // グループの並び：配るの形はいつも（空でも探す欄の名前を替える）・引き継いでもらうの形は在るときだけ（別の人にする K-413 では出さない）
+  const groups = pv && (mode === "distribute" || (pv.groups.length > 0 && !replaces)) ? pv.groups : undefined;
+  const blocked = noPower ? catalogMessage("E-HND-002") : pv ? blockedText(pv) : undefined;
   const target = targetOf(ticket.detail);
   const aiBlocked = pv?.blocked === "ai_running" || pv?.blocked === "approval";
 
   const pick = (id: string) => {
     setWhoId(id);
+    setDest("member");
     setOver({});
     setErrors((e) => without(e, "to"));
     setNotice(null);
-    setPhase("pass");
+    setPhase(asManager ? "distribute" : "pass");
+  };
+  const pickGroup = (id: string) => {
+    setGroupId(id);
+    setDest("group");
+    setPhase("distribute");
   };
 
   const change = (patch: Partial<HandoverValues>) => {
@@ -403,16 +440,28 @@ export function PassFlow({ ticket, open, onClose, onDone, replaces }: PassFlowPr
     }
   };
 
+  const distDest: DistributeDest =
+    dest === "group" && group
+      ? { kind: "group", id: group.id, name: group.name, done: `${group.name}に配りました` }
+      : {
+          kind: "member",
+          id: who?.id ?? "",
+          name: who?.name ?? "",
+          done: `${surnameOf(who?.name ?? "")}さんに配りました`,
+        };
+
   return (
     <>
       <PickDialog
         open={open && phase === "pick"}
         members={members}
-        intro={aiBlocked ? BLOCKED_INTRO : INTRO}
+        intro={noPower ? NO_POWER_INTRO : aiBlocked ? BLOCKED_INTRO : asManager ? DISTRIBUTE_INTRO : INTRO}
         query={query}
         onQueryChange={setQuery}
         onPick={pick}
+        onPickGroup={pickGroup}
         onClose={onClose}
+        {...(groups ? { groups } : {})}
         {...(target ? { target } : {})}
         {...(blocked ? { blocked } : {})}
         {...(loadError ? { notice: loadError, onRetry: retry } : {})}
@@ -438,6 +487,18 @@ export function PassFlow({ ticket, open, onClose, onDone, replaces }: PassFlowPr
         {...(target ? { target } : {})}
         {...(notice ? { notice } : {})}
         {...(callout ? { callout } : {})}
+      />
+      <DistributeFlow
+        ticket={ticket}
+        open={open && phase === "distribute"}
+        dest={distDest}
+        reason={values.reason}
+        ask={values.ask}
+        onChange={change}
+        onChangeTo={() => setPhase("pick")}
+        onClose={onClose}
+        {...(onDone ? { onDone } : {})}
+        {...(target ? { target } : {})}
       />
     </>
   );

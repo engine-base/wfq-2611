@@ -2,7 +2,7 @@
 
 > 生成物（`python3 scripts/ci/build_catalog.py`）。手で直さない。チケットを切るときは、まずここを探す。使えるなら依存として書き、無いときだけ作る（D-128.125・D-128.129）。
 
-API 374（作った 104・後のフェーズの行為だけ 20）・前の道すじ 26・表 148・画面の部品 19・共通の処理 13・エラー 282・部品 56・設定 41
+API 375（作った 105・後のフェーズの行為だけ 20）・前の道すじ 26・表 148・画面の部品 19・共通の処理 13・エラー 287・部品 56・設定 41
 
 ## 共通の処理
 
@@ -421,6 +421,7 @@ API 374（作った 104・後のフェーズの行為だけ 20）・前の道す
 | `restoreTicket` | POST /api/v1/tickets/:id/restore | 作成・実行（tickets）— チケットを消す・アーカイブする（子孫の扱いを決める） | F7 | 契約だけ（501） | K-67 |
 | `listHandoverRules` | GET /api/v1/handover_rules | 取得（handover_rules）— 渡すときに一緒に切り替えるものの決まり（会社の分を全部） | F8 | 作った | K-401 |
 | `answerTicketHandover` | PATCH /api/v1/ticket_handovers/:id | 更新（ticket_handovers）— 渡されたものを受ける／断る（理由） | F8 | 作った | K-401 |
+| `claimTicketHandover` | POST /api/v1/ticket_handovers/:id/claim | 作成・実行（ticket_handovers）— 上から配る（人・グループへ） | F8 | 作った | K-410 |
 | `remindTicketHandover` | POST /api/v1/ticket_handovers/:id/remind | 作成・実行（ticket_handovers）— 上から配る（人・グループへ）／引き継いでもらう（理由・お願い・返事の期限・一緒に切り替 | F8 | 作った | K-406 |
 | `withdrawTicketHandover` | POST /api/v1/ticket_handovers/:id/withdraw | 作成・実行（ticket_handovers）— 上から配る（人・グループへ）／引き継ぐ（他の人の仕事の引き取りを申し出る） | F8 | 作った | K-406 |
 | `previewTicketHandover` | GET /api/v1/tickets/:id/handover-preview | 取得（tickets）— 上から配る（人・グループへ）／引き継ぐ（他の人の仕事の引き取りを申し出る） | F8 | 作った | K-401 |

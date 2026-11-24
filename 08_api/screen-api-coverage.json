@@ -4,7 +4,7 @@
  "frozen_at": "2026-11-24",
  "summary": {
   "total_screens": 37,
-  "total_apis": 374,
+  "total_apis": 375,
   "coverage_rate": 1.0,
   "uncovered_screens": [],
   "static_screens": [
@@ -599,6 +599,11 @@
      "role": "action",
      "endpoint": "PATCH /api/v1/ticket_handovers/:id",
      "act": "A110"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ticket_handovers/:id/claim",
+     "act": "A111"
     }
    ],
    "transitions": [

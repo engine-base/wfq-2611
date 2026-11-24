@@ -8254,6 +8254,30 @@
      ]
     },
     {
+     "act": "A111",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_handovers/:id/claim",
+     "table": "ticket_handovers",
+     "operation_id": "claimTicketHandover",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-136",
+      "E-106",
+      "E-080",
+      "E-052"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.91",
+      "D-125.92",
+      "D-125.167"
+     ]
+    },
+    {
      "role": "transition",
      "method": "navigate",
      "path_draft": "/account",
@@ -9054,6 +9078,30 @@
      "source": [
       "D-125.88",
       "D-125.90",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A111",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_handovers/:id/claim",
+     "table": "ticket_handovers",
+     "operation_id": "claimTicketHandover",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-136",
+      "E-106",
+      "E-080",
+      "E-052"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.91",
+      "D-125.92",
       "D-125.167"
      ]
     },
@@ -23847,7 +23895,7 @@
     "ログインと安全",
     "PC と使った量",
     "預けたログイン情報",
-    "知らせ"
+    "お知らせ"
    ],
    "checklist": [],
    "release": "v1",

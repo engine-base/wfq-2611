@@ -40,6 +40,8 @@ const HIDDEN = "［伏せた］";
 const SHAPES = [
   [/[A-Za-z0-9._+-]+@resend\.dev/g, "［試験の宛先］"],
   [/([?&](?:amp;)?token=)[^&\s"'<>]+/g, `$1${HIDDEN}`],
+  // 招待のリンクの印（/invite/<印>・K-418）。道の中に印があるので token= の形では伏せられない
+  [/(\/invite\/)[A-Za-z0-9_-]{16,}/g, `$1${HIDDEN}`],
   [/kpc_[A-Za-z0-9_-]{20,}/g, "［PC の印］"],
   [/\bre_[A-Za-z0-9_]{16,}/g, "［鍵］"],
   [/(Bearer\s+)[A-Za-z0-9._~+/=-]{16,}/gi, `$1${HIDDEN}`],
