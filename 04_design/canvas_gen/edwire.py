@@ -15,7 +15,7 @@ def firsttime(s):
     s = re.sub(r'<b class="kn-lbl" style="margin-left: auto; font-size: 11px; background: #B45309; color: #FFFFFF; border-radius: 99px; padding: 0 7px">2</b>', '', s)
     s = s.replace('<span style="width: 8px; height: 8px; flex: none; border-radius: 99px; background: #166534"></span><span class="kn-lbl">PC つながっている</span>', '<span style="width: 8px; height: 8px; flex: none; border-radius: 99px; background: #B45309"></span><span class="kn-lbl" style="color: #7A4A05">PC がまだ</span>')
     s = s.replace('title="PC つながっている" style="font-size: 12px; color: #166534;', 'title="PC がまだ" style="font-size: 12px; color: #7A4A05;')
-    s = re.sub(r'(<button type="button" aria-label="知らせ（3 件）".*?)<b style="position: absolute; top: 2px; right: 2px;[^>]*>3</b>', r'\1', s, flags=re.S)
+    s = re.sub(r'(<button type="button" aria-label="お?知らせ（3 件）".*?)<b style="position: absolute; top: 2px; right: 2px;[^>]*>3</b>', r'\1', s, flags=re.S)
     return s
 def run():
     for name, mp in MAP.items():
