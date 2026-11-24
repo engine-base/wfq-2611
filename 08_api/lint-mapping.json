@@ -237,6 +237,18 @@
   },
   {
    "method": "POST",
+   "path": "/api/v1/auth/invitations/confirm",
+   "implementation_path": "apps/api/src/routes/invitations.ts::confirmInvitationJoin",
+   "screen_ids_referencing": [
+    "invite-accept"
+   ],
+   "acts": [
+    "A03",
+    "A96"
+   ]
+  },
+  {
+   "method": "POST",
    "path": "/api/v1/auth/password/forgot",
    "implementation_path": "apps/api/src/routes/security_events.ts::requestPasswordReset",
    "screen_ids_referencing": [
