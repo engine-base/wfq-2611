@@ -1,0 +1,8 @@
+{
+ "data_links": [
+  {"paths": ["07_qa/test-specs/errors.json"], "tests": ["apps/web/tests/k/k414-offer.spec.ts"]}
+ ],
+ "reads_ok": {
+  "apps/web/tests/k/k414-offer.spec.ts": "文言の正本 07_qa/test-specs/errors.json を読み、口が断ったときの文を番号で引く（K-414。K-369 の断片と同じ形で data_links に結ぶ）"
+ }
+}

@@ -24,11 +24,17 @@ row(R["K63-UI-001"], async (page) => {
   await mockApi(page);
   for (const w of WIDTHS) {
     await openQueue(page, w);
-    const order = await page
-      .getByRole("main")
-      .getByText(/^(期限切れ|今日|7 日以内|それより後|期限なし)$/)
-      .allInnerTexts(); // 外枠の「今日」（左のメニュー・下タブ）に当てない
-    expect(order).toEqual(["期限切れ", "今日", "期限なし"]);
+    if (w >= 768) {
+      const order = await page
+        .getByRole("main")
+        .getByText(/^(期限切れ|今日|7 日以内|それより後|期限なし)$/)
+        .allInnerTexts(); // 外枠の「今日」（左のメニュー・下タブ）に当てない
+      expect(order).toEqual(["期限切れ", "今日", "期限なし"]);
+    } else {
+      // 767 以下は 1 件 1 枚のカードを期限の順に（区切りの見出しは無い・D-148.26・K-412 が切る段で替えた 2026-11-20）
+      const titles = await page.locator("#k-main .k-hnd-mcard .k-hnd-mcard-title").allInnerTexts();
+      expect(titles).toEqual(["見積を出す", "11 月分の請求書を送る", "応募文を出す"]);
+    }
     await expect(page.getByRole("main").getByText("3 件", { exact: true })).toBeVisible();
     if (w >= 1440) await menuCount(page, 3); // 左のメニューの数は 1440 で見る。ほかの幅は見出しの横の数だけ
     await noOverflow(page, w);
