@@ -6,4 +6,6 @@ import { op, type ContractDeps } from "../contract/op.js";
 export function register(app: Hono<Vars>, deps: ContractDeps): void {
   app.patch("/api/v1/ticket_handovers/:id", op(deps, "answerTicketHandover"));
   app.post("/api/v1/ticket_handovers/:id/claim", op(deps, "claimTicketHandover"));
+  app.post("/api/v1/ticket_handovers/:id/remind", op(deps, "remindTicketHandover"));
+  app.post("/api/v1/ticket_handovers/:id/withdraw", op(deps, "withdrawTicketHandover"));
 }
