@@ -10,7 +10,7 @@ IC2.update({"user": '<circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 
 def sub(cur):
     return build("自分の設定の中", [("アカウント", [("MeProfile.dc.html", SV % IC2["user"], "プロフィール", "", False), ("MeLogin.dc.html", SV % IC2["lock"], "ログインと安全", "", False)]),
         ("分身", [("MePC.dc.html", SV % IC2["pc"], "PC と使った量", "", False), ("MeSecrets.dc.html", SV % IC2["key"], "預けたログイン情報", "5", False)]),
-        ("ワークスペースごと", [("MeNotify.dc.html", SV % IC2["bell"], "知らせ", "", False)])], cur, "アカウントは 1 人 1 つ。預けたログイン情報と知らせはワークスペースごと")
+        ("ワークスペースごと", [("MeNotify.dc.html", SV % IC2["bell"], "お知らせ", "", False)])], cur, "アカウントは 1 人 1 つ。預けたログイン情報とお知らせはワークスペースごと")
 def page(name, title, crumb, body, cur=None):
     s = MAIN
     a = s.index('<nav aria-label="いまの場所"'); b = s.index("</nav>", a) + 6
@@ -109,7 +109,7 @@ s = modal(SP, mhead("ログイン情報を預ける", "MeSecrets.dc.html", icon(
   + '<div style="background: #F7F8FA; border-radius: 8px; padding: 10px 12px; font-size: 12px; display: flex; flex-direction: column; gap: 4px"><span>・ 値はワークスペースごとの鍵で暗号にして保存する。画面にも分身の会話にも出さない</span><span>・ 使えるのはあなたの分身の実行だけ（同じワークスペースのほかの人の分身は使えない）</span><span>・ 入れたあとの画面の写しや文字に値が映ったら、分身に渡す前に隠す</span><span>・ 使ったときは、名前・宛先・時刻だけがチケットの実行の記録に残る</span></div>')
   + mfoot(btn("やめる", "", "MeSecrets.dc.html"), btn("本人確認して保存", "p", "MeSecrets.dc.html"), left='<span style="font-size: 12px; color: %s">保存の前にパスキーで本人確認を取り直す</span>' % MUTED), 560, "ログイン情報を預ける")
 save("MeSecretAdd.dc.html", "ログイン情報を預ける", s)
-# ---------- 知らせ ----------
+# ---------- お知らせ ----------
 CH = ["受け箱（ベル）", "メール（まとめて）"]   # デスクトップ・スマホは後のフェーズ（D-128.92）
 def nrow(ev, note, on, lock0=True):
     cells = ""
@@ -122,11 +122,11 @@ tbl = ('<div style="background: #FFFFFF; border: 1px solid #DDE2E9; border-radiu
   + nrow("分身が止まった・落ちて直せない", "PC が切れた・ログイン情報が切れた など", [1, 1]) + nrow("分身が実行を終えた", "やったことは分身の部屋でも見られる", [1, 0])
   + nrow("自分が担当・承認するチケットが動いた", "状態・期限の変化", [1, 0]) + nrow("覚えたいこと・直す案が出た", "分身の部屋・ナレッジ", [1, 0]) + nrow("新しい端末で入った", "安全のため止められない", [1, 1])
   + '</tbody></table><div style="font-size: 11px; color: %s; padding-top: 8px">メールは、受け箱で読んでいないものだけを 30 分ごとにまとめて送る。デスクトップとスマホへの知らせは後のフェーズ</div></div>' % MUTED)
-body = (ttl("知らせ", "ワークスペースごとに決める")
+body = (ttl("お知らせ", "ワークスペースごとに決める")
   + '<div style="display: flex; gap: 6px; align-items: center">' + chip("株式会社ENGINE BASE", True) + chip("高本 聖斗（個人）") + chip("京蟻システム") + '<a href="#" style="margin-left: auto; font-size: 12px">この設定をほかのワークスペースにも写す</a></div>'
   + tbl
   + blk("静かにする時間", [("夜と休みの日", "このあいだはメールを送らない（受け箱にはたまる）", sel("平日 20:00〜8:00 ・ 土日")), ("いま止める", "", chip("1 時間") + chip("今日いっぱい") + chip("明日の朝まで")), ("止めていても知らせる", "急ぎのものだけ", check("承認を待っている（期限が今日）", True) + check("分身が止まった", True))]))
-page("MeNotify.dc.html", "自分の設定 知らせ", "知らせ", body)
+page("MeNotify.dc.html", "自分の設定 お知らせ", "お知らせ", body)
 
 # 上書き（ログイン情報）は ID とパスワードを両方入れ直す（代表の答え answer=e34268dbfbac・モック cred-edit と同じ SEIKO_PORTAL・K-356）
 s2 = modal(SP, mhead("SEIKO_PORTAL を上書きする", "MeSecrets.dc.html", icon("鍵", NAVY, 28), "前の値は消え、戻せない。見ることもできない")

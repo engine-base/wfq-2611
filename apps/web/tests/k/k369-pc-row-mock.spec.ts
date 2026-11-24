@@ -513,7 +513,7 @@ test("K369-UI-020 Bridge を入れ直す一手（幅 1440・375）：題は E-CO
 
   await openState(page, "pc-bridge-reinstalling", 1440);
   await expect(part().getByRole("status")).toHaveText(
-    "受け取りを始めました。受け取った Kaname Bridge を開いて入れ直すと、この知らせは自分で消えます",
+    "受け取りを始めました。受け取った Kaname Bridge を開いて入れ直すと、このお知らせは自分で消えます",
   );
   await expect(part().locator('[data-os-warning] [data-os-warning-os="mac"]')).toHaveCount(1);
   await expect(part().locator('[data-os-warning] [data-os-warning-os="win"]')).toHaveCount(0);
