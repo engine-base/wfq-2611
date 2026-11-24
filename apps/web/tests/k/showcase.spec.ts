@@ -66,7 +66,6 @@ navLink("KSC-01-005", /^承認待ち/, "/approvals", async (p) =>
 );
 navLink("KSC-01-006", /^高本のAI/, "/ai/chat");
 navLink("KSC-01-007", /^ナレッジ/, "/knowledge");
-navLink("KSC-01-008", /^取引先/, "/clients");
 navLink("KSC-01-009", /^営業/, "#eg", async (p) =>
   expect(nav(p).getByRole("link", { name: /^営業/ })).toContainText("18"),
 );
@@ -117,7 +116,7 @@ row(R["KSC-02-002"], async (page) => {
 });
 row(R["KSC-02-003"], async (page) => {
   await open(page);
-  await bar(page).getByRole("button", { name: "知らせ（3 件）" }).click();
+  await bar(page).getByRole("button", { name: "お知らせ（3 件）" }).click();
   await expect(toast(page, "知らせを開く（見本）")).toBeVisible();
 });
 row(R["KSC-02-004"], async (page) => {

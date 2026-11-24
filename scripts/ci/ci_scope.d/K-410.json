@@ -1,0 +1,29 @@
+{
+ "data_links": [
+  {
+   "paths": [
+    "apps/api/src/hooks/handover-claim.ts",
+    "apps/api/src/features/F8/handovers/create/distribute-group.ts",
+    "apps/api/src/features/F8/handovers/answer/distribute-group.ts",
+    "apps/api/src/features/F8/handovers/claim.ts",
+    "packages/db/migrations/20261121091000_handover_group.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F8/distribute-group.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F8/distribute-group.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_ticket_handovers_id_claim.test.ts"
+   ]
+  }
+ ],
+ "reads_ok": {
+  "apps/api/test/features/contract/k144.d/K-410.ts": "準備（setup）で口の hooks のファイル apps/api/src/hooks/handover-claim.ts を最初の要求の前に動的 import で読む（k144.d の README の決まり）。hooks → k144 は上の data_links で結ぶ・K-410"
+ }
+}

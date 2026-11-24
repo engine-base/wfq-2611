@@ -8254,6 +8254,30 @@
      ]
     },
     {
+     "act": "A111",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_handovers/:id/claim",
+     "table": "ticket_handovers",
+     "operation_id": "claimTicketHandover",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-136",
+      "E-106",
+      "E-080",
+      "E-052"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.91",
+      "D-125.92",
+      "D-125.167"
+     ]
+    },
+    {
      "role": "transition",
      "method": "navigate",
      "path_draft": "/account",
@@ -9054,6 +9078,30 @@
      "source": [
       "D-125.88",
       "D-125.90",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A111",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_handovers/:id/claim",
+     "table": "ticket_handovers",
+     "operation_id": "claimTicketHandover",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-136",
+      "E-106",
+      "E-080",
+      "E-052"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.91",
+      "D-125.92",
       "D-125.167"
      ]
     },
@@ -23847,7 +23895,7 @@
     "ログインと安全",
     "PC と使った量",
     "預けたログイン情報",
-    "知らせ"
+    "お知らせ"
    ],
    "checklist": [],
    "release": "v1",
@@ -39758,6 +39806,148 @@
       "D-068.1",
       "D-068.8"
      ]
+    },
+    {
+     "act": "A51",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_handovers/:id/withdraw",
+     "table": "ticket_handovers",
+     "operation_id": "withdrawTicketHandover",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-136",
+      "E-080",
+      "E-052"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.14",
+      "D-125.88",
+      "D-125.89",
+      "D-125.167",
+      "D-061",
+      "D-058",
+      "D-032",
+      "D-068",
+      "D-008.6",
+      "D-058.8",
+      "D-061.4",
+      "D-068.1",
+      "D-068.8"
+     ]
+    },
+    {
+     "act": "A48",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_handovers/:id/withdraw",
+     "table": "ticket_handovers",
+     "operation_id": "withdrawTicketHandover",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-136",
+      "E-080",
+      "E-052"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.94",
+      "D-125.167",
+      "D-058",
+      "D-032",
+      "D-024",
+      "D-068",
+      "D-058.7",
+      "D-061.3",
+      "D-061.5",
+      "D-068.1",
+      "D-068.8"
+     ]
+    },
+    {
+     "act": "A111",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_handovers/:id/withdraw",
+     "table": "ticket_handovers",
+     "operation_id": "withdrawTicketHandover",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-136",
+      "E-080",
+      "E-052"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.91",
+      "D-125.92",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A51",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_handovers/:id/remind",
+     "table": "ticket_handovers",
+     "operation_id": "remindTicketHandover",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-136",
+      "E-080",
+      "E-052"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.14",
+      "D-125.88",
+      "D-125.89",
+      "D-125.167",
+      "D-061",
+      "D-058",
+      "D-032",
+      "D-068",
+      "D-008.6",
+      "D-058.8",
+      "D-061.4",
+      "D-068.1",
+      "D-068.8"
+     ]
+    },
+    {
+     "act": "A111",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_handovers/:id/remind",
+     "table": "ticket_handovers",
+     "operation_id": "remindTicketHandover",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-136",
+      "E-080",
+      "E-052"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.91",
+      "D-125.92",
+      "D-125.167"
+     ]
     }
    ],
    "required_apis": [
@@ -41908,6 +42098,148 @@
       "D-061.4",
       "D-068.1",
       "D-068.8"
+     ]
+    },
+    {
+     "act": "A51",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_handovers/:id/withdraw",
+     "table": "ticket_handovers",
+     "operation_id": "withdrawTicketHandover",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-136",
+      "E-080",
+      "E-052"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.14",
+      "D-125.88",
+      "D-125.89",
+      "D-125.167",
+      "D-061",
+      "D-058",
+      "D-032",
+      "D-068",
+      "D-008.6",
+      "D-058.8",
+      "D-061.4",
+      "D-068.1",
+      "D-068.8"
+     ]
+    },
+    {
+     "act": "A48",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_handovers/:id/withdraw",
+     "table": "ticket_handovers",
+     "operation_id": "withdrawTicketHandover",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-136",
+      "E-080",
+      "E-052"
+     ],
+     "choke_points": [
+      "C2"
+     ],
+     "source": [
+      "D-125.94",
+      "D-125.167",
+      "D-058",
+      "D-032",
+      "D-024",
+      "D-068",
+      "D-058.7",
+      "D-061.3",
+      "D-061.5",
+      "D-068.1",
+      "D-068.8"
+     ]
+    },
+    {
+     "act": "A111",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_handovers/:id/withdraw",
+     "table": "ticket_handovers",
+     "operation_id": "withdrawTicketHandover",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-136",
+      "E-080",
+      "E-052"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.91",
+      "D-125.92",
+      "D-125.167"
+     ]
+    },
+    {
+     "act": "A51",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_handovers/:id/remind",
+     "table": "ticket_handovers",
+     "operation_id": "remindTicketHandover",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-136",
+      "E-080",
+      "E-052"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.14",
+      "D-125.88",
+      "D-125.89",
+      "D-125.167",
+      "D-061",
+      "D-058",
+      "D-032",
+      "D-068",
+      "D-008.6",
+      "D-058.8",
+      "D-061.4",
+      "D-068.1",
+      "D-068.8"
+     ]
+    },
+    {
+     "act": "A111",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/ticket_handovers/:id/remind",
+     "table": "ticket_handovers",
+     "operation_id": "remindTicketHandover",
+     "auth": "session（会社・層・権限）",
+     "related_entities": [
+      "E-136",
+      "E-080",
+      "E-052"
+     ],
+     "choke_points": [
+      "C2",
+      "C6"
+     ],
+     "source": [
+      "D-125.91",
+      "D-125.92",
+      "D-125.167"
      ]
     }
    ],

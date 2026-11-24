@@ -6,8 +6,16 @@ import type pg from "pg";
 import type { Hook } from "../../../contract/deps.js";
 import { completeHooks, type CompleteOptions } from "./complete.js";
 import { decideHooks } from "./decide.js";
-import { queueHooks } from "./queue.js";
+import { queueHooks, type OverdueMailOptions } from "./queue.js";
 
-export function approveHooks(pool: pg.Pool, o: CompleteOptions = {}): Record<string, Hook> {
-  return { ...queueHooks(pool), ...decideHooks(pool), ...completeHooks(pool, o) };
+/** K-407：承認待ちの口は、渡した人が開いたとき期限切れの知らせのメールを送る（mailer・webBaseUrl が無ければ送れない扱い） */
+export function approveHooks(pool: pg.Pool, o: CompleteOptions & OverdueMailOptions = {}): Record<string, Hook> {
+  return {
+    ...queueHooks(pool, {
+      ...(o.mailer ? { mailer: o.mailer } : {}),
+      ...(o.webBaseUrl ? { webBaseUrl: o.webBaseUrl } : {}),
+    }),
+    ...decideHooks(pool),
+    ...completeHooks(pool, o),
+  };
 }

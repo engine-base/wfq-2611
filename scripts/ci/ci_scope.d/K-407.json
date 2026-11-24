@@ -1,0 +1,9 @@
+{
+ "data_links": [
+  {"paths": ["apps/api/src/features/F8/handovers/overdue.ts", "apps/api/src/features/F5/approve-complete/sweep.ts", "apps/api/src/features/F5/approve-complete/queue.ts", "apps/api/src/hooks/approve-complete.ts"],
+   "tests": ["apps/api/test/features/F8/handover-overdue.test.ts", "apps/api/test/k236_read_sweep.test.ts", "apps/api/test/k234_one_transaction.test.ts"]}
+ ],
+ "reads_ok": {
+  "apps/api/test/features/F8/handover-overdue.test.ts": "承認待ちの口の hooks のファイル apps/api/src/hooks/approve-complete.ts を it の中で動的 import で読み、メールの偽を持つ材料で作り直す（切る段の smoke で準備ごと落とさない）。読む物と試験は data_links で結ぶ・K-407"
+ }
+}
