@@ -1989,6 +1989,33 @@
     }
    }
   },
+  "claimTicketHandover": {
+   "file": "apps/api/test/features/F8/distribute-group.test.ts",
+   "reason": "グループに配られた渡しの人を決める口は、配る・グループの権限・グループの人の組み合わせで答えが変わる。生成の試験の種ではグループ宛ての待っている渡しを作れない（K-410）",
+   "covers": {
+    "test_post_ticket_handovers_id_claim_ok": "K410-API-013",
+    "test_post_ticket_handovers_id_claim_shape": "K410-API-013",
+    "test_post_ticket_handovers_id_claim_rejected_401": "K410-API-022",
+    "test_post_ticket_handovers_id_claim_rejected_403": "K410-API-016",
+    "test_post_ticket_handovers_id_claim_rejected_422": "K410-API-026",
+    "test_post_ticket_handovers_id_claim_not_found": "K410-API-022",
+    "test_post_ticket_handovers_id_claim_conflict": "K410-API-018",
+    "test_post_ticket_handovers_id_claim_rate_limited": "K410-API-022",
+    "test_post_ticket_handovers_id_claim_too_large": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-042"
+    },
+    "test_post_ticket_handovers_id_claim_terms_pending": {
+     "file": "apps/api/test/features/F1/terms.test.ts",
+     "mark": "K53-API-005"
+    },
+    "test_post_ticket_handovers_id_claim_session_unresolved": {
+     "file": "apps/api/test/features/contract/k144-contract.test.ts",
+     "mark": "K144-API-032"
+    }
+   },
+   "na": {}
+  },
   "getWorkspaceMembers": {
    "file": "apps/api/test/features/F10/invite-create.test.ts",
    "reason": "メンバーの並びは、グループ・兼ねる所属・招待中・PC の様子・権限の組み合わせで答えが変わる。生成の試験の種では作れない（K-419）",

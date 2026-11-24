@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。282 件
+// 生成物（scripts/ci/errors_used.mjs gen ← 07_qa/test-specs/errors.json）。手で直さない。287 件
 export interface CatalogEntry {
   id: string;
   cls: string;
@@ -4312,6 +4312,91 @@ export const CATALOG: Record<string, CatalogEntry> = {
     "undo": false,
     "severity": "low",
     "support_code": "E-HND-081",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-HND-130": {
+    "id": "E-HND-130",
+    "cls": "conflict",
+    "message": "閲覧のみの人・ゲストには配れません",
+    "action": "別の人を選ぶ",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-HND-130",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-HND-131": {
+    "id": "E-HND-131",
+    "cls": "conflict",
+    "message": "この人はもう担当者です",
+    "action": "別の人を選ぶ",
+    "undo": false,
+    "severity": "low",
+    "support_code": "E-HND-131",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-HND-150": {
+    "id": "E-HND-150",
+    "cls": "conflict",
+    "message": "このグループの人を選んでください",
+    "action": "グループの人を選び直す",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "E-HND-150",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-HND-151": {
+    "id": "E-HND-151",
+    "cls": "conflict",
+    "message": "この人は担当者にできません。止まっている人・閲覧のみの人は選べません",
+    "action": "別の人を選ぶ",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "E-HND-151",
+    "must_not": false,
+    "layers": [
+      "API",
+      "DB"
+    ],
+    "where": {
+      "screen": "tickets"
+    }
+  },
+  "E-HND-152": {
+    "id": "E-HND-152",
+    "cls": "conflict",
+    "message": "グループに配られたものは断れません。自分が持つか、人を決めてください",
+    "action": "自分が持つか、人を決める",
+    "undo": false,
+    "severity": "medium",
+    "support_code": "E-HND-152",
     "must_not": false,
     "layers": [
       "API",

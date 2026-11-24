@@ -34,7 +34,7 @@ G = [  # 文字の頭 → 行き先（どの画面でも）
 ]
 F = {("MbTalk", "高本のAI"): "MbAI.dc.html"}
 B = [  # ボタン → 行き先（文字が同じとき）
- ("高 ▾", "TopMe.dc.html", None), ("3", "StOverlay.dc.html", "aria-label=\"知らせ"), ("1", "StOverlay.dc.html", "aria-label=\"知らせ"),
+ ("高 ▾", "TopMe.dc.html", None), ("3", "StOverlay.dc.html", "知らせ（"), ("1", "StOverlay.dc.html", "知らせ（"),
  ("＋ グループ", "EdGroup.dc.html", None), ("表示設定", "LsView.dc.html", None), ("表示設定（列）", "LsView.dc.html", None), ("検索条件を保存", "LsSave.dc.html", None), ("まとめて操作", "LsBulk.dc.html", None),
  ("開始・期限が無い 4 件", "GtNoDate.dc.html", None), ("決めた履歴", "ApHistory.dc.html", None), ("AI と話して作る", "StCreateAi.dc.html", None), ("自分で書く", "Create.dc.html", None), ("過去のチケットから複製", "TdDuplicate.dc.html", None),
  ("＋ プランを足す", "OpPlanEdit.dc.html", None), ("書き直す", "OpNoticeNew.dc.html", None), ("PDF を大きく見る", "TdPreview.dc.html", None), ("＋ 覚えさせる", "EdTeach.dc.html", None), ("覚えさせる", "EdTeach.dc.html", None),
@@ -58,6 +58,9 @@ TEXT = [  # 古い呼び方をそろえる（全部の画面）
  ("ウォッチしている 3 人に知らせる", "持ち主と、直す案を出した人に知らせる"),
  ("ウォッチしているチケットが動いた", "自分が担当・承認するチケットが動いた"),
  ("（担当者とウォッチする人には自動で届く）", "（担当者と承認する人には自動で届く）"),
+ # 名詞の「知らせ」は「お知らせ」（段 5 のすり合わせ・K-400・K-1113）。上の帯の鈴・自分の設定の第 2 ナビとその注
+ ("aria-label=\"知らせ（", "aria-label=\"お知らせ（"), ("aria-label=\"知らせ\"", "aria-label=\"お知らせ\""),
+ ("<span class=\"kn-sub-t\">知らせ</span>", "<span class=\"kn-sub-t\">お知らせ</span>"), ("預けたログイン情報と知らせはワークスペースごと", "預けたログイン情報とお知らせはワークスペースごと"),
  ("ウォッチしているものの動き", "自分が担当・承認するものの動き"), ("ウォッチしているもの", "自分が担当・承認するもの"), ("「ワークスペース › 消したもの」から戻せる", "ワークスペースの管理 › 記録 の「消した」から戻せる"),
 ]
 RX = [  # 決まりに合わせて外すもの（D-128.80〜.82）

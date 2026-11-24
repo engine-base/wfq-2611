@@ -1,4 +1,4 @@
-// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:c8bf0316f1b7bf1c
+// 生成物（scripts/ci/contract.mjs gen ← openapi.yaml）。手で直さない。openapi:67278edaf46329a9
 import type * as T from "./types.js";
 
 /** 口ごとの型：path の値・問い合わせ・入力・成功の答えの data */
@@ -292,6 +292,7 @@ export interface Ops {
   listTicketFields: { params: never; query: { "kind_id"?: string | number; "cursor"?: string | number; "limit"?: string | number }; body: never; data: T.TicketField[] };
   updateTicketDecision: { params: { id: string }; query: never; body: T.TicketDecisionUpdateInput; data: T.TicketDecisionChange };
   answerTicketHandover: { params: { id: string }; query: never; body: T.TicketHandoverAnswerInput; data: T.TicketHandoverAnswered };
+  claimTicketHandover: { params: { id: string }; query: never; body: T.TicketHandoverClaimInput; data: T.TicketHandoverClaimed };
   remindTicketHandover: { params: { id: string }; query: never; body: T.HandoverRemindInput; data: T.HandoverReminded };
   withdrawTicketHandover: { params: { id: string }; query: never; body: T.HandoverWithdrawInput; data: T.HandoverWithdrawn };
   createTicketImport: { params: never; query: never; body: T.TicketImportsInput; data: T.TicketImports };

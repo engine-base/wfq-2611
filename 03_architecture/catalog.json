@@ -5,14 +5,14 @@
   "D-128.129"
  ],
  "counts": {
-  "api": 374,
-  "api_built": 104,
+  "api": 375,
+  "api_built": 105,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
   "db": 148,
   "ui": 19,
   "packages": 13,
-  "errors": 282,
+  "errors": 287,
   "stack": 56,
   "env": 41
  },
@@ -4664,6 +4664,23 @@
    "status": "作った",
    "owner_tickets": [
     "K-401"
+   ]
+  },
+  {
+   "op": "claimTicketHandover",
+   "method": "POST",
+   "path": "/api/v1/ticket_handovers/:id/claim",
+   "what": "作成・実行（ticket_handovers）— 上から配る（人・グループへ）",
+   "flows": [
+    "F8"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "ticket_handovers"
+   ],
+   "status": "作った",
+   "owner_tickets": [
+    "K-410"
    ]
   },
   {
