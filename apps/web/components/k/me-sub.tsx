@@ -67,7 +67,7 @@ const SECTIONS: { head: string; items: Item[] }[] = [
   },
   {
     head: "ワークスペースごと",
-    items: [{ key: "notices", label: "知らせ", icon: "bell", href: "/notifications" }],
+    items: [{ key: "notices", label: "お知らせ", icon: "bell", href: "/notifications" }],
   },
 ];
 
@@ -162,7 +162,7 @@ export function MeSub({ current }: { current: MeSubKey }) {
           ))}
         </Fragment>
       ))}
-      <div className="k-me-sub-note">アカウントは 1 人 1 つ。預けたログイン情報と知らせはワークスペースごと</div>
+      <div className="k-me-sub-note">アカウントは 1 人 1 つ。預けたログイン情報とお知らせはワークスペースごと</div>
     </aside>
   );
 }
