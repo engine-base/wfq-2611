@@ -69,7 +69,7 @@ class MergeNotImplTest(Case):
 
     def test_K643_CI_003_impl_after_merge_is_counted_and_judged(self):
         """K643-CI-003 時間の流れ：取り込みのコミットの後に、自分の番号の親 1 つのコミット（ぶつかりを直した中身）が出れば、
-        それは実装に数え、K-1 が祖先に無ければ赤。K-1 の実装を持つ枝を先に取り込んでいれば緑（数え漏れにならない）"""
+        それは実装に数え、K-1 が枝に無ければ赤。K-1 の実装を持つ枝を取り込んだ後は緑（数え漏れにならない・K-1154 で枝の先頭だけで裁く形に替えた）"""
         self.side("side", "K-5 feat: 別の枝の物", {"apps/other.ts": "o"})
         self.r.commit("K-9 feat: 本線の物", {"apps/main.ts": "m"})
         self.merge("side", "K-2 merge: 取り込みの列の前の木 t/K-5 を取り込む")
@@ -85,8 +85,7 @@ class MergeNotImplTest(Case):
         self.merge("ok", "K-3 merge: 依存の枝を取り込む")
         self.r.commit("K-2 fix: 依存の後の直し", {"apps/a2.ts": "a"})
         bad2, _, _ = self.check()
-        self.assertEqual([b for b in bad2 if "依存の後の直し" in b], [])
-        self.assertEqual(len(bad2), 1, bad2)   # 赤は前の直し（K-1 より前）の 1 件だけ
+        self.assertEqual(bad2, [], bad2)   # K-1154：枝の先頭に K-1 が入ったので、前の直し（K-1 より前）も赤にしない
 
     def test_K643_CI_004_dependency_reaching_through_a_merge_is_satisfied(self):
         """K643-CI-004 守り：依存 K-1 の実装が取り込みのコミットの向こうの枝にあり、その後に K-2 の実装が来れば緑

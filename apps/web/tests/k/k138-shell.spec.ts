@@ -206,10 +206,10 @@ test("K138-SH-001 役 owner（R1）・/tickets：左のメニューの項目が 
   await mockApi(page, { role: "owner" });
   await open(page, PATHS.tickets);
   const want = expectedLabels("R1");
-  expect(want).toEqual(["チケット", "承認待ち", "高本のAI", "ナレッジ", "取引先", "ワークスペースの管理"]);
+  expect(want).toEqual(["チケット", "承認待ち", "高本のAI", "ナレッジ", "ワークスペースの管理"]);
   await expect.poll(() => navLabels(page)).toEqual(want);
   const canvas = await canvasSigs(browser, "Main", ".kn-nav > a.kn-item:not(:has(> span:not(.kn-lbl)))", 1440);
-  expect(canvas).toHaveLength(6);
+  expect(canvas).toHaveLength(5);
   expect(await svgSigs(page, ".k-nav > .k-nav-item:not(:has(.k-group-mark))")).toEqual(canvas);
 });
 
@@ -263,7 +263,7 @@ test("K138-SH-005 今いる項目：/tickets と /tickets/:id はチケット、
   }
 });
 
-test("K138-SH-006 作っていない項目（ナレッジ・取引先）は押せない形（読み上げは「使えないリンク」・Tab で止まり Enter でも移らない）・title に準備中・目に見える「準備中」の字が無い。ワークスペースの管理は作った道 /members へ押せる（D-148.49・K-420）", async ({
+test("K138-SH-006 作っていない項目（ナレッジ）は押せない形（読み上げは「使えないリンク」・Tab で止まり Enter でも移らない）・title に準備中・目に見える「準備中」の字が無い。ワークスペースの管理は作った道 /members へ押せる（D-148.49・K-420）", async ({
   page,
 }) => {
   await mockApi(page);
@@ -273,7 +273,7 @@ test("K138-SH-006 作っていない項目（ナレッジ・取引先）は押�
   const ws = nav.getByRole("link", { name: /ワークスペースの管理/, disabled: false });
   await expect(ws).toHaveCount(1);
   expect(await ws.getAttribute("href")).toBe("/members");
-  for (const name of ["ナレッジ", "取引先"]) {
+  for (const name of ["ナレッジ"]) {
     // 押せるリンクは無く、読み上げには「使えないリンク」として届く（role=link・aria-disabled）
     await expect(nav.getByRole("link", { name: new RegExp(name), disabled: false }), name).toHaveCount(0);
     const item = nav.getByRole("link", { name: new RegExp(name), disabled: true });
@@ -573,7 +573,9 @@ test("K138-SH-019 幅 375：本文を一番下まで送っても、本文の最�
       });
       return Math.max(...all.map((e) => e.getBoundingClientRect().bottom));
     });
-    expect(lastBottom, path).toBeLessThanOrEqual(tabsTop);
+    // 文書の高さ（scrollHeight）は整数に丸められ、字の行の高さで本文の高さが端数（例 .39px）になると最後の 1px 未満までは送れない。
+    // 被りは 1px からを数える（K-1114：G48 で 840.39 ＞ 840 が赤だった。最後の物は面の下の余白で、字は 16px 上で終わっていた）
+    expect(lastBottom, path).toBeLessThan(tabsTop + 1);
   }
 });
 

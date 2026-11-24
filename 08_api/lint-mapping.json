@@ -3208,6 +3208,42 @@
   },
   {
    "method": "POST",
+   "path": "/api/v1/ticket_handovers/:id/claim",
+   "implementation_path": "apps/api/src/routes/ticket_handovers.ts::claimTicketHandover",
+   "screen_ids_referencing": [
+    "approvals"
+   ],
+   "acts": [
+    "A111"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/ticket_handovers/:id/remind",
+   "implementation_path": "apps/api/src/routes/ticket_handovers.ts::remindTicketHandover",
+   "screen_ids_referencing": [
+    "tickets"
+   ],
+   "acts": [
+    "A111",
+    "A51"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/ticket_handovers/:id/withdraw",
+   "implementation_path": "apps/api/src/routes/ticket_handovers.ts::withdrawTicketHandover",
+   "screen_ids_referencing": [
+    "tickets"
+   ],
+   "acts": [
+    "A111",
+    "A48",
+    "A51"
+   ]
+  },
+  {
+   "method": "POST",
    "path": "/api/v1/ticket_imports",
    "implementation_path": "apps/api/src/routes/ticket_imports.ts::createTicketImport",
    "screen_ids_referencing": [

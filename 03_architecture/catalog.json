@@ -5,14 +5,14 @@
   "D-128.129"
  ],
  "counts": {
-  "api": 372,
-  "api_built": 102,
+  "api": 375,
+  "api_built": 105,
   "api_only_later_phase": 20,
   "legacy_routes": 26,
   "db": 148,
   "ui": 19,
   "packages": 13,
-  "errors": 280,
+  "errors": 287,
   "stack": 56,
   "env": 41
  },
@@ -4664,6 +4664,57 @@
    "status": "作った",
    "owner_tickets": [
     "K-401"
+   ]
+  },
+  {
+   "op": "claimTicketHandover",
+   "method": "POST",
+   "path": "/api/v1/ticket_handovers/:id/claim",
+   "what": "作成・実行（ticket_handovers）— 上から配る（人・グループへ）",
+   "flows": [
+    "F8"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "ticket_handovers"
+   ],
+   "status": "作った",
+   "owner_tickets": [
+    "K-410"
+   ]
+  },
+  {
+   "op": "remindTicketHandover",
+   "method": "POST",
+   "path": "/api/v1/ticket_handovers/:id/remind",
+   "what": "作成・実行（ticket_handovers）— 上から配る（人・グループへ）／引き継いでもらう（理由・お願い・返事の期限・一緒に切り替",
+   "flows": [
+    "F8"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "ticket_handovers"
+   ],
+   "status": "作った",
+   "owner_tickets": [
+    "K-406"
+   ]
+  },
+  {
+   "op": "withdrawTicketHandover",
+   "method": "POST",
+   "path": "/api/v1/ticket_handovers/:id/withdraw",
+   "what": "作成・実行（ticket_handovers）— 上から配る（人・グループへ）／引き継ぐ（他の人の仕事の引き取りを申し出る）",
+   "flows": [
+    "F8"
+   ],
+   "only_later_phase": false,
+   "tables": [
+    "ticket_handovers"
+   ],
+   "status": "作った",
+   "owner_tickets": [
+    "K-406"
    ]
   },
   {
