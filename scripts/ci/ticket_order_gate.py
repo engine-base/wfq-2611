@@ -1,25 +1,24 @@
 #!/usr/bin/env python3
-"""取り込む順（K-94・D-128.147・ai-driven-process.md 原則 11）：チケットの depends_on の実装が、先に枝に入っている。
+"""取り込む順（K-94・D-128.147・ai-driven-process.md 原則 11）：枝の先頭に、チケットの depends_on の葉の実装が入っている。
 
-  python3 scripts/ci/ticket_order_gate.py             START..HEAD の実装のコミットを見る
-  python3 scripts/ci/ticket_order_gate.py --selftest  依存が未完了・枝の外にだけある写しが赤になるか
+  python3 scripts/ci/ticket_order_gate.py             START..HEAD を、枝の先頭の depends_on で見る
+  python3 scripts/ci/ticket_order_gate.py --selftest  依存が枝に無い・枝の外にだけある写しが赤、後で依存を取り込んだ写しが緑になるか
 
-完了の決め方：依存のチケットの番号を件名に持つ「実装のコミット」が、確かめるコミットの祖先にあれば完了（同じコミットに
-依存の番号も入っていればそれでもよい。満たす側は件名の全部の番号）。裁かれる側（どのチケットの依存を見るか）は持ち主 owners_of だけ：
-頭に番号が並んでいれば頭の番号、並んでいなければ件名の全部の番号（K-309）。チケットの stage は決め手にしない。枝の外（hold/…）の実装は祖先でないので数えない。
+裁くのは枝の先頭だけ（K-1154・代表の決め answer=ee72b1756f5d・2026-11-24「入れるときだけ見る」）：
+  START..rev の実装のコミットか取り込みのコミットの件名に持ち主として出るチケットごとに、rev（枝の先頭）の版の
+  11_tickets/tickets.json の depends_on の 1 つずつが、START..rev のどれかの実装のコミットか取り込みのコミットの件名（満たす側は件名の全部の番号）に
+  在れば緑。コミットの順（依存より前か後か）は見ない。依存より先に実装を始めた葉が、後で依存の枝を取り込めば緑になる（K-711 の ecc6788c6d の形）。
+  依存の実装が枝に無いまま入れようとしたら赤（入れる順は守る）。各コミットの版の tickets.json は読まない
+  （前の「コミットごとに、そのコミットの版の depends_on で祖先を見る」形・K-159 と、「外して戻した依存」の覚えは K-1154 で消した）。
+持ち主（依存を裁かれる側）は owners_of だけ：頭に番号が並んでいれば頭の番号、並んでいなければ件名の全部の番号（K-309）。
+取り込みのコミット（親 2 つ以上）は実装に数えないが、件名の持ち主は裁き、件名の番号は満たす側に数える（K-643）。
+チケットの stage は決め手にしない。枝の外（hold/…）の実装は START..rev に無いので数えない。
 ただし決まりを始めた START より前に作られたチケット（START..HEAD のどのコミットにも番号が出てこず、stage が
 確認中・完了のもの）は、番号の付いたコミットが無いので「決まりの前に入った」として通し、そのことを出す。
+人の準備（担当が人・完了）と、子が全部済んだ親（--base-ref を渡せば分かれ目と枝の中の版で子だった物も数える・K-210）も満たす。
 文書だけのコミット（変えたファイルが全部、文書と生成物の置き場に入る）は見ない。進め方の設定（ai-team.yaml）も、この検査の中だけ
 実装に数えない（PM の判断 2026-11-10・K-159）。共有の is_doc_only（ci_scope.py も使う）には入れない。
-
-どの依存で裁くか（K-159・後から足した依存で過去のコミットを赤にしない）：
-  ・コミットごと：各実装のコミットを、そのコミットの版の 11_tickets/tickets.json の depends_on で裁く。その版の一覧が無い・
-    読めない・そのチケットが載っていないときは、rev（枝の先頭）の版の depends_on で裁く（前と同じ・緩めない）。
-    あわせて、rev の版の depends_on のうち START の版か枝の中のそれより前の版に一度でも載っていたものも足す
-    （外して先に実装し後で戻す道を通さない・テスター Q 回 1 の #2・PM の判断 (ア)）
-  ・枝の先頭：実装のコミットを持つチケットの、rev の版の depends_on が全部 START..rev の実装にあること（原則 11）。
-    同じ（チケット, 依存）をコミットごとで既に出していれば重ねない
-  ・rev の一覧・stage・生成物の一覧（scripts/ci/generated.json）は作業場所でなく rev の版から読む。rev の一覧が読めなければ止める
+rev の一覧・stage・生成物の一覧（scripts/ci/generated.json）は作業場所でなく rev の版から読む。rev の一覧が読めなければ止める。
 """
 from __future__ import annotations
 
@@ -257,43 +256,8 @@ def check(root: str, rev: str = "HEAD", start: str = START, base: str | None = N
         elif not _not_impl(files, gen):
             impl.append((sha, owners_of(subj)))
             credit[sha] = set(TICKET.findall(subj))
-    start_sha = git("rev-parse", "--verify", f"{start}^{{commit}}", cwd=root).strip()
-    order = [start_sha] + [sha for sha, _ in rows]
-    raw_at = read_versions(root, [f"{c}:{TICKETS_JSON}" for c in order], dedupe=True)
-    # 同じ中身の版は read_versions(dedupe=True) が同じ bytes の物を返すので、物の id で覚える（2.7MB の中身を毎回ハッシュしない・K-341）
-    parsed: dict[int, dict[str, dict] | None] = {}
-    chunks: dict[bytes, object] = {}   # チケット 1 つずつの文字 → 読み解いた値（版をまたいで使い回す・K-341）
-
-    def version(c: str) -> dict[str, dict] | None:
-        raw = raw_at.get(f"{c}:{TICKETS_JSON}")
-        if raw is None:
-            return None
-        if id(raw) not in parsed:
-            parsed[id(raw)] = _tickets_of(raw, chunks)
-        return parsed[id(raw)]
-
-    # 外して戻した依存を通さない（テスター Q 回 1 の #2・PM の判断 (ア)）：START の版と、枝の中のそれより前の版に一度でも
-    # 載っていた依存を、実装のコミットごとに覚える（git log の順。並んだ枝の版も数えるので、緩む側には倒れない）
-    impl_ids = dict(impl)
-    seen: dict[str, set[str]] = {}
-    seen_before: dict[str, dict[str, frozenset[str]]] = {}
-    last_raw: bytes | None = None
-    for c in order:
-        if c in impl_ids:
-            seen_before[c] = {tid: frozenset(seen.get(tid, ())) for tid in impl_ids[c]}
-        raw = raw_at.get(f"{c}:{TICKETS_JSON}")
-        if raw is None or raw == last_raw:
-            continue
-        last_raw = raw
-        for tid, tk in (version(c) or {}).items():
-            seen.setdefault(tid, set()).update(tk.get("depends_on") or [])
-
-    def deps_at(sha: str, tid: str) -> list[str]:
-        then = version(sha)
-        src = then if then is not None and tid in then else tickets
-        own = list(src.get(tid, {}).get("depends_on") or [])
-        back = [d for d in tickets.get(tid, {}).get("depends_on") or [] if d in seen_before.get(sha, {}).get(tid, ()) and d not in own]
-        return own + back
+    # 起点が読めることだけ確かめる（浅い写し・違うリポジトリなら止める）。各コミットの版の tickets.json は読まない（K-1154）
+    git("rev-parse", "--verify", f"{start}^{{commit}}", cwd=root)
 
     def legacy_ok(dep: str) -> bool:
         return dep not in mentioned and tickets.get(dep, {}).get("stage") in DONE_STAGES
@@ -309,6 +273,7 @@ def check(root: str, rev: str = "HEAD", start: str = START, base: str | None = N
     #   base を渡した回は、分かれ目の版と枝の中の版に一度でも parent として載っていた子を数える（枝で parent を外しても親を満たさない・K-210）。
     #   起点を START にしない：本線で済む前に消した子・付け替えた子で、親が永久に満たせなくなるため
     children: dict[str, set[str]] = {}
+    chunks: dict[bytes, object] = {}   # チケット 1 つずつの文字 → 読み解いた値（版をまたいで使い回す・K-341）
     fam_raw = read_versions(root, [f"{c}:{TICKETS_JSON}" for c in family_at], dedupe=True) if family_at else {}
     for ver in [tickets] + [_tickets_of(r, chunks) or {} for r in dict.fromkeys(v for v in fam_raw.values() if v is not None)]:
         for kid, tk in ver.items():
@@ -327,34 +292,15 @@ def check(root: str, rev: str = "HEAD", start: str = START, base: str | None = N
             return "子が全部済んだ親"
         return None
 
-    # 先祖かは git に 1 本ずつ聞かず、一覧の親から作ったビットで見る（K-341）。「前の実装のコミット impl[:i]」は一覧で前の物（ビットの番号が小さい）
-    pos, anc_bits = _ancestor_bits(log)
-    credit_bits: dict[str, int] = {}
-    for c in [c for c, _ in impl] + merges:
-        for x in credit[c]:
-            credit_bits[x] = credit_bits.get(x, 0) | (1 << pos[c])
+    # 裁くのは枝の先頭だけ（K-1154・代表の決め answer=ee72b1756f5d）：依存の実装が START..rev のどこかに在れば緑。コミットの順は見ない
     bad, legacy = [], []
-    reported: set[tuple[str, str]] = set()
-    for sha, ids in impl:
-        def has_impl_at(x: str, sha: str = sha) -> bool:
-            return x in credit[sha] or bool(credit_bits.get(x, 0) & anc_bits[sha] & ((1 << pos[sha]) - 1))
-        for tid in sorted(ids):
-            for dep in deps_at(sha, tid):
-                why = satisfied(dep, has_impl_at)
-                if why == "impl":
-                    continue
-                if why:
-                    legacy.append(f"{dep}（{tid} の依存・{why}）")
-                    continue
-                reported.add((tid, dep))
-                bad.append(f"{sha[:10]} {tid} は {dep} に依存するが、{dep} の実装がまだ枝に入っていない（祖先に {dep} の実装のコミットが無い）")
-    # 枝の先頭：依存が取り込まれていない実装を取り込まない（原則 11）
+    in_branch = {x for c in [c for c, _ in impl] + merges for x in credit[c]}   # 満たす側：実装と取り込みのコミットの件名の全部の番号
+
     def has_impl_head(x: str) -> bool:
-        return any(x in credit[c] for c in [c for c, _ in impl] + merges)
+        return x in in_branch
+
     for tid in sorted({k for _, ids in impl for k in ids} | merge_owners):
         for dep in tickets.get(tid, {}).get("depends_on") or []:
-            if (tid, dep) in reported:
-                continue
             why = satisfied(dep, has_impl_head)
             if why == "impl":
                 continue
@@ -415,7 +361,7 @@ def is_ancestor(a: str, b: str, root: str) -> bool:
 
 
 def selftest() -> int:
-    """写しのリポジトリを作り、赤になるべき形が赤・緑になるべき形が緑になるかを見る。"""
+    """写しのリポジトリを作り、赤になるべき形（依存が枝に無い・枝の外・済んでいない子の親）が赤、緑になるべき形（依存が先・決まりの前・人の準備・後で依存を取り込んだ K-711 の形）が緑になるかを見る。"""
     with tempfile.TemporaryDirectory() as d:
         def run(*a: str) -> None:
             subprocess.run(["git", *a], cwd=d, check=True, capture_output=True,
@@ -487,11 +433,21 @@ def selftest() -> int:
         commit("K-6 feat: 親に依存", "apps/e.ts", "e")
         bad6, _, _ = check(d, "HEAD", start, base=fork)
         ok_parent = ok_parent and any("K-6 は K-22" in b for b in bad6)
+        # K-711 の形（K-1154）：依存の実装より先に試験と実装をコミットし、後で依存の枝を取り込む → 緑（枝の先頭だけで見る）
+        run("checkout", "-q", "-b", "late", start)
+        commit("K-2 test: チケットと試験", "scripts/ci/k2_test.py", "t")
+        commit("K-2 feat: 依存より先に作る", "apps/a.ts", "a")
+        run("checkout", "-q", "-b", "t/K-1", start)
+        commit("K-1 feat: 依存を作る", "apps/b.ts", "b")
+        run("checkout", "-q", "late")
+        run("merge", "-q", "--no-ff", "-m", "K-2 merge: t/K-1 を取り込む", "t/K-1")
+        bad7, _, n7 = check(d, "HEAD", start)
+        ok_parent = ok_parent and not bad7 and n7 == 3
         ok = ok_parent and (len(bad1) == 1 and "K-2 は K-1" in bad1[0] and len(bad2) == 1 and not bad3 and n3 == 3
               and legacy3 == ["K-9（K-4 の依存・決まりの前に入った）"]
               and any("K-6 は K-7" in b for b in bad4) and not any("K-5" in b for b in bad4)
               and "K-8（K-5 の依存・人の準備で完了）" in legacy4)
-        print("selftest ok" if ok else f"selftest NG: {bad1} / {bad2} / {bad3} / {legacy3} / {bad5} / {legacy5} / {bad6}")
+        print("selftest ok" if ok else f"selftest NG: {bad1} / {bad2} / {bad3} / {legacy3} / {bad5} / {legacy5} / {bad6} / {bad7}")
         return 0 if ok else 1
 
 
