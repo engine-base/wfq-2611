@@ -120,8 +120,13 @@ export const OP_RULES = {
   answerTicketHandover: `app.handover_answerer(id, ${ME}, false)`,
 
   // 段9:K-406 取り消す・催促するの行はこの下
+  // 渡した人だけ（申し出は申し出た人・配るは配った人・K-406）。状態は見ない（決まった渡しは口が 409 にする）。関数 app.handover_withdraw・app.handover_remind も中で同じ判定をする（守りは 2 層）
+  withdrawTicketHandover: `from_member_id = ${ME}`,
+  remindTicketHandover: `from_member_id = ${ME}`,
 
   // 段9:K-410 人を決めるの行はこの下
+  //   人を決める（グループ宛ての渡しの答える人が、グループの人を担当者に決める）。式は answerTicketHandover と同じ。関数 app.handover_claim も中で同じ判定をする（守りは 2 層）
+  claimTicketHandover: `app.handover_answerer(id, ${ME}, false)`,
 
   // 止まった AI の仕事を自分で直す：入口は「その実行が見える」だけ。担当者の判定（403・E-STP-001）と、消した・無い（404）は
   //   DB の関数 app.run_takeover と口（features/F7/stopped/takeover.ts）が持つ（K-485・K-353 の updateCredential と同じ作り）

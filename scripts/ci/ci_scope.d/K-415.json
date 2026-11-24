@@ -1,0 +1,8 @@
+{
+ "data_links": [
+  {"paths": ["07_qa/test-specs/errors.json"], "tests": ["apps/web/tests/k/k415-distribute.spec.ts"]}
+ ],
+ "reads_ok": {
+  "apps/web/tests/k/k415-distribute.spec.ts": "文言の正本 07_qa/test-specs/errors.json を読む（エラーの文を番号で引く）。data_links で結ぶ（実ブラウザの試験は web の組が流す）・K-415"
+ }
+}

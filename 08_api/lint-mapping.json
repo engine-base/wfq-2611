@@ -237,6 +237,18 @@
   },
   {
    "method": "POST",
+   "path": "/api/v1/auth/invitations/confirm",
+   "implementation_path": "apps/api/src/routes/invitations.ts::confirmInvitationJoin",
+   "screen_ids_referencing": [
+    "invite-accept"
+   ],
+   "acts": [
+    "A03",
+    "A96"
+   ]
+  },
+  {
+   "method": "POST",
    "path": "/api/v1/auth/password/forgot",
    "implementation_path": "apps/api/src/routes/security_events.ts::requestPasswordReset",
    "screen_ids_referencing": [
@@ -3192,6 +3204,42 @@
    ],
    "acts": [
     "A110"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/ticket_handovers/:id/claim",
+   "implementation_path": "apps/api/src/routes/ticket_handovers.ts::claimTicketHandover",
+   "screen_ids_referencing": [
+    "approvals"
+   ],
+   "acts": [
+    "A111"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/ticket_handovers/:id/remind",
+   "implementation_path": "apps/api/src/routes/ticket_handovers.ts::remindTicketHandover",
+   "screen_ids_referencing": [
+    "tickets"
+   ],
+   "acts": [
+    "A111",
+    "A51"
+   ]
+  },
+  {
+   "method": "POST",
+   "path": "/api/v1/ticket_handovers/:id/withdraw",
+   "implementation_path": "apps/api/src/routes/ticket_handovers.ts::withdrawTicketHandover",
+   "screen_ids_referencing": [
+    "tickets"
+   ],
+   "acts": [
+    "A111",
+    "A48",
+    "A51"
    ]
   },
   {

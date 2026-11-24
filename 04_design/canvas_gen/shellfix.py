@@ -27,7 +27,6 @@ def nav(sec):
       + item("Approvals.dc.html", "approvals", "承認待ち", sec == "approvals", badge)
       + item("Room.dc.html", "ai", "高本のAI", sec == "ai")
       + item("KnHome.dc.html", "knowledge", "ナレッジ", sec == "knowledge")
-      + item("CuList.dc.html", "clients", "取引先", sec == "clients")
       + '  <div class="kn-lbl" style="font-size: 12px; color: #4A5563; padding: 12px 10px 4px; display: flex">グループ<span style="margin-left: auto">★</span></div>\n'
       + grp("EG", "#186F69", "営業", 18, "Overview.dc.html") + grp("JD", "#6D4AA6", "受託開発", 42) + grp("KR", "#B45309", "経理", 9)
       + '  <div style="flex: 1"></div>\n'
@@ -117,7 +116,7 @@ body:has(#kn-tg-side:checked) .kn-reopen{display:flex}
 @media (max-width:767px){div:has(>.kn-sub){flex-direction:column}}
 """ + NARROW
 # 幅 767 以下の上の帯（D-147・2026-11-18 代表の直し・answer=0a262be577b2）：画面の外枠（components/k/shell.tsx・shell.css）と同じく、
-#   スマホにも高さ 48px の上の帯を出す。左に会社の印と名前、右に 探す（虫眼鏡。押すと探す欄が帯の幅いっぱいに開き × で戻る）・知らせ・自分のアイコン。
+#   スマホにも高さ 48px の上の帯を出す。左に会社の印と名前、右に 探す（虫眼鏡。押すと探す欄が帯の幅いっぱいに開き × で戻る）・お知らせ・自分のアイコン。
 #   いまの場所は出さない（題は本文の h1）。前の決め（MobileList どおり上の帯を出さない・承認待ちは見出しの右に鈴の場所）は D-147 で置き換えた
 WS_MARK = 'width: 24px; height: 24px; flex: none; border-radius: 6px; background: %s; color: #FFFFFF; place-items: center; font-size: 12px; font-weight: 700'
 WS_NAME = 'flex: 1; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 14px; font-weight: 600; color: #131B27'
@@ -143,9 +142,9 @@ def mobile_bar(s, ops):
         closer = '<label for="kn-tg-search" class="kn-bar-search-close" aria-label="探すを閉じる" title="探すを閉じる" style="%s">%s</label>' % (ICON_BTN, SV18 % XX)
         bar = bar[:sm.start()] + opener + sm.group(0) + closer + bar[sm.end():]
     return s[:m.end()] + head + bar + s[end:]
-MOBILE_BAR_CSS = """/* kn-mobile-bar（D-147）：幅 767 以下の上の帯は画面の外枠と同じ（会社の印と名前・探す・知らせ・自分のアイコン。いまの場所は出さない） */
+MOBILE_BAR_CSS = """/* kn-mobile-bar（D-147）：幅 767 以下の上の帯は画面の外枠と同じ（会社の印と名前・探す・お知らせ・自分のアイコン。いまの場所は出さない） */
 .kn-bar-ws,.kn-bar-ws-name,.kn-bar-search-open,.kn-bar-search-close{display:none}
-@media (max-width:767px){.kn-bar{gap:8px !important;padding:0 8px 0 16px !important}.kn-bar>nav[aria-label="いまの場所"]{display:none !important}.kn-bar-ws{display:grid}.kn-bar-ws-name{display:block}.kn-bar>span[style*="margin-left: auto"]{gap:0 !important}.kn-bar>span>label:has(input[type="search"]){display:none !important}.kn-bar-search-open{display:grid}.kn-bar>span>[aria-label^="知らせ"]{width:44px !important;height:44px !important}.kn-bar-search-open:hover,.kn-bar-search-close:hover{background:#DDE2E9}
+@media (max-width:767px){.kn-bar{gap:8px !important;padding:0 8px 0 16px !important}.kn-bar>nav[aria-label="いまの場所"]{display:none !important}.kn-bar-ws{display:grid}.kn-bar-ws-name{display:block}.kn-bar>span[style*="margin-left: auto"]{gap:0 !important}.kn-bar>span>label:has(input[type="search"]){display:none !important}.kn-bar-search-open{display:grid}.kn-bar>span>[aria-label^="お知らせ"]{width:44px !important;height:44px !important}.kn-bar-search-open:hover,.kn-bar-search-close:hover{background:#DDE2E9}
 body:has(#kn-tg-search:checked) .kn-bar>:not(span[style*="margin-left: auto"]),body:has(#kn-tg-search:checked) .kn-bar>span>:not(label){display:none !important}body:has(#kn-tg-search:checked) .kn-bar-search-open{display:none !important}body:has(#kn-tg-search:checked) .kn-bar>span[style*="margin-left: auto"]{flex:1;margin-left:0 !important;gap:4px !important}body:has(#kn-tg-search:checked) .kn-bar>span>label:has(input[type="search"]){display:flex !important;flex:1;width:auto !important;max-width:none !important;height:36px !important}body:has(#kn-tg-search:checked) .kn-bar>span>label:has(input[type="search"])>span:last-child{display:none}body:has(#kn-tg-search:checked) .kn-bar-search-close{display:grid}}
 """
 CSS = CSS + MOBILE_BAR_CSS

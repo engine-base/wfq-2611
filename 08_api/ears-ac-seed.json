@@ -1,7 +1,7 @@
 {
  "version": "v3",
  "skill": "api-design",
- "endpoints_count": 371,
+ "endpoints_count": 375,
  "ac_seeds": [
   {
    "endpoint": "POST /api/v1/acceptances/:id/remind",
@@ -716,13 +716,14 @@
     "EVENT-DRIVEN: WHEN POST /api/v1/auth/invitations/:token/accept が「招待の中身（会社・層・役割）を見て参加する」として呼ばれたとき THEN Kaname は「テナントへの所属を作り、層と権限の束を結ぶ」を行い 2xx を返す",
     "EVENT-DRIVEN: WHEN POST /api/v1/auth/invitations/:token/accept が「規約とプライバシーポリシーを読んで同意する」として呼ばれたとき THEN Kaname は「同意した版と時刻を残す。版が上がったら次のログインで同意を取り直す」を行い 2xx を返す",
     "UNWANTED: IF 名前かパスワードが受け付けられないなら、Kaname は 422 と欄ごとの理由を返し、利用者を作らず招待も使わない",
-    "UNWANTED: IF ログインしていない人が宛てのメールを持たない招待で参加しようとしたなら、Kaname は 401 と UNAUTHENTICATED を返し、利用者も所属も作らず招待も使わない",
     "UNWANTED: IF 招いたワークスペースが止められているなら、Kaname は 403 と E-AUTH-012 を返し、利用者を作らず招待も使わない",
     "UNWANTED: IF ログイン中の人のメールが招待の宛てと違うなら、Kaname は 403 と E-INV-005 を返し、所属を作らず招待も使わず、その画面も切り替えない",
     "UNWANTED: IF 招待のリンクの印が見つからないなら、Kaname は 404 と E-INV-001 を返し、何も作らない",
     "UNWANTED: IF 宛てのメールにもうアカウントがあるなら、Kaname は 409 と E-INV-006 を返し、利用者を作らず招待も使わない",
     "UNWANTED: IF ログイン中の人がもうそのワークスペースに入っているなら、Kaname は 409 と E-INV-007 を返し、役割を変えず招待も使わない",
     "UNWANTED: IF 招待が取り消し・期限切れ・使われたなら、Kaname は 410 とその理由の番号を返し、利用者を作らない",
+    "UNWANTED: IF 送られたメールが空か形が違うなら、Kaname は 422 と E-INV-013 を返し、保留の行もメールも作らない",
+    "UNWANTED: IF 宛てのメールが無い招待でメールが送られていないなら、Kaname は 409 と E-INV-016 を返し、保留の行もメールも作らない",
     "UNWANTED: IF 利用者を作る所か受諾が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、作った利用者を消して招待を使わない",
     "UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない",
     "UNWANTED: IF 10/min/ip を超えたら、Kaname は 429 と retry_after_sec を返す",
@@ -767,6 +768,41 @@
     "D-125.121",
     "D-125.150",
     "D-125.152",
+    "D-125.167",
+    "D-126.18"
+   ]
+  },
+  {
+   "endpoint": "POST /api/v1/auth/invitations/confirm",
+   "feature_id": "F-001",
+   "screen_ids": [
+    "invite-accept"
+   ],
+   "acts": [
+    "A03",
+    "A96"
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN POST /api/v1/auth/invitations/confirm が「招待の中身（会社・層・役割）を見て参加する」として呼ばれたとき THEN Kaname は「テナントへの所属を作り、層と権限の束を結ぶ」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN POST /api/v1/auth/invitations/confirm が「規約とプライバシーポリシーを読んで同意する」として呼ばれたとき THEN Kaname は「同意した版と時刻を残す。版が上がったら次のログインで同意を取り直す」を行い 2xx を返す",
+    "UNWANTED: IF 確認のトークンが受け付けられないなら、Kaname は 422 と欄ごとの理由を返し、何も作らない",
+    "UNWANTED: IF 招いたワークスペースが止められているなら、Kaname は 403 と E-AUTH-012 を返し、利用者を作らず招待も使わない",
+    "UNWANTED: IF 確認のリンクの印が見つからないなら、Kaname は 404 と E-INV-001 を返し、何も作らない",
+    "UNWANTED: IF 確認までの間に同じメールのアカウントができたなら、Kaname は 409 と E-INV-006 を返し、利用者を作らず保留の行を閉じる",
+    "UNWANTED: IF 確認のリンクか招待が使えないなら、Kaname は 410 とその理由の番号を返し、利用者を作らない",
+    "UNWANTED: IF 利用者を作る所か受諾が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、作った利用者を消して確認の印を戻す。セッションだけが落ちたなら参加は取り消さない",
+    "UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない",
+    "UNWANTED: IF 10/min/ip を超えたら、Kaname は 429 と retry_after_sec を返す",
+    "UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない",
+    "UBIQUITOUS: POST /api/v1/auth/invitations/confirm の副作用は関門 C2 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+   ],
+   "source": [
+    "D-026",
+    "D-037",
+    "D-125.121",
+    "D-125.150",
+    "D-125.152",
+    "D-125.162",
     "D-125.167",
     "D-126.18"
    ]
@@ -9417,6 +9453,128 @@
     "D-125.167",
     "D-125.88",
     "D-125.90"
+   ]
+  },
+  {
+   "endpoint": "POST /api/v1/ticket_handovers/:id/claim",
+   "feature_id": "F-010",
+   "screen_ids": [
+    "approvals"
+   ],
+   "acts": [
+    "A111"
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN POST /api/v1/ticket_handovers/:id/claim が「人かグループを選んで配る」として呼ばれたとき THEN Kaname は「層ごとの合意の要否に沿って知らせる」を行い 2xx を返す",
+    "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+    "UNWANTED: IF 答える人でないか、グループ宛てでない渡しなら、Kaname は 403 と E-HND-002 を返し、何も書かない",
+    "UNWANTED: IF 無い渡し、または無い人・別の会社の人を決める人に選んだなら、Kaname は 404 と E-PAGE-001 を返し、何も書かない",
+    "UNWANTED: IF その渡しがもう決まっているか、選んだ人が担当者にできないなら、Kaname は 409 と E-HND-005／E-HND-150／E-HND-151 を返し、何も書かない",
+    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない",
+    "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
+    "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
+    "UNWANTED: IF 付けるまで進めないの印が立ったセッションなら、Kaname は 403 と MFA_REQUIRED を返し、副作用を起こさない",
+    "UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない",
+    "UBIQUITOUS: POST /api/v1/ticket_handovers/:id/claim の副作用は関門 C2・C6 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+   ],
+   "source": [
+    "D-125.167",
+    "D-125.91",
+    "D-125.92"
+   ]
+  },
+  {
+   "endpoint": "POST /api/v1/ticket_handovers/:id/remind",
+   "feature_id": "F-010",
+   "screen_ids": [
+    "tickets"
+   ],
+   "acts": [
+    "A111",
+    "A51"
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN POST /api/v1/ticket_handovers/:id/remind が「人かグループを選んで配る」として呼ばれたとき THEN Kaname は「層ごとの合意の要否に沿って知らせる」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN POST /api/v1/ticket_handovers/:id/remind が「相手・理由・お願い・返事の期限を書いて渡す」として呼ばれたとき THEN Kaname は「渡し中にして相手に知らせる」を行い 2xx を返す",
+    "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+    "UNWANTED: IF 渡した人でないなら、Kaname は 403 と E-HND-002 を返し、何も書かない",
+    "UNWANTED: IF 無い渡しを催促しようとしたなら、Kaname は 404 と E-PAGE-001 を返し、何も書かない",
+    "UNWANTED: IF その渡しがもう決まっているか今日もう催促したか催促できない種類なら、Kaname は 409 と E-HND-005／E-HND-080／E-HND-081 を返し、何も書かない",
+    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない",
+    "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
+    "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
+    "UNWANTED: IF 付けるまで進めないの印が立ったセッションなら、Kaname は 403 と MFA_REQUIRED を返し、副作用を起こさない",
+    "UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない",
+    "UBIQUITOUS: POST /api/v1/ticket_handovers/:id/remind の副作用は関門 C2・C6 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+   ],
+   "source": [
+    "D-008.6",
+    "D-032",
+    "D-058",
+    "D-058.8",
+    "D-061",
+    "D-061.4",
+    "D-068",
+    "D-068.1",
+    "D-068.8",
+    "D-125.14",
+    "D-125.167",
+    "D-125.88",
+    "D-125.89",
+    "D-125.91",
+    "D-125.92"
+   ]
+  },
+  {
+   "endpoint": "POST /api/v1/ticket_handovers/:id/withdraw",
+   "feature_id": "F-010",
+   "screen_ids": [
+    "tickets"
+   ],
+   "acts": [
+    "A111",
+    "A48",
+    "A51"
+   ],
+   "ears_ac_seed": [
+    "EVENT-DRIVEN: WHEN POST /api/v1/ticket_handovers/:id/withdraw が「人かグループを選んで配る」として呼ばれたとき THEN Kaname は「層ごとの合意の要否に沿って知らせる」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN POST /api/v1/ticket_handovers/:id/withdraw が「引き取りを申し出る」として呼ばれたとき THEN Kaname は「—」を行い 2xx を返す",
+    "EVENT-DRIVEN: WHEN POST /api/v1/ticket_handovers/:id/withdraw が「相手・理由・お願い・返事の期限を書いて渡す」として呼ばれたとき THEN Kaname は「渡し中にして相手に知らせる」を行い 2xx を返す",
+    "UNWANTED: IF セッションが無いか失効しているなら、Kaname は 401 を返し入り直しを促す（発行済みトークンの期限に頼らない）",
+    "UNWANTED: IF 渡した人でないなら、Kaname は 403 と E-HND-002 を返し、何も書かない",
+    "UNWANTED: IF 無い渡しを取り消そうとしたなら、Kaname は 404 と E-PAGE-001 を返し、何も書かない",
+    "UNWANTED: IF その渡しがもう決まっているなら、Kaname は 409 と E-HND-005 を返し、何も書かない",
+    "UNWANTED: IF 入力が受け付けられないなら、Kaname は 422 と項目ごとの理由を返す（表記ゆらぎはサーバーで正規化してから判定）",
+    "UNWANTED: IF 1 回に送る内容が 1MB（1,048,576 バイト）を超えたなら、Kaname は 413 と PAYLOAD_TOO_LARGE を返し、振る舞いに届かず何も書かない",
+    "UNWANTED: IF 60/min/user を超えたら、Kaname は 429 と retry_after_sec を返す",
+    "UNWANTED: IF 同意し直しが要るセッションなら、Kaname は 403 と E-AUTH-010 を返し、副作用を起こさない",
+    "UNWANTED: IF 付けるまで進めないの印が立ったセッションなら、Kaname は 403 と MFA_REQUIRED を返し、副作用を起こさない",
+    "UNWANTED: IF 入口でセッションを解く所が落ちたなら、Kaname は 503 と E-PAGE-003 を返し、止める側に倒して副作用を起こさない",
+    "UBIQUITOUS: POST /api/v1/ticket_handovers/:id/withdraw の副作用は関門 C2・C6 を経由し、認可 → ポリシー → 承認 → 副作用 → 記録 の順で行う"
+   ],
+   "source": [
+    "D-008.6",
+    "D-024",
+    "D-032",
+    "D-058",
+    "D-058.7",
+    "D-058.8",
+    "D-061",
+    "D-061.3",
+    "D-061.4",
+    "D-061.5",
+    "D-068",
+    "D-068.1",
+    "D-068.8",
+    "D-125.14",
+    "D-125.167",
+    "D-125.88",
+    "D-125.89",
+    "D-125.91",
+    "D-125.92",
+    "D-125.94"
    ]
   },
   {
