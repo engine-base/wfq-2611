@@ -54,6 +54,7 @@
   ],
   "paths": [
    "05_flow/*.py",
+   "05_flow/build_api.d/**",
    "05_flow/*.json",
    "05_flow/*.html",
    "04_design/**",
@@ -1412,6 +1413,14 @@
   },
   {
    "paths": [
+    "packages/db/migrations/20261121090400_handover_switch.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F8/handover-switch.test.ts"
+   ]
+  },
+  {
+   "paths": [
     "apps/api/src/hooks/workspace-invitations.ts",
     "apps/api/src/features/F10/invite/**",
     "packages/db/migrations/20261121091900_workspace_invitations.sql"
@@ -1427,6 +1436,15 @@
    "readers": [
     "apps/api/test/generated/get_workspace_members.test.ts",
     "apps/api/test/generated/post_invitations.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/web/features/F10/invite/**",
+    "apps/web/app/(work)/members/**"
+   ],
+   "tests": [
+    "apps/web/tests/k/k420-members-invite.spec.ts"
    ]
   },
   {
@@ -1450,6 +1468,43 @@
     "apps/api/test/features/F10/invite-link.test.ts"
    ],
    "readers": [
+    "apps/api/test/generated/post_invitations_link.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/src/features/F2/invitations/**",
+    "apps/api/src/hooks/invitation-confirm.ts",
+    "packages/auth/src/invitations.ts",
+    "packages/auth/src/pending.ts",
+    "packages/db/migrations/20261121092200_invitation_link_joins.sql"
+   ],
+   "tests": [
+    "apps/api/test/features/F10/invite-link-confirm.test.ts",
+    "apps/api/test/features/F10/invite-link.test.ts",
+    "apps/api/test/features/F2/invitation-accept-new.test.ts",
+    "apps/api/test/features/F2/invitation-accept-signed.test.ts",
+    "apps/api/test/features/F1/sign-up.test.ts",
+    "apps/api/test/features/F1/verify-email.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F10/invite-link-confirm.test.ts",
+    "apps/api/test/features/F2/invitation-accept-new.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
+    "apps/api/test/generated/post_auth_invitations_confirm.test.ts"
+   ]
+  },
+  {
+   "paths": [
+    "apps/api/test/features/F10/invite-link.test.ts",
+    "apps/api/test/features/F1/terms.test.ts",
+    "apps/api/test/features/contract/k144-contract.test.ts"
+   ],
+   "tests": [
     "apps/api/test/generated/post_invitations_link.test.ts"
    ]
   },
@@ -1799,6 +1854,20 @@
    "tests": [
     "apps/web/tests/k/k1100-stage-locked.spec.ts"
    ]
+  },
+  {
+   "paths": [
+    "04_design/canvas/**",
+    "04_design/canvas_gen/**",
+    "05_flow/phase1.py",
+    "05_flow/flow.json",
+    "apps/web/components/k/shell.tsx",
+    "apps/web/components/k/me-sub.tsx",
+    "apps/web/features/F3/connect-pc/pc-row-parts.tsx"
+   ],
+   "tests": [
+    "apps/web/tests/k/k1113-shell-words.spec.ts"
+   ]
   }
  ],
  "reads_ok": {
@@ -1963,7 +2032,8 @@
   "apps/api/test/features/F4/ticket-fields.test.ts": "読む口の hooks のファイル apps/api/src/hooks/ticket-fields-read.ts を動的 import で読む（最初の要求のときに 1 回）。読む物と使う試験は data_links で結ぶ・K-563",
   "apps/api/test/features/contract/k144.d/K-563.ts": "葉の hooks のファイルを F3/leaf-hooks.ts の動的 import で読む。読む物と使う試験は data_links で結ぶ・K-563",
   "apps/web/tests/k/k630-request-ref.spec.ts": "K-630 の試験。画面の型を確かめるため子プロセスで apps/web の tsc を流す（読む物は apps/web の画面のコードと型。web の組が流す）",
-  "apps/web/tests/k/k1100-stage-locked.spec.ts": "鍵の札の CSS apps/web/features/F6/progress/progress.css を読み、余白と間が正本のトークンだけを読むかを見る（K1100-UI-004）。正本と生成物の変更でも流れるよう data_links で結ぶ（K-1100）"
+  "apps/web/tests/k/k1100-stage-locked.spec.ts": "鍵の札の CSS apps/web/features/F6/progress/progress.css を読み、余白と間が正本のトークンだけを読むかを見る（K1100-UI-004）。正本と生成物の変更でも流れるよう data_links で結ぶ（K-1100）",
+  "apps/web/tests/k/k1113-shell-words.spec.ts": "正の絵 04_design/canvas/*.dc.html・作り手のソース 04_design/canvas_gen/*.py・並べ方の正 05_flow/phase1.py・画面のコード（shell.tsx・me-sub.tsx・pc-row-parts.tsx）を読み、古い字が無いかを見る。絵の写しに作り手 04_design/canvas_gen/shellfix.py を子プロセスで回し、絵が変わらないかを見る（K1113-UI-005〜009）。読む物の変更でも流れるよう data_links で結ぶ（K-1113）"
  },
  "web_select": {
   "_doc": "web の組でチケットの範囲の回に流す画面の試験の選び方（K-177・scripts/ci/web_select.py）。registry：みんなが書き足す一覧のファイル（作った人で選ばない）。all_on：変えたら全部の物。web_own：画面ごとのコード（作ったチケットの試験・当たらなければ全部）。web_tests：試験の置き場。gates：専用の段の画面の試験（G48・G59 の一覧に無く、その段が流す。tests が試験・on が変えたらその段を起こすファイル・K-238）。always_when_enrolled：突き合わせに入れた組が在るとき、画面の組が起きる回には必ず選ぶ段（K-379）",
