@@ -47,9 +47,17 @@ export async function sendHandoverMails(
   for (const row of mails) ((await sendOne(d, row, where)) ? sent : failed).push(row.notification_id);
   if (sent.length + failed.length === 0) return { sent, failed };
   const mark = () =>
-    withTenant(d.appPool, { tenantId: ctx.tenantId, userId: ctx.userId, role: "member" }, (c) =>
-      c.query("select app.handover_mail_mark($1::uuid[], $2::uuid[])", [sent, failed]),
-    );
+    withTenant(d.appPool, { tenantId: ctx.tenantId, userId: ctx.userId, role: "member" }, async (c) => {
+      // 要求の取引（K-234）に入って流れるとき、印の失敗が取引ごと落とさないよう、印だけを savepoint で包む
+      await c.query("savepoint handover_mail_mark");
+      try {
+        await c.query("select app.handover_mail_mark($1::uuid[], $2::uuid[])", [sent, failed]);
+        await c.query("release savepoint handover_mail_mark");
+      } catch (e) {
+        await c.query("rollback to savepoint handover_mail_mark");
+        throw e;
+      }
+    });
   try {
     await mark().catch(() => mark());
   } catch (e) {

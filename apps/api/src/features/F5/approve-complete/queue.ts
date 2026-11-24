@@ -7,7 +7,9 @@ import { isUuid } from "@kaname/contracts";
 import { withTenant } from "@kaname/db/context";
 import type { Hook, HookArgs } from "../../../contract/deps.js";
 import { invalid, notFound } from "./errors.js";
-import { SWEEP_MINE, SWEEP_OF_APPROVAL, sweepBeforeRead } from "./sweep.js";
+import { sendOverdueMails } from "../../F8/handovers/overdue.js";
+import type { HandoverMailer } from "../../F8/handovers/deps.js";
+import { SWEEP_OF_APPROVAL, sweepBeforeRead, sweepMineAndOverdue } from "./sweep.js";
 
 export const LIMIT_DEFAULT = 20;
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
@@ -45,14 +47,21 @@ interface QueueItem {
   created_at: string;
 }
 
-async function listQueue(pool: pg.Pool, a: HookArgs) {
+/** K-407：期限切れの知らせのメールの材料（無ければ送れない扱い） */
+export interface OverdueMailOptions {
+  mailer?: HandoverMailer;
+  webBaseUrl?: string;
+}
+
+async function listQueue(pool: pg.Pool, a: HookArgs, mo: OverdueMailOptions) {
   const q = a.c.req.query();
   // limit は入口（op.ts）が 1〜200 の整数と確かめ済み。cursor は入口が base64url の形だけ確かめ、中身はここで確かめる
   const limit = q["limit"] ? Number(q["limit"]) : LIMIT_DEFAULT;
   const key = q["cursor"] ? decodeKey(q["cursor"]) : null;
   if (q["cursor"] && !key) return invalid("cursor", "続きの印が不正です");
+  let overdue: Awaited<ReturnType<typeof sweepMineAndOverdue>> = [];
   const { rows, total } = await withTenant(pool, a.ctx, async (cl) => {
-    await sweepBeforeRead(cl, SWEEP_MINE, [], "承認待ちの一覧");
+    overdue = await sweepMineAndOverdue(cl, "承認待ちの一覧");
     const r = await cl.query<{ v: QueueItem[] }>("select app.approval_queue($1, $2, $3, $4) as v", [
       limit + 1,
       key?.due ?? null,
@@ -62,6 +71,13 @@ async function listQueue(pool: pg.Pool, a: HookArgs) {
     const n = await cl.query<{ n: number }>("select app.approval_queue_count() as n");
     return { rows: r.rows[0]?.v ?? [], total: Number(n.rows[0]?.n ?? 0) };
   });
+  // 取引の後：渡した人が開いたときの期限切れの知らせのメール（送れなくても答えは変えない）
+  if (overdue.length && a.ctx.tenantId && a.ctx.userId)
+    await sendOverdueMails(
+      { appPool: pool, ...(mo.mailer ? { mailer: mo.mailer } : {}), config: { webBaseUrl: mo.webBaseUrl ?? "" } },
+      { tenantId: a.ctx.tenantId, userId: a.ctx.userId },
+      overdue,
+    );
   const data = rows.slice(0, limit);
   const last = data.at(-1);
   const more = rows.length > limit && last;
@@ -89,9 +105,9 @@ async function getOne(pool: pg.Pool, a: HookArgs) {
   return { status: 200, body: { data: v } };
 }
 
-export function queueHooks(pool: pg.Pool): Record<string, Hook> {
+export function queueHooks(pool: pg.Pool, mo: OverdueMailOptions = {}): Record<string, Hook> {
   return {
-    listApprovalQueue: { before: (a) => listQueue(pool, a) },
+    listApprovalQueue: { before: (a) => listQueue(pool, a, mo) },
     getApproval: { before: (a) => getOne(pool, a) },
   };
 }
