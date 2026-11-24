@@ -7525,6 +7525,150 @@
    ]
   },
   {
+   "id": "E-HND-130",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "閲覧のみの人・ゲストを配る相手に選んだ",
+   "false_when": "相手が書ける人",
+   "message": "閲覧のみの人・ゲストには配れません",
+   "action": "別の人を選ぶ",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "マネージャーでチケットの詳細を開き、配る小窓を開く",
+    "steps": [
+     "相手に閲覧のみの人を選んで配る（直に API）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-148.18"
+   ]
+  },
+  {
+   "id": "E-HND-131",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "今の担当者を配る相手に選んだ",
+   "false_when": "相手が今の担当者でない",
+   "message": "この人はもう担当者です",
+   "action": "別の人を選ぶ",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "マネージャーでチケットの詳細を開き、配る小窓を開く",
+    "steps": [
+     "相手に今の担当者を選んで配る（直に API）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-148.18",
+    "D-148.3"
+   ]
+  },
+  {
+   "id": "E-HND-150",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "人を決めるで、同じ会社でグループ（と下のグループ）の外の人を選んだ",
+   "false_when": "グループの中の人を選んだ",
+   "message": "このグループの人を選んでください",
+   "action": "グループの人を選び直す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "グループに配られたチケットの承認待ちの行を開く",
+    "steps": [
+     "「人を決める」でグループの外の人を選ぶ（直に API）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-148.19",
+    "D-125.118"
+   ]
+  },
+  {
+   "id": "E-HND-151",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "人を決めるで、止まっている人・招待中の人・閲覧のみの人・依頼する側の人を選んだ",
+   "false_when": "使える状態の人を選んだ",
+   "message": "この人は担当者にできません。止まっている人・閲覧のみの人は選べません",
+   "action": "別の人を選ぶ",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "グループに配られたチケットの承認待ちの行を開く",
+    "steps": [
+     "「人を決める」で止まっている人を選ぶ（直に API）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-148.19",
+    "D-125.118"
+   ]
+  },
+  {
+   "id": "E-HND-152",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "グループに配られた渡しを答える口で断った",
+   "false_when": "受ける（自分が持つ）か、人を決めた",
+   "message": "グループに配られたものは断れません。自分が持つか、人を決めてください",
+   "action": "自分が持つか、人を決める",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "グループに配られたチケットの承認待ちの行を開く",
+    "steps": [
+     "断る（直に API）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-148.17",
+    "D-125.92"
+   ]
+  },
+  {
    "id": "E-INV-009",
    "class": "validation",
    "where": {
@@ -7642,6 +7786,122 @@
    "source": [
     "D-148.29",
     "D-148.31"
+   ]
+  },
+  {
+   "id": "E-INV-013",
+   "class": "validation",
+   "where": {
+    "screen": "invite-accept",
+    "state": "a"
+   },
+   "when": "招待のリンクで新しく参加する人が、メールを空・空白だけ・メールの形でないまま送った",
+   "false_when": "メールで招いた招待（宛てのメールを使う）・ログイン中の人",
+   "message": "メールアドレスを入れてください",
+   "action": "メールアドレスを入れ直す",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "invite-accept の画面",
+    "steps": [
+     "招待のリンクを開き、名前とパスワードを入れ、メールを空かメールの形でない字にして参加を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-148.51"
+   ]
+  },
+  {
+   "id": "E-INV-016",
+   "class": "conflict",
+   "where": {
+    "screen": "invite-accept",
+    "state": "a"
+   },
+   "when": "宛てのメールが無い招待（リンクの招待）で、新しく参加する人がメールを送っていない",
+   "false_when": "メールで招いた招待（宛てのメールを使う）・ログイン中の人・メールを送った",
+   "message": "メールアドレスを入れてください",
+   "action": "メールアドレスを入れて、もう一度参加する",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "invite-accept の画面（リンクの招待）",
+    "steps": [
+     "招待のリンクを開き、名前とパスワードだけでメールの欄を送らずに参加を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-148.51"
+   ]
+  },
+  {
+   "id": "E-INV-014",
+   "class": "not_found",
+   "where": {
+    "screen": "invite-accept",
+    "state": "a"
+   },
+   "when": "確認のメールのリンクを、期限（24 時間）が過ぎてから押した",
+   "false_when": "期限の内に押した",
+   "message": "確認のリンクの期限（24 時間）が過ぎました。招待のリンクから、もう一度参加してください",
+   "action": "招待のリンクから、もう一度参加する",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "invite-accept の画面",
+    "steps": [
+     "参加を押して確認のメールを受け取り、24 時間後にそのリンクを押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-148.51"
+   ]
+  },
+  {
+   "id": "E-INV-015",
+   "class": "not_found",
+   "where": {
+    "screen": "invite-accept",
+    "state": "a"
+   },
+   "when": "確認のメールのリンクを、一度押した後にもう一度押した",
+   "false_when": "まだ押していない確認のリンク",
+   "message": "この確認のリンクはもう使われています。ログインして入ってください",
+   "action": "ログインして入る",
+   "undo": false,
+   "layers": [
+    "UI",
+    "API"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "invite-accept の画面",
+    "steps": [
+     "確認のメールのリンクを押して参加した後、同じリンクをもう一度押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "medium",
+   "source": [
+    "D-148.51"
    ]
   },
   {

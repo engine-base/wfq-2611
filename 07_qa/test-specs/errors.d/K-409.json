@@ -1,0 +1,61 @@
+{
+ "errors": [
+  {
+   "id": "E-HND-130",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "閲覧のみの人・ゲストを配る相手に選んだ",
+   "false_when": "相手が書ける人",
+   "message": "閲覧のみの人・ゲストには配れません",
+   "action": "別の人を選ぶ",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "マネージャーでチケットの詳細を開き、配る小窓を開く",
+    "steps": [
+     "相手に閲覧のみの人を選んで配る（直に API）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-148.18"
+   ]
+  },
+  {
+   "id": "E-HND-131",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "今の担当者を配る相手に選んだ",
+   "false_when": "相手が今の担当者でない",
+   "message": "この人はもう担当者です",
+   "action": "別の人を選ぶ",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "マネージャーでチケットの詳細を開き、配る小窓を開く",
+    "steps": [
+     "相手に今の担当者を選んで配る（直に API）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-148.18",
+    "D-148.3"
+   ]
+  }
+ ]
+}

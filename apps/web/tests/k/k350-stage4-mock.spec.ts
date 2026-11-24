@@ -585,14 +585,14 @@ test("K350-MS-001 幅 375（モック cred-list）：第 2 ナビはボタン「
     "ログインと安全",
     "PC と使った量",
     "預けたログイン情報",
-    "知らせ",
+    "お知らせ",
   ]);
   const hrefOf: Record<string, string> = {
     プロフィール: "/account",
     ログインと安全: "/mfa-setup",
     "PC と使った量": "/setup/bridge",
     預けたログイン情報: "/settings/credentials",
-    知らせ: "/notifications",
+    お知らせ: "/notifications",
   };
   for (const x of all) {
     if (x.text === "預けたログイン情報") {

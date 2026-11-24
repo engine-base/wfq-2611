@@ -4,7 +4,7 @@
  "frozen_at": "2026-11-24",
  "summary": {
   "total_screens": 37,
-  "total_apis": 372,
+  "total_apis": 375,
   "coverage_rate": 1.0,
   "uncovered_screens": [],
   "static_screens": [
@@ -93,6 +93,16 @@
      "role": "action",
      "endpoint": "POST /api/v1/auth/invitations/:token/resend-request",
      "act": "A03"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/auth/invitations/confirm",
+     "act": "A03"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/auth/invitations/confirm",
+     "act": "A96"
     }
    ],
    "transitions": [],
@@ -589,6 +599,11 @@
      "role": "action",
      "endpoint": "PATCH /api/v1/ticket_handovers/:id",
      "act": "A110"
+    },
+    {
+     "role": "action",
+     "endpoint": "POST /api/v1/ticket_handovers/:id/claim",
+     "act": "A111"
     }
    ],
    "transitions": [
@@ -2677,6 +2692,16 @@
      "role": "data_fetch",
      "endpoint": "GET /api/v1/tickets/:id/handover-preview",
      "act": "A48"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/tickets/:id/handovers",
+     "act": "A110"
+    },
+    {
+     "role": "data_fetch",
+     "endpoint": "GET /api/v1/tickets/:id/handovers",
+     "act": "A51"
     },
     {
      "role": "action",
