@@ -99,13 +99,16 @@
     "E-002 scopes",
     "E-001 tenants",
     "E-131 terms_consents",
-    "E-080 notifications"
+    "E-080 notifications",
+    "E-061 sessions"
    ],
    "related_apis": [
     "GET /api/auth/invitations/:token",
     "POST /api/auth/invitations/:token/accept",
     "POST /api/auth/invitations/:token/accept",
-    "POST /api/auth/invitations/:token/resend-request"
+    "POST /api/auth/invitations/:token/resend-request",
+    "POST /api/auth/invitations/confirm",
+    "POST /api/auth/invitations/confirm"
    ],
    "access_roles": [
     "R3",
@@ -1432,6 +1435,7 @@
     "navigate /today"
    ],
    "access_roles": [
+    "R1",
     "R2"
    ]
   },
@@ -2832,6 +2836,7 @@
     "navigate /today"
    ],
    "access_roles": [
+    "R1",
     "R2"
    ]
   },
@@ -3507,6 +3512,18 @@
      "role": "action",
      "method": "POST",
      "path_draft": "/api/auth/invitations/:token/resend-request"
+    },
+    {
+     "act": "A03",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/auth/invitations/confirm"
+    },
+    {
+     "act": "A96",
+     "role": "action",
+     "method": "POST",
+     "path_draft": "/api/auth/invitations/confirm"
     }
    ]
   },
@@ -12931,6 +12948,7 @@
    "entity_name": "sessions",
    "used_by_screens": [
     "verify-email",
+    "invite-accept",
     "mfa-setup",
     "login",
     "password-reset",
@@ -12952,6 +12970,7 @@
    ],
    "used_by_features": [
     "F-001",
+    "F-002",
     "F-003",
     "F-004",
     "F-005",
@@ -14692,6 +14711,7 @@
     "E-004",
     "E-055",
     "E-058",
+    "E-061",
     "E-080",
     "E-091",
     "E-129",
