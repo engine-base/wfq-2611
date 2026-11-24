@@ -1,0 +1,62 @@
+{
+ "errors": [
+  {
+   "id": "E-HND-080",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "同じ渡しを、今日（日本の日付）もう催促した",
+   "false_when": "まだ催促していない渡し・前の催促が昨日以前",
+   "message": "今日はもう催促しました",
+   "action": "明日もう一度押す",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "自分が渡して待っている渡しがある（人宛て）",
+    "steps": [
+     "渡し中の帯の「催促する」を押す",
+     "もう一度「催促する」を押す"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-148.8"
+   ]
+  },
+  {
+   "id": "E-HND-081",
+   "class": "conflict",
+   "where": {
+    "screen": "tickets"
+   },
+   "when": "申し出・グループに配った渡しを催促する",
+   "false_when": "人宛ての引き継ぎ・合意ありで人に配った渡しを催促する",
+   "message": "この渡しは催促できません",
+   "action": "取り消すか、返事を待つ",
+   "undo": false,
+   "layers": [
+    "API",
+    "DB"
+   ],
+   "must_not": false,
+   "reproduce": {
+    "setup": "自分が申し出た・グループに配った待っている渡しがある",
+    "steps": [
+     "申し出（担当者への引き取りの申し出）かグループ宛ての渡しに「催促する」を送る（直に API）"
+    ],
+    "needs": "なし"
+   },
+   "severity": "low",
+   "source": [
+    "D-148.8",
+    "D-148.12"
+   ]
+  }
+ ]
+}

@@ -36,7 +36,7 @@ def shell(base, crumbs, search_ph):
 def page(name, title, crumbs, body, sub="", side="", hdr="", base=None, ph="ワークスペース・問い合わせを探す", pad="20px 28px"):
     s = shell(base or MAIN, crumbs, ph)
     if name.startswith("Op"):
-        s = s.replace('aria-label="知らせ（3 件）"', 'aria-label="知らせ（1 件）"', 1).replace('>3</b></button>', '>1</b></button>', 1)
+        s = re.sub(r'aria-label="(お?)知らせ（3 件）"', r'aria-label="\1知らせ（1 件）"', s, count=1).replace('>3</b></button>', '>1</b></button>', 1)
     bar_end = s.index("</span></div>", s.index('class="kn-bar"')) + len("</span></div>")
     mend = s.rindex("</main>")
     s = s[:bar_end] + hdr + '\n  <div style="display: flex; min-height: 0">' + sub + '<section style="flex: 1; min-width: 0; padding: %s; display: flex; flex-direction: column; gap: 14px">' % pad + body + '</section>' + side + '</div>\n ' + s[mend:]
